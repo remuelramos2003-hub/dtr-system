@@ -88,32 +88,24 @@
     let allRecords = [];
     let currentImage = null;
 
-    // Helper function to make Supabase API calls directly
-    async function supabaseFetch(endpoint, options = {}) {
-        const headers = {
-            'apikey': SUPABASE_KEY,
-            'Authorization': `Bearer ${SUPABASE_KEY}`,
-            'Content-Type': 'application/json'
-        };
-        
-        const response = await fetch(`${SUPABASE_URL}/rest/v1/${endpoint}`, {
-            ...options,
-            headers: { ...headers, ...options.headers }
-        });
-        
-        if (!response.ok) {
-            throw new Error(`HTTP ${response.status}: ${await response.text()}`);
-        }
-        return response.json();
-    }
-
-    // Load records
+    // Load records - FIXED: Better error handling
     async function loadRecords() {
         try {
             document.getElementById('status').innerHTML = '🔄 Syncing...';
             document.getElementById('status').className = 'status info';
             
-            const data = await supabaseFetch('dtr_records?select=*&order=created_at.desc');
+            const response = await fetch(`${SUPABASE_URL}/rest/v1/dtr_records?select=*&order=created_at.desc`, {
+                headers: {
+                    'apikey': SUPABASE_KEY,
+                    'Authorization': `Bearer ${SUPABASE_KEY}`
+                }
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+            }
+            
+            const data = await response.json();
             allRecords = data || [];
             
             renderGrid();
@@ -124,14 +116,13 @@
             
         } catch (error) {
             console.error('Error:', error);
-            document.getElementById('status').innerHTML = '❌ Connection Error: ' + error.message;
+            document.getElementById('status').innerHTML = '❌ Connection Error - Please run SQL in Supabase';
             document.getElementById('status').className = 'status error';
             document.getElementById('recordsGrid').innerHTML = `
                 <div style="text-align:center;padding:40px;">
                     <i class="bi bi-exclamation-triangle" style="font-size:48px;color:#dc3545;"></i>
                     <h4>Connection Failed</h4>
-                    <p>Your database has data (I can see it in Supabase), but the API is blocking requests.</p>
-                    <p>Please run this SQL in Supabase:</p>
+                    <p>Please run this SQL in your Supabase SQL Editor:</p>
                     <code style="display:block;background:#f8f9fa;padding:10px;margin:10px 0;">
                         ALTER TABLE dtr_records DISABLE ROW LEVEL SECURITY;
                     </code>
@@ -143,7 +134,7 @@
         }
     }
 
-    // Save record
+    // Save record - FIXED: Better error handling and refresh
     async function saveRecord() {
         const name = document.getElementById('empName').value;
         const client = document.getElementById('client').value;
@@ -175,10 +166,19 @@
         };
         
         try {
-            await supabaseFetch('dtr_records', {
+            const response = await fetch(`${SUPABASE_URL}/rest/v1/dtr_records`, {
                 method: 'POST',
+                headers: {
+                    'apikey': SUPABASE_KEY,
+                    'Authorization': `Bearer ${SUPABASE_KEY}`,
+                    'Content-Type': 'application/json'
+                },
                 body: JSON.stringify(newRecord)
             });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+            }
             
             alert('Record saved to database!');
             
@@ -190,21 +190,35 @@
             document.getElementById('imageFile').value = '';
             currentImage = null;
             
-            loadRecords();
+            // REFRESH THE GRID
+            await loadRecords();
             
         } catch (error) {
             alert('Error: ' + error.message);
         }
     }
 
-    // Delete record
+    // Delete record - FIXED: REFRESH AFTER DELETE
     async function deleteRecord(id) {
         if (!confirm('Delete this record permanently?')) return;
         
         try {
-            await supabaseFetch(`dtr_records?id=eq.${id}`, { method: 'DELETE' });
+            const response = await fetch(`${SUPABASE_URL}/rest/v1/dtr_records?id=eq.${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'apikey': SUPABASE_KEY,
+                    'Authorization': `Bearer ${SUPABASE_KEY}`
+                }
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+            }
+            
             alert('Record deleted');
-            loadRecords();
+            // REFRESH THE GRID AFTER DELETE
+            await loadRecords();
+            
         } catch (error) {
             alert('Error: ' + error.message);
         }
