@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DTR System | Supabase Real-Time</title>
-    
+    <title>DTR System | Client Time Records</title>
 
     <!-- Supabase SDK -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -14,38 +13,48 @@
     
     <style>
         *{margin:0;padding:0;box-sizing:border-box;}
-        body{font-family:'Segoe UI',sans-serif;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);min-height:100vh;padding:20px;}
-        .app-container{max-width:1400px;margin:0 auto;background:white;border-radius:20px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.3);}
-        .header{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:white;padding:20px 30px;text-align:center;}
-        .status-badge{background:#10b981;color:white;padding:5px 12px;border-radius:20px;font-size:12px;display:inline-block;}
-        .stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:20px;padding:25px;background:#f8f9fa;}
-        .stat-card{background:white;padding:20px;border-radius:15px;text-align:center;box-shadow:0 2px 10px rgba(0,0,0,0.1);}
-        .stat-card i{font-size:2em;color:#667eea;}
-        .stat-card h3{font-size:2em;margin:10px 0;}
-        .main-content{display:grid;grid-template-columns:380px 1fr;gap:25px;padding:25px;}
+        body{font-family:'Segoe UI',sans-serif;background:linear-gradient(135deg,#1a1a2e 0%,#16213e 100%);min-height:100vh;padding:20px;}
+        .app-container{max-width:1400px;margin:0 auto;background:#0f0f23;border-radius:20px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.5);}
+        .header{background:linear-gradient(135deg,#0f3460 0%,#16213e 100%);color:white;padding:20px 30px;text-align:center;border-bottom:1px solid #e94560;}
+        .status-badge{background:#e94560;color:white;padding:5px 12px;border-radius:20px;font-size:12px;display:inline-block;}
+        .stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:20px;padding:25px;background:#1a1a2e;}
+        .stat-card{background:#16213e;padding:20px;border-radius:15px;text-align:center;box-shadow:0 2px 10px rgba(0,0,0,0.3);border:1px solid #e94560;}
+        .stat-card i{font-size:2em;color:#e94560;}
+        .stat-card h3{font-size:2em;margin:10px 0;color:white;}
+        .stat-card p{color:#aaa;}
+        .main-content{display:grid;grid-template-columns:400px 1fr;gap:25px;padding:25px;}
         @media (max-width:768px){.main-content{grid-template-columns:1fr;}}
-        .upload-section{background:#f8f9fa;padding:20px;border-radius:15px;}
+        .upload-section{background:#16213e;padding:20px;border-radius:15px;border:1px solid #e94560;}
+        .upload-section h3{color:white;margin-bottom:20px;}
         .form-group{margin-bottom:20px;}
-        .form-group label{display:block;margin-bottom:8px;font-weight:600;color:#555;}
-        .form-group input,.form-group select,.form-group textarea{width:100%;padding:10px;border:2px solid #e0e0e0;border-radius:8px;}
+        .form-group label{display:block;margin-bottom:8px;font-weight:600;color:#e94560;}
+        .form-group input,.form-group select,.form-group textarea{width:100%;padding:10px;border:1px solid #e94560;border-radius:8px;background:#0f0f23;color:white;}
+        .form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:#e94560;}
+        .form-group input::placeholder{color:#666;}
         .btn{padding:12px 20px;border:none;border-radius:8px;cursor:pointer;font-weight:600;transition:all 0.3s;}
-        .btn-primary{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:white;width:100%;}
-        .btn-primary:hover{transform:translateY(-2px);}
-        .btn-success{background:#10b981;color:white;}
-        .btn-danger{background:#ef4444;color:white;}
-        .btn-warning{background:#f59e0b;color:white;}
+        .btn-primary{background:#e94560;color:white;width:100%;}
+        .btn-primary:hover{background:#ff6b6b;transform:translateY(-2px);}
+        .btn-success{background:#00b894;color:white;}
+        .btn-danger{background:#d63031;color:white;}
+        .btn-warning{background:#fdcb6e;color:#2d3436;}
         .controls-bar{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;justify-content:space-between;}
-        .search-box{flex:1;padding:10px;border:2px solid #e0e0e0;border-radius:8px;}
+        .search-box{flex:1;padding:10px;border:1px solid #e94560;border-radius:8px;background:#0f0f23;color:white;}
+        .search-box::placeholder{color:#666;}
+        .sort-select{background:#0f0f23;border:1px solid #e94560;color:white;padding:10px;border-radius:8px;}
         .dtr-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:20px;max-height:600px;overflow-y:auto;}
-        .dtr-card{background:white;border-radius:12px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,0.1);transition:all 0.3s;cursor:pointer;border:2px solid transparent;}
-        .dtr-card:hover{transform:translateY(-5px);}
-        .dtr-card.selected{border-color:#667eea;background:#f0f4ff;}
+        .dtr-card{background:#16213e;border-radius:12px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,0.3);transition:all 0.3s;cursor:pointer;border:2px solid transparent;}
+        .dtr-card:hover{transform:translateY(-5px);border-color:#e94560;}
+        .dtr-card.selected{border-color:#e94560;background:#1a1a2e;}
         .dtr-image{width:100%;height:200px;object-fit:cover;}
         .dtr-info{padding:15px;}
-        .employee-name{font-weight:bold;font-size:1.1em;color:#667eea;}
+        .employee-name{font-weight:bold;font-size:1.1em;color:#e94560;margin-bottom:5px;}
+        .client-name{color:#00b894;font-size:0.9em;}
+        .date-range{color:#aaa;font-size:0.85em;}
         .preview-image{max-width:100%;max-height:150px;border-radius:8px;margin-top:10px;display:none;}
-        .toast-message{position:fixed;bottom:20px;right:20px;background:#333;color:white;padding:12px 20px;border-radius:8px;z-index:1100;animation:slideIn 0.3s ease;}
+        .toast-message{position:fixed;bottom:20px;right:20px;background:#e94560;color:white;padding:12px 20px;border-radius:8px;z-index:1100;animation:slideIn 0.3s ease;}
         @keyframes slideIn{from{transform:translateX(100%);opacity:0;}to{transform:translateX(0);opacity:1;}}
+        .date-group{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:center;}
+        .date-group span{color:#e94560;font-weight:bold;}
         @media print{.header,.stats-row,.upload-section,.controls-bar,.btn{display:none;}}
     </style>
 </head>
@@ -53,7 +62,7 @@
 
 <div class="app-container">
     <div class="header">
-        <h1><i class="bi bi-database"></i> DTR System - Real-Time Cloud</h1>
+        <h1><i class="bi bi-building"></i> DTR System - Client Time Records</h1>
         <p>Powered by Supabase | Live Sync Across All Devices</p>
         <span class="status-badge" id="statusBadge"><i class="bi bi-cloud-sync"></i> Connecting...</span>
     </div>
@@ -62,19 +71,75 @@
         <div class="stat-card"><i class="bi bi-files"></i><h3 id="totalCount">0</h3><p>Total Records</p></div>
         <div class="stat-card"><i class="bi bi-people"></i><h3 id="employeeCount">0</h3><p>Employees</p></div>
         <div class="stat-card"><i class="bi bi-calendar-month"></i><h3 id="monthCount">0</h3><p>This Month</p></div>
-        <div class="stat-card"><i class="bi bi-building"></i><h3 id="deptCount">0</h3><p>Departments</p></div>
+        <div class="stat-card"><i class="bi bi-building"></i><h3 id="deptCount">0</h3><p>Active Clients</p></div>
     </div>
 
     <div class="main-content">
         <div class="upload-section">
-            <h3><i class="bi bi-cloud-upload"></i> Add/Edit DTR</h3>
+            <h3><i class="bi bi-cloud-upload"></i> Add DTR Record</h3>
             <form id="dtrForm">
                 <input type="hidden" id="editId" value="">
-                <div class="form-group"><label>Employee Name *</label><input type="text" id="employeeName" required placeholder="Enter full name"></div>
-                <div class="form-group"><label>Department *</label><select id="department" required><option value="">Select</option><option>Information Technology</option><option>Human Resources</option><option>Finance</option><option>Operations</option><option>Marketing</option><option>Sales</option><option>Administration</option></select></div>
-                <div class="form-group"><label>Date *</label><input type="date" id="dtrDate" required></div>
-                <div class="form-group"><label>Remarks</label><textarea id="remarks" rows="2" placeholder="Optional notes..."></textarea></div>
-                <div class="form-group"><label>DTR Picture *</label><input type="file" id="imageFile" accept="image/*"><img id="imagePreview" class="preview-image"></div>
+                <div class="form-group">
+                    <label>Employee Name *</label>
+                    <input type="text" id="employeeName" required placeholder="Enter full name">
+                </div>
+                <div class="form-group">
+                    <label>Client/Department *</label>
+                    <select id="department" required size="1" style="height:auto;">
+                        <option value="">Select Client</option>
+                        <optgroup label="MAJOR CLIENTS">
+                            <option>AHAM</option><option>ARGO</option><option>BEYOND CONCEPT</option><option>COH</option>
+                            <option>DC SUPERHEROES</option><option>DIAMOND</option><option>DIGITS</option><option>EASTERWIRE</option>
+                            <option>EL FASHION</option><option>ESP</option><option>FBC</option><option>FIL EM</option>
+                            <option>FILOGISTICS</option><option>FILPAC</option><option>FILSTAR</option><option>FOSTER TEKTITE</option>
+                            <option>HAVI LAGUNA</option><option>HEAVENLY</option><option>HOKKAIDO</option><option>IGLOO</option>
+                            <option>JP MERIDIAN</option><option>JS PHIL</option><option>MSLT</option><option>MSLP</option>
+                            <option>PARC CHATEAU</option><option>POWERASEA</option><option>COUGAR</option><option>REDDOT</option>
+                            <option>REPUBLIC CEMENT</option><option>RFM</option><option>SACI</option><option>RPC</option>
+                            <option>TASCO</option><option>WINELEAN</option><option>LINK IMPORT</option><option>KICKSTART</option>
+                            <option>LAKPUE</option><option>EASTERNWIRE</option><option>ASTANA</option><option>REJ</option>
+                            <option>BMR</option><option>OTHER</option><option>MSLD</option><option>MFC</option>
+                        </optgroup>
+                        <optgroup label="MANUFACTURING & INDUSTRIAL">
+                            <option>STEELPLAS</option><option>FPDI</option><option>MIDDLEBY PHILS CORP.</option><option>FRANKE PHILS</option>
+                            <option>ORACLE CHEM CORP.</option><option>INTERPHIL LAB. INC.</option><option>ALLIANCE PACKAGING CORP.</option>
+                            <option>MANILA CORDAGE</option><option>PAPERCON PHILS INC</option><option>PRIMA ANIMAL TRADING CORP.</option>
+                            <option>MANIMALEX</option><option>LINCOLNCHER</option><option>EDWARD KELLER PHILS</option><option>EFCO</option>
+                            <option>ASSEMPRO</option><option>FISHER FARM INC</option><option>FOSTER FARM</option><option>JOCKERS</option>
+                            <option>MED VALE</option><option>NORDIC</option><option>VIKING</option><option>SUNSONIC</option>
+                        </optgroup>
+                        <optgroup label="RETAIL & DISTRIBUTION">
+                            <option>Sleepery</option><option>FOCUS GLOBAL INC.</option><option>MC ASIA FOODTRADE CORP.</option><option>SHOPEE</option>
+                            <option>NOVA PLUS</option><option>LANDERS</option><option>SOLID JADE</option><option>VG</option>
+                            <option>HAVI PLARIDEL</option><option>RICOA</option><option>FIBISCO</option><option>The Hubstop</option>
+                            <option>TOBIE PHARMA</option><option>CRAVE VILLE</option><option>SEVEN DAYS/365 DAYS</option><option>ART PLUS</option>
+                            <option>BEYOND INNOVATION</option><option>BEAUTY ELEMENTS VENTURES INC</option><option>BLUESPACE TECHNOLOGY</option>
+                        </optgroup>
+                        <optgroup label="LOGISTICS & SERVICES">
+                            <option>HAVI</option><option>CARGO BAYAN</option><option>GRH LAND INC.</option><option>LEAD LOGISTICS CARMONA</option>
+                            <option>APL LOGISTICS</option><option>SOLAIRE</option><option>LINDE</option><option>SNEC</option>
+                            <option>YCH</option><option>ROBO MATRIX</option><option>NORTHERN COLDFRONT CORP.</option>
+                        </optgroup>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Cutoff Period *</label>
+                    <div class="date-group">
+                        <input type="date" id="cutoffFrom" required placeholder="From">
+                        <span>→</span>
+                        <input type="date" id="cutoffTo" required placeholder="To">
+                    </div>
+                    <small class="text-muted" style="color:#888;">Select the payroll cutoff range</small>
+                </div>
+                <div class="form-group">
+                    <label>Remarks</label>
+                    <textarea id="remarks" rows="2" placeholder="Optional notes..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>DTR Picture *</label>
+                    <input type="file" id="imageFile" accept="image/*">
+                    <img id="imagePreview" class="preview-image">
+                </div>
                 <button type="submit" class="btn btn-primary" id="submitBtn"><i class="bi bi-save"></i> Save to Cloud</button>
                 <button type="button" class="btn btn-warning mt-2" id="cancelEditBtn" style="display:none;" onclick="cancelEdit()"><i class="bi bi-x-circle"></i> Cancel Edit</button>
             </form>
@@ -82,12 +147,12 @@
 
         <div>
             <div class="controls-bar">
-                <input type="text" id="searchInput" class="search-box" placeholder="🔍 Search records...">
-                <select id="sortSelect" class="form-select" style="width:auto;">
+                <input type="text" id="searchInput" class="search-box" placeholder="🔍 Search by name, client...">
+                <select id="sortSelect" class="sort-select">
                     <option value="latest">Latest First</option>
                     <option value="oldest">Oldest First</option>
                     <option value="name">Name A-Z</option>
-                    <option value="dept">Department A-Z</option>
+                    <option value="dept">Client A-Z</option>
                 </select>
                 <button class="btn btn-success" onclick="printSelected()"><i class="bi bi-printer"></i> Print Selected</button>
                 <button class="btn btn-success" onclick="printAll()"><i class="bi bi-file-pdf"></i> Print All</button>
@@ -100,45 +165,17 @@
 </div>
 
 <script>
-    // ============ YOUR SUPABASE CONFIGURATION ============
+    // ============ SUPABASE CONFIGURATION ============
     const SUPABASE_URL = "https://oioamrxxcgwejaaglvbg.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9pb2Ftcnh4Y2d3ZWphYWdsdmJnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE0NjUxNzYsImV4cCI6MjA5NzA0MTE3Nn0.NrprjEB1cNHCqgYCerhcX3_79UvEBjhmu-ueGl1dlew";
     
-    // Initialize Supabase
     const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     
-    // ============ GLOBAL VARIABLES ============
     let allRecords = [];
     let selectedIds = new Set();
     let currentImageData = null;
     let editingId = null;
     
-    // ============ CREATE TABLE FIRST ============
-    async function createTable() {
-        // Note: Table creation needs to be done in Supabase SQL Editor
-        // Run this SQL in Supabase SQL Editor:
-        /*
-        CREATE TABLE IF NOT EXISTS dtr_records (
-            id SERIAL PRIMARY KEY,
-            employee_name TEXT NOT NULL,
-            department TEXT NOT NULL,
-            date DATE NOT NULL,
-            remarks TEXT,
-            image_data TEXT NOT NULL,
-            created_at TIMESTAMP DEFAULT NOW()
-        );
-        
-        ALTER TABLE dtr_records ENABLE ROW LEVEL SECURITY;
-        
-        CREATE POLICY "Enable all" ON dtr_records
-            FOR ALL
-            USING (true)
-            WITH CHECK (true);
-        */
-        console.log("Make sure table is created in Supabase SQL Editor");
-    }
-    
-    // ============ LOAD DATA FROM SUPABASE ============
     async function loadRecords() {
         try {
             document.getElementById('statusBadge').innerHTML = '<i class="bi bi-cloud-sync"></i> Syncing...';
@@ -148,23 +185,7 @@
                 .select('*')
                 .order('created_at', { ascending: false });
             
-            if (error) {
-                if (error.message.includes('relation') && error.message.includes('does not exist')) {
-                    document.getElementById('dtrGrid').innerHTML = `
-                        <div class="text-center p-5" style="grid-column:1/-1;">
-                            <i class="bi bi-database-exclamation" style="font-size:3em;color:#f59e0b;"></i>
-                            <h5 class="mt-3">Database Table Not Found</h5>
-                            <p>Please create the 'dtr_records' table in Supabase SQL Editor.</p>
-                            <button class="btn btn-primary mt-2" onclick="window.open('https://supabase.com/dashboard/project/oioamrxxcgwejaaglvbg/sql/new', '_blank')">
-                                Open SQL Editor
-                            </button>
-                        </div>
-                    `;
-                    document.getElementById('statusBadge').innerHTML = '<i class="bi bi-cloud-slash"></i> Table Missing';
-                    return;
-                }
-                throw error;
-            }
+            if (error) throw error;
             
             allRecords = data || [];
             renderGrid();
@@ -172,20 +193,20 @@
             document.getElementById('statusBadge').innerHTML = '<i class="bi bi-cloud-check"></i> Connected ✓';
             
         } catch (error) {
-            console.error('Error loading:', error);
+            console.error(error);
             document.getElementById('statusBadge').innerHTML = '<i class="bi bi-cloud-slash"></i> Connection Error';
             showToast('Error: ' + error.message, 'error');
         }
     }
     
-    // ============ CREATE or UPDATE RECORD ============
     async function saveRecord() {
         const employeeName = document.getElementById('employeeName').value;
         const department = document.getElementById('department').value;
-        const date = document.getElementById('dtrDate').value;
+        const cutoffFrom = document.getElementById('cutoffFrom').value;
+        const cutoffTo = document.getElementById('cutoffTo').value;
         const remarks = document.getElementById('remarks').value;
         
-        if (!employeeName || !department || !date) {
+        if (!employeeName || !department || !cutoffFrom || !cutoffTo) {
             showToast('Please fill all required fields', 'error');
             return;
         }
@@ -195,10 +216,14 @@
             return;
         }
         
+        const cutoffRange = `${cutoffFrom} to ${cutoffTo}`;
+        
         const recordData = {
             employee_name: employeeName,
             department: department,
-            date: date,
+            cutoff_from: cutoffFrom,
+            cutoff_to: cutoffTo,
+            cutoff_range: cutoffRange,
             remarks: remarks || '',
             image_data: currentImageData
         };
@@ -229,7 +254,6 @@
         }
     }
     
-    // ============ DELETE RECORD ============
     async function deleteRecord(id) {
         if (confirm('Delete this record permanently?')) {
             try {
@@ -239,7 +263,6 @@
                     .eq('id', id);
                 
                 if (error) throw error;
-                
                 showToast('Record deleted', 'success');
                 selectedIds.delete(id);
                 loadRecords();
@@ -249,7 +272,6 @@
         }
     }
     
-    // ============ DELETE SELECTED ============
     async function deleteSelected() {
         if (selectedIds.size === 0) {
             showToast('Select records to delete', 'warning');
@@ -265,7 +287,6 @@
                     .in('id', idsArray);
                 
                 if (error) throw error;
-                
                 showToast(`${selectedIds.size} record(s) deleted`, 'success');
                 selectedIds.clear();
                 loadRecords();
@@ -275,12 +296,12 @@
         }
     }
     
-    // ============ EDIT RECORD ============
     function editRecord(record) {
         editingId = record.id;
         document.getElementById('employeeName').value = record.employee_name;
         document.getElementById('department').value = record.department;
-        document.getElementById('dtrDate').value = record.date;
+        document.getElementById('cutoffFrom').value = record.cutoff_from || '';
+        document.getElementById('cutoffTo').value = record.cutoff_to || '';
         document.getElementById('remarks').value = record.remarks || '';
         
         if (record.image_data) {
@@ -308,22 +329,19 @@
         document.getElementById('imagePreview').src = '';
         document.getElementById('submitBtn').innerHTML = '<i class="bi bi-save"></i> Save to Cloud';
         document.getElementById('cancelEditBtn').style.display = 'none';
-        document.getElementById('dtrDate').value = new Date().toISOString().split('T')[0];
         currentImageData = null;
     }
     
-    // ============ RENDER GRID ============
     function renderGrid() {
         const searchTerm = document.getElementById('searchInput').value.toLowerCase();
         let filtered = allRecords.filter(r => 
             r.employee_name.toLowerCase().includes(searchTerm) ||
-            r.department.toLowerCase().includes(searchTerm) ||
-            r.date.includes(searchTerm)
+            r.department.toLowerCase().includes(searchTerm)
         );
         
         const sortBy = document.getElementById('sortSelect').value;
-        if (sortBy === 'latest') filtered.sort((a,b) => new Date(b.date) - new Date(a.date));
-        else if (sortBy === 'oldest') filtered.sort((a,b) => new Date(a.date) - new Date(b.date));
+        if (sortBy === 'latest') filtered.sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
+        else if (sortBy === 'oldest') filtered.sort((a,b) => new Date(a.created_at) - new Date(b.created_at));
         else if (sortBy === 'name') filtered.sort((a,b) => a.employee_name.localeCompare(b.employee_name));
         else if (sortBy === 'dept') filtered.sort((a,b) => a.department.localeCompare(b.department));
         
@@ -339,8 +357,8 @@
                 <img src="${record.image_data}" class="dtr-image" alt="DTR" onclick="event.stopPropagation(); showImage('${record.image_data}')">
                 <div class="dtr-info">
                     <div class="employee-name">👤 ${escapeHtml(record.employee_name)}</div>
-                    <div class="text-muted small">🏢 ${escapeHtml(record.department)}</div>
-                    <div class="text-muted small">📅 ${record.date}</div>
+                    <div class="client-name">🏢 ${escapeHtml(record.department)}</div>
+                    <div class="date-range">📅 Cutoff: ${record.cutoff_range || record.cutoff_from + ' to ' + record.cutoff_to}</div>
                     ${record.remarks ? `<div class="text-muted small mt-1">💬 ${escapeHtml(record.remarks)}</div>` : ''}
                     <div class="d-flex gap-2 mt-2">
                         <button class="btn btn-danger btn-sm flex-grow-1" onclick="event.stopPropagation(); deleteRecord(${record.id})">Delete</button>
@@ -366,17 +384,14 @@
         document.getElementById('employeeCount').textContent = employees.size;
         
         const now = new Date();
-        const thisMonth = allRecords.filter(r => {
-            const d = new Date(r.date);
-            return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
-        });
+        const currentMonth = now.toISOString().slice(0,7);
+        const thisMonth = allRecords.filter(r => r.created_at && r.created_at.startsWith(currentMonth));
         document.getElementById('monthCount').textContent = thisMonth.length;
         
-        const depts = new Set(allRecords.map(r => r.department));
-        document.getElementById('deptCount').textContent = depts.size;
+        const clients = new Set(allRecords.map(r => r.department));
+        document.getElementById('deptCount').textContent = clients.size;
     }
     
-    // ============ PRINT FUNCTIONS ============
     function printSelected() {
         if (selectedIds.size === 0) { showToast('Select records to print', 'warning'); return; }
         const toPrint = allRecords.filter(r => selectedIds.has(r.id));
@@ -390,17 +405,15 @@
     
     function generatePrint(records) {
         const win = window.open('', '_blank');
-        win.document.write(`<!DOCTYPE html><html><head><title>DTR Report</title><style>body{font-family:Arial;padding:20px;} .header{text-align:center;margin-bottom:30px;} .record{margin-bottom:30px;border:1px solid #ddd;padding:15px;page-break-inside:avoid;} img{max-width:100%;}</style></head><body><div class="header"><h1>DTR Report</h1><p>Generated: ${new Date().toLocaleString()}</p><p>Total: ${records.length} records</p></div>${records.map(r => `<div class="record"><h3>${escapeHtml(r.employee_name)}</h3><p>Department: ${escapeHtml(r.department)} | Date: ${r.date}</p>${r.remarks ? `<p>Remarks: ${escapeHtml(r.remarks)}</p>` : ''}<img src="${r.image_data}"></div>`).join('')}</body></html>`);
+        win.document.write(`<!DOCTYPE html><html><head><title>DTR Report</title><style>body{font-family:Arial;padding:20px;} .header{text-align:center;margin-bottom:30px;} .record{margin-bottom:30px;border:1px solid #ddd;padding:15px;page-break-inside:avoid;} img{max-width:100%;}</style></head><body><div class="header"><h1>DTR Report - Client Time Records</h1><p>Generated: ${new Date().toLocaleString()}</p><p>Total: ${records.length} records</p></div>${records.map(r => `<div class="record"><h3>${escapeHtml(r.employee_name)}</h3><p><strong>Client:</strong> ${escapeHtml(r.department)}</p><p><strong>Cutoff Period:</strong> ${r.cutoff_range || r.cutoff_from + ' to ' + r.cutoff_to}</p>${r.remarks ? `<p><strong>Remarks:</strong> ${escapeHtml(r.remarks)}</p>` : ''}<img src="${r.image_data}"></div>`).join('')}</body></html>`);
         win.document.close();
         win.print();
     }
     
-    // ============ HELPER FUNCTIONS ============
     function showToast(message, type = 'success') {
         const toast = document.createElement('div');
         toast.className = 'toast-message';
         toast.innerHTML = `<i class="bi bi-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i> ${message}`;
-        toast.style.background = type === 'success' ? '#10b981' : '#ef4444';
         document.body.appendChild(toast);
         setTimeout(() => toast.remove(), 3000);
     }
@@ -423,7 +436,6 @@
         document.body.appendChild(modal);
     }
     
-    // ============ EVENT LISTENERS ============
     document.getElementById('imageFile').addEventListener('change', function(e) {
         const file = e.target.files[0];
         if (file) {
@@ -442,11 +454,9 @@
         saveRecord();
     });
     
-    document.getElementById('dtrDate').value = new Date().toISOString().split('T')[0];
     document.getElementById('searchInput').addEventListener('input', () => renderGrid());
     document.getElementById('sortSelect').addEventListener('change', () => renderGrid());
     
-    // ============ INITIALIZE ============
     loadRecords();
 </script>
 </body>
