@@ -123,9 +123,24 @@
             gap:10px;
             margin-bottom:20px;
             flex-wrap:wrap;
+            align-items:flex-end;
         }
-        .filter-bar input,.filter-bar select{
+        .filter-group{
             flex:1;
+            min-width:150px;
+        }
+        .filter-group label{
+            display:block;
+            font-size:12px;
+            margin-bottom:4px;
+            color:#666;
+            font-weight:500;
+        }
+        body.dark-mode .filter-group label{
+            color:#94a3b8;
+        }
+        .filter-group input,.filter-group select{
+            width:100%;
             margin:0;
             padding:10px;
         }
@@ -304,6 +319,9 @@
                 height: 45px;
                 font-size: 20px;
             }
+            .filter-group{
+                min-width:100%;
+            }
         }
         @media print{
             .form-area, .filter-bar, .print-bar, .stats, .delete-btn, .select-checkbox, .status, .mode-toggle, .guide-box, .btn-delete-selected{
@@ -389,17 +407,29 @@
         <button id="saveBtn"><i class="bi bi-save"></i> Save to Database</button>
     </div>
 
-    <!-- Filter Bar -->
+    <!-- Filter Bar with Labels -->
     <div class="filter-bar">
-        <input type="text" id="searchName" placeholder="🔍 Search by name...">
-        <select id="filterClient">
-            <option value="">All Clients</option>
-            <option>AHAM</option><option>ARGO</option><option>BEYOND CONCEPT</option><option>COH</option>
-            <option>DC SUPERHEROES</option><option>DIAMOND</option><option>SHOPEE</option><option>LANDERS</option>
-            <option>HAVI</option><option>FILPAC</option><option>OTHER</option>
-        </select>
-        <input type="date" id="filterDateFrom" placeholder="From Date">
-        <input type="date" id="filterDateTo" placeholder="To Date">
+        <div class="filter-group">
+            <label><i class="bi bi-search"></i> Search by Name</label>
+            <input type="text" id="searchName" placeholder="Enter employee name...">
+        </div>
+        <div class="filter-group">
+            <label><i class="bi bi-building"></i> Filter by Client</label>
+            <select id="filterClient">
+                <option value="">All Clients</option>
+                <option>AHAM</option><option>ARGO</option><option>BEYOND CONCEPT</option><option>COH</option>
+                <option>DC SUPERHEROES</option><option>DIAMOND</option><option>SHOPEE</option><option>LANDERS</option>
+                <option>HAVI</option><option>FILPAC</option><option>OTHER</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label><i class="bi bi-calendar-plus"></i> Cutoff From Date</label>
+            <input type="date" id="filterDateFrom" placeholder="From Date">
+        </div>
+        <div class="filter-group">
+            <label><i class="bi bi-calendar-minus"></i> Cutoff To Date</label>
+            <input type="date" id="filterDateTo" placeholder="To Date">
+        </div>
     </div>
 
     <!-- Print Bar -->
