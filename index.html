@@ -3,451 +3,146 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DTR System | Supabase Real-Time</title>
-    
-
-    <!-- Supabase SDK -->
+    <title>DTR System</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-    
     <style>
-        *{margin:0;padding:0;box-sizing:border-box;}
-        body{font-family:'Segoe UI',sans-serif;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);min-height:100vh;padding:20px;}
-        .app-container{max-width:1400px;margin:0 auto;background:white;border-radius:20px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.3);}
-        .header{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:white;padding:20px 30px;text-align:center;}
-        .status-badge{background:#10b981;color:white;padding:5px 12px;border-radius:20px;font-size:12px;display:inline-block;}
-        .stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:20px;padding:25px;background:#f8f9fa;}
-        .stat-card{background:white;padding:20px;border-radius:15px;text-align:center;box-shadow:0 2px 10px rgba(0,0,0,0.1);}
-        .stat-card i{font-size:2em;color:#667eea;}
-        .stat-card h3{font-size:2em;margin:10px 0;}
-        .main-content{display:grid;grid-template-columns:380px 1fr;gap:25px;padding:25px;}
-        @media (max-width:768px){.main-content{grid-template-columns:1fr;}}
-        .upload-section{background:#f8f9fa;padding:20px;border-radius:15px;}
-        .form-group{margin-bottom:20px;}
-        .form-group label{display:block;margin-bottom:8px;font-weight:600;color:#555;}
-        .form-group input,.form-group select,.form-group textarea{width:100%;padding:10px;border:2px solid #e0e0e0;border-radius:8px;}
-        .btn{padding:12px 20px;border:none;border-radius:8px;cursor:pointer;font-weight:600;transition:all 0.3s;}
-        .btn-primary{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:white;width:100%;}
-        .btn-primary:hover{transform:translateY(-2px);}
-        .btn-success{background:#10b981;color:white;}
-        .btn-danger{background:#ef4444;color:white;}
-        .btn-warning{background:#f59e0b;color:white;}
-        .controls-bar{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;justify-content:space-between;}
-        .search-box{flex:1;padding:10px;border:2px solid #e0e0e0;border-radius:8px;}
-        .dtr-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:20px;max-height:600px;overflow-y:auto;}
-        .dtr-card{background:white;border-radius:12px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,0.1);transition:all 0.3s;cursor:pointer;border:2px solid transparent;}
-        .dtr-card:hover{transform:translateY(-5px);}
-        .dtr-card.selected{border-color:#667eea;background:#f0f4ff;}
-        .dtr-image{width:100%;height:200px;object-fit:cover;}
-        .dtr-info{padding:15px;}
-        .employee-name{font-weight:bold;font-size:1.1em;color:#667eea;}
-        .preview-image{max-width:100%;max-height:150px;border-radius:8px;margin-top:10px;display:none;}
-        .toast-message{position:fixed;bottom:20px;right:20px;background:#333;color:white;padding:12px 20px;border-radius:8px;z-index:1100;animation:slideIn 0.3s ease;}
-        @keyframes slideIn{from{transform:translateX(100%);opacity:0;}to{transform:translateX(0);opacity:1;}}
-        @media print{.header,.stats-row,.upload-section,.controls-bar,.btn{display:none;}}
+        body{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);padding:20px;font-family:Arial}
+        .container{max-width:1200px;margin:0 auto;background:white;border-radius:20px;padding:20px}
+        .card{background:#f8f9fa;padding:20px;border-radius:10px;margin-bottom:20px}
+        input,select,textarea{width:100%;padding:8px;margin:5px 0 15px;border:1px solid #ddd;border-radius:5px}
+        button{background:#667eea;color:white;padding:10px 20px;border:none;border-radius:5px;cursor:pointer}
+        .record{border:1px solid #ddd;padding:10px;margin:10px 0;border-radius:5px}
+        img{max-width:200px}
+        .status{display:inline-block;padding:5px 10px;border-radius:20px;font-size:12px}
+        .connected{background:#10b981;color:white}
+        .disconnected{background:#ef4444;color:white}
     </style>
 </head>
 <body>
-
-<div class="app-container">
-    <div class="header">
-        <h1><i class="bi bi-database"></i> DTR System - Real-Time Cloud</h1>
-        <p>Powered by Supabase | Live Sync Across All Devices</p>
-        <span class="status-badge" id="statusBadge"><i class="bi bi-cloud-sync"></i> Connecting...</span>
+<div class="container">
+    <h1>📅 DTR Management System</h1>
+    <p id="status" class="status disconnected">Connecting...</p>
+    
+    <div class="card">
+        <h3>Add DTR Record</h3>
+        <input type="text" id="name" placeholder="Employee Name">
+        <select id="dept">
+            <option>IT</option><option>HR</option><option>Finance</option><option>Operations</option>
+        </select>
+        <input type="date" id="date">
+        <textarea id="remarks" placeholder="Remarks"></textarea>
+        <input type="file" id="image" accept="image/*">
+        <img id="preview" style="max-width:200px;display:none">
+        <button onclick="saveRecord()">Save to Cloud</button>
     </div>
-
-    <div class="stats-row">
-        <div class="stat-card"><i class="bi bi-files"></i><h3 id="totalCount">0</h3><p>Total Records</p></div>
-        <div class="stat-card"><i class="bi bi-people"></i><h3 id="employeeCount">0</h3><p>Employees</p></div>
-        <div class="stat-card"><i class="bi bi-calendar-month"></i><h3 id="monthCount">0</h3><p>This Month</p></div>
-        <div class="stat-card"><i class="bi bi-building"></i><h3 id="deptCount">0</h3><p>Departments</p></div>
-    </div>
-
-    <div class="main-content">
-        <div class="upload-section">
-            <h3><i class="bi bi-cloud-upload"></i> Add/Edit DTR</h3>
-            <form id="dtrForm">
-                <input type="hidden" id="editId" value="">
-                <div class="form-group"><label>Employee Name *</label><input type="text" id="employeeName" required placeholder="Enter full name"></div>
-                <div class="form-group"><label>Department *</label><select id="department" required><option value="">Select</option><option>Information Technology</option><option>Human Resources</option><option>Finance</option><option>Operations</option><option>Marketing</option><option>Sales</option><option>Administration</option></select></div>
-                <div class="form-group"><label>Date *</label><input type="date" id="dtrDate" required></div>
-                <div class="form-group"><label>Remarks</label><textarea id="remarks" rows="2" placeholder="Optional notes..."></textarea></div>
-                <div class="form-group"><label>DTR Picture *</label><input type="file" id="imageFile" accept="image/*"><img id="imagePreview" class="preview-image"></div>
-                <button type="submit" class="btn btn-primary" id="submitBtn"><i class="bi bi-save"></i> Save to Cloud</button>
-                <button type="button" class="btn btn-warning mt-2" id="cancelEditBtn" style="display:none;" onclick="cancelEdit()"><i class="bi bi-x-circle"></i> Cancel Edit</button>
-            </form>
-        </div>
-
-        <div>
-            <div class="controls-bar">
-                <input type="text" id="searchInput" class="search-box" placeholder="🔍 Search records...">
-                <select id="sortSelect" class="form-select" style="width:auto;">
-                    <option value="latest">Latest First</option>
-                    <option value="oldest">Oldest First</option>
-                    <option value="name">Name A-Z</option>
-                    <option value="dept">Department A-Z</option>
-                </select>
-                <button class="btn btn-success" onclick="printSelected()"><i class="bi bi-printer"></i> Print Selected</button>
-                <button class="btn btn-success" onclick="printAll()"><i class="bi bi-file-pdf"></i> Print All</button>
-                <button class="btn btn-danger" onclick="deleteSelected()"><i class="bi bi-trash"></i> Delete</button>
-                <button class="btn btn-primary" onclick="loadRecords()"><i class="bi bi-arrow-repeat"></i> Refresh</button>
-            </div>
-            <div id="dtrGrid" class="dtr-grid"><div class="text-center p-5"><div class="spinner-border text-primary"></div><p class="mt-2">Loading from cloud database...</p></div></div>
-        </div>
-    </div>
+    
+    <h3>Records</h3>
+    <div id="records"></div>
 </div>
 
 <script>
-    // ============ YOUR SUPABASE CONFIGURATION ============
-    const SUPABASE_URL = "https://oioamrxxcgwejaaglvbg.supabase.co";
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9pb2Ftcnh4Y2d3ZWphYWdsdmJnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE0NjUxNzYsImV4cCI6MjA5NzA0MTE3Nn0.NrprjEB1cNHCqgYCerhcX3_79UvEBjhmu-ueGl1dlew";
+// ===== YOUR SUPABASE CONFIG - UPDATE THIS! =====
+const SUPABASE_URL = "https://oioamrxxcgwejaaglvbg.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9pb2Ftcnh4Y2d3ZWphYWdsdmJnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE0NjUxNzYsImV4cCI6MjA5NzA0MTE3Nn0.NrprjEB1cNHCqgYCerhcX3_79UvEBjhmu-ueGl1dlew"; // ← PASTE YOUR FULL KEY HERE!
+
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+let currentImage = null;
+
+// Test connection
+async function testConnection() {
+    try {
+        const { data, error } = await supabase.from('dtr_records').select('count', { count: 'exact', head: true });
+        if (error) throw error;
+        document.getElementById('status').innerHTML = 'Connected ✓';
+        document.getElementById('status').className = 'status connected';
+        loadRecords();
+    } catch(e) {
+        document.getElementById('status').innerHTML = 'Connection Error - Check your anon key';
+        document.getElementById('status').className = 'status disconnected';
+        console.error(e);
+    }
+}
+
+// Load records
+async function loadRecords() {
+    const { data, error } = await supabase.from('dtr_records').select('*').order('created_at', { ascending: false });
+    if (error) { console.error(error); return; }
     
-    // Initialize Supabase
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    
-    // ============ GLOBAL VARIABLES ============
-    let allRecords = [];
-    let selectedIds = new Set();
-    let currentImageData = null;
-    let editingId = null;
-    
-    // ============ CREATE TABLE FIRST ============
-    async function createTable() {
-        // Note: Table creation needs to be done in Supabase SQL Editor
-        // Run this SQL in Supabase SQL Editor:
-        /*
-        CREATE TABLE IF NOT EXISTS dtr_records (
-            id SERIAL PRIMARY KEY,
-            employee_name TEXT NOT NULL,
-            department TEXT NOT NULL,
-            date DATE NOT NULL,
-            remarks TEXT,
-            image_data TEXT NOT NULL,
-            created_at TIMESTAMP DEFAULT NOW()
-        );
-        
-        ALTER TABLE dtr_records ENABLE ROW LEVEL SECURITY;
-        
-        CREATE POLICY "Enable all" ON dtr_records
-            FOR ALL
-            USING (true)
-            WITH CHECK (true);
-        */
-        console.log("Make sure table is created in Supabase SQL Editor");
+    const container = document.getElementById('records');
+    if (data.length === 0) {
+        container.innerHTML = '<p>No records yet. Upload your first DTR!</p>';
+        return;
     }
     
-    // ============ LOAD DATA FROM SUPABASE ============
-    async function loadRecords() {
-        try {
-            document.getElementById('statusBadge').innerHTML = '<i class="bi bi-cloud-sync"></i> Syncing...';
-            
-            const { data, error } = await supabase
-                .from('dtr_records')
-                .select('*')
-                .order('created_at', { ascending: false });
-            
-            if (error) {
-                if (error.message.includes('relation') && error.message.includes('does not exist')) {
-                    document.getElementById('dtrGrid').innerHTML = `
-                        <div class="text-center p-5" style="grid-column:1/-1;">
-                            <i class="bi bi-database-exclamation" style="font-size:3em;color:#f59e0b;"></i>
-                            <h5 class="mt-3">Database Table Not Found</h5>
-                            <p>Please create the 'dtr_records' table in Supabase SQL Editor.</p>
-                            <button class="btn btn-primary mt-2" onclick="window.open('https://supabase.com/dashboard/project/oioamrxxcgwejaaglvbg/sql/new', '_blank')">
-                                Open SQL Editor
-                            </button>
-                        </div>
-                    `;
-                    document.getElementById('statusBadge').innerHTML = '<i class="bi bi-cloud-slash"></i> Table Missing';
-                    return;
-                }
-                throw error;
-            }
-            
-            allRecords = data || [];
-            renderGrid();
-            updateStats();
-            document.getElementById('statusBadge').innerHTML = '<i class="bi bi-cloud-check"></i> Connected ✓';
-            
-        } catch (error) {
-            console.error('Error loading:', error);
-            document.getElementById('statusBadge').innerHTML = '<i class="bi bi-cloud-slash"></i> Connection Error';
-            showToast('Error: ' + error.message, 'error');
-        }
+    container.innerHTML = data.map(r => `
+        <div class="record">
+            <strong>${r.employee_name}</strong> - ${r.department}<br>
+            Date: ${r.date}<br>
+            ${r.remarks ? `Remarks: ${r.remarks}<br>` : ''}
+            <img src="${r.image_data}"><br>
+            <button onclick="deleteRecord(${r.id})">Delete</button>
+        </div>
+    `).join('');
+}
+
+// Save record
+async function saveRecord() {
+    const name = document.getElementById('name').value;
+    const dept = document.getElementById('dept').value;
+    const date = document.getElementById('date').value;
+    const remarks = document.getElementById('remarks').value;
+    
+    if (!name || !dept || !date || !currentImage) {
+        alert('Please fill all fields and select an image');
+        return;
     }
     
-    // ============ CREATE or UPDATE RECORD ============
-    async function saveRecord() {
-        const employeeName = document.getElementById('employeeName').value;
-        const department = document.getElementById('department').value;
-        const date = document.getElementById('dtrDate').value;
-        const remarks = document.getElementById('remarks').value;
-        
-        if (!employeeName || !department || !date) {
-            showToast('Please fill all required fields', 'error');
-            return;
-        }
-        
-        if (!currentImageData && !editingId) {
-            showToast('Please select an image', 'error');
-            return;
-        }
-        
-        const recordData = {
-            employee_name: employeeName,
-            department: department,
-            date: date,
-            remarks: remarks || '',
-            image_data: currentImageData
-        };
-        
-        try {
-            if (editingId) {
-                const { error } = await supabase
-                    .from('dtr_records')
-                    .update(recordData)
-                    .eq('id', editingId);
-                
-                if (error) throw error;
-                showToast('Record updated!', 'success');
-            } else {
-                const { error } = await supabase
-                    .from('dtr_records')
-                    .insert([recordData]);
-                
-                if (error) throw error;
-                showToast('Record saved to cloud!', 'success');
-            }
-            
-            resetForm();
-            loadRecords();
-            
-        } catch (error) {
-            showToast('Error: ' + error.message, 'error');
-        }
-    }
+    const { error } = await supabase.from('dtr_records').insert([{
+        employee_name: name,
+        department: dept,
+        date: date,
+        remarks: remarks,
+        image_data: currentImage
+    }]);
     
-    // ============ DELETE RECORD ============
-    async function deleteRecord(id) {
-        if (confirm('Delete this record permanently?')) {
-            try {
-                const { error } = await supabase
-                    .from('dtr_records')
-                    .delete()
-                    .eq('id', id);
-                
-                if (error) throw error;
-                
-                showToast('Record deleted', 'success');
-                selectedIds.delete(id);
-                loadRecords();
-            } catch (error) {
-                showToast('Error: ' + error.message, 'error');
-            }
-        }
-    }
+    if (error) { alert('Error: ' + error.message); return; }
     
-    // ============ DELETE SELECTED ============
-    async function deleteSelected() {
-        if (selectedIds.size === 0) {
-            showToast('Select records to delete', 'warning');
-            return;
-        }
-        
-        if (confirm(`Delete ${selectedIds.size} record(s) from cloud?`)) {
-            try {
-                const idsArray = Array.from(selectedIds);
-                const { error } = await supabase
-                    .from('dtr_records')
-                    .delete()
-                    .in('id', idsArray);
-                
-                if (error) throw error;
-                
-                showToast(`${selectedIds.size} record(s) deleted`, 'success');
-                selectedIds.clear();
-                loadRecords();
-            } catch (error) {
-                showToast('Error: ' + error.message, 'error');
-            }
-        }
-    }
-    
-    // ============ EDIT RECORD ============
-    function editRecord(record) {
-        editingId = record.id;
-        document.getElementById('employeeName').value = record.employee_name;
-        document.getElementById('department').value = record.department;
-        document.getElementById('dtrDate').value = record.date;
-        document.getElementById('remarks').value = record.remarks || '';
-        
-        if (record.image_data) {
-            document.getElementById('imagePreview').src = record.image_data;
-            document.getElementById('imagePreview').style.display = 'block';
-            currentImageData = record.image_data;
-        }
-        
-        document.getElementById('submitBtn').innerHTML = '<i class="bi bi-pencil"></i> Update Record';
-        document.getElementById('cancelEditBtn').style.display = 'block';
-        
-        document.querySelector('.upload-section').scrollIntoView({ behavior: 'smooth' });
-        showToast('Editing record - click Update when done', 'info');
-    }
-    
-    function cancelEdit() {
-        resetForm();
-        showToast('Edit cancelled', 'info');
-    }
-    
-    function resetForm() {
-        document.getElementById('dtrForm').reset();
-        editingId = null;
-        document.getElementById('imagePreview').style.display = 'none';
-        document.getElementById('imagePreview').src = '';
-        document.getElementById('submitBtn').innerHTML = '<i class="bi bi-save"></i> Save to Cloud';
-        document.getElementById('cancelEditBtn').style.display = 'none';
-        document.getElementById('dtrDate').value = new Date().toISOString().split('T')[0];
-        currentImageData = null;
-    }
-    
-    // ============ RENDER GRID ============
-    function renderGrid() {
-        const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-        let filtered = allRecords.filter(r => 
-            r.employee_name.toLowerCase().includes(searchTerm) ||
-            r.department.toLowerCase().includes(searchTerm) ||
-            r.date.includes(searchTerm)
-        );
-        
-        const sortBy = document.getElementById('sortSelect').value;
-        if (sortBy === 'latest') filtered.sort((a,b) => new Date(b.date) - new Date(a.date));
-        else if (sortBy === 'oldest') filtered.sort((a,b) => new Date(a.date) - new Date(b.date));
-        else if (sortBy === 'name') filtered.sort((a,b) => a.employee_name.localeCompare(b.employee_name));
-        else if (sortBy === 'dept') filtered.sort((a,b) => a.department.localeCompare(b.department));
-        
-        const grid = document.getElementById('dtrGrid');
-        
-        if (filtered.length === 0) {
-            grid.innerHTML = '<div class="text-center p-5" style="grid-column:1/-1;"><i class="bi bi-inbox" style="font-size:3em;color:#ccc;"></i><p>No records found. Upload your first DTR!</p></div>';
-            return;
-        }
-        
-        grid.innerHTML = filtered.map(record => `
-            <div class="dtr-card ${selectedIds.has(record.id) ? 'selected' : ''}" onclick="toggleSelect(${record.id})">
-                <img src="${record.image_data}" class="dtr-image" alt="DTR" onclick="event.stopPropagation(); showImage('${record.image_data}')">
-                <div class="dtr-info">
-                    <div class="employee-name">👤 ${escapeHtml(record.employee_name)}</div>
-                    <div class="text-muted small">🏢 ${escapeHtml(record.department)}</div>
-                    <div class="text-muted small">📅 ${record.date}</div>
-                    ${record.remarks ? `<div class="text-muted small mt-1">💬 ${escapeHtml(record.remarks)}</div>` : ''}
-                    <div class="d-flex gap-2 mt-2">
-                        <button class="btn btn-danger btn-sm flex-grow-1" onclick="event.stopPropagation(); deleteRecord(${record.id})">Delete</button>
-                        <button class="btn btn-warning btn-sm flex-grow-1" onclick="event.stopPropagation(); editRecord(${JSON.stringify(record).replace(/"/g, '&quot;')})">Edit</button>
-                    </div>
-                </div>
-            </div>
-        `).join('');
-    }
-    
-    function toggleSelect(id) {
-        if (selectedIds.has(id)) selectedIds.delete(id);
-        else selectedIds.add(id);
-        renderGrid();
-        updateStats();
-    }
-    
-    function updateStats() {
-        document.getElementById('totalCount').textContent = allRecords.length;
-        document.getElementById('selectedCount').textContent = selectedIds.size;
-        
-        const employees = new Set(allRecords.map(r => r.employee_name));
-        document.getElementById('employeeCount').textContent = employees.size;
-        
-        const now = new Date();
-        const thisMonth = allRecords.filter(r => {
-            const d = new Date(r.date);
-            return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
-        });
-        document.getElementById('monthCount').textContent = thisMonth.length;
-        
-        const depts = new Set(allRecords.map(r => r.department));
-        document.getElementById('deptCount').textContent = depts.size;
-    }
-    
-    // ============ PRINT FUNCTIONS ============
-    function printSelected() {
-        if (selectedIds.size === 0) { showToast('Select records to print', 'warning'); return; }
-        const toPrint = allRecords.filter(r => selectedIds.has(r.id));
-        generatePrint(toPrint);
-    }
-    
-    function printAll() {
-        if (allRecords.length === 0) { showToast('No records to print', 'warning'); return; }
-        generatePrint(allRecords);
-    }
-    
-    function generatePrint(records) {
-        const win = window.open('', '_blank');
-        win.document.write(`<!DOCTYPE html><html><head><title>DTR Report</title><style>body{font-family:Arial;padding:20px;} .header{text-align:center;margin-bottom:30px;} .record{margin-bottom:30px;border:1px solid #ddd;padding:15px;page-break-inside:avoid;} img{max-width:100%;}</style></head><body><div class="header"><h1>DTR Report</h1><p>Generated: ${new Date().toLocaleString()}</p><p>Total: ${records.length} records</p></div>${records.map(r => `<div class="record"><h3>${escapeHtml(r.employee_name)}</h3><p>Department: ${escapeHtml(r.department)} | Date: ${r.date}</p>${r.remarks ? `<p>Remarks: ${escapeHtml(r.remarks)}</p>` : ''}<img src="${r.image_data}"></div>`).join('')}</body></html>`);
-        win.document.close();
-        win.print();
-    }
-    
-    // ============ HELPER FUNCTIONS ============
-    function showToast(message, type = 'success') {
-        const toast = document.createElement('div');
-        toast.className = 'toast-message';
-        toast.innerHTML = `<i class="bi bi-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i> ${message}`;
-        toast.style.background = type === 'success' ? '#10b981' : '#ef4444';
-        document.body.appendChild(toast);
-        setTimeout(() => toast.remove(), 3000);
-    }
-    
-    function escapeHtml(text) {
-        if (!text) return '';
-        const div = document.createElement('div');
-        div.textContent = text;
-        return div.innerHTML;
-    }
-    
-    function showImage(imageData) {
-        const modal = document.createElement('div');
-        modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);z-index:2000;display:flex;align-items:center;justify-content:center;cursor:pointer;';
-        modal.onclick = () => modal.remove();
-        const img = document.createElement('img');
-        img.src = imageData;
-        img.style.cssText = 'max-width:90%;max-height:90%;object-fit:contain;';
-        modal.appendChild(img);
-        document.body.appendChild(modal);
-    }
-    
-    // ============ EVENT LISTENERS ============
-    document.getElementById('imageFile').addEventListener('change', function(e) {
-        const file = e.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(event) {
-                document.getElementById('imagePreview').src = event.target.result;
-                document.getElementById('imagePreview').style.display = 'block';
-                currentImageData = event.target.result;
-            };
-            reader.readAsDataURL(file);
-        }
-    });
-    
-    document.getElementById('dtrForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        saveRecord();
-    });
-    
-    document.getElementById('dtrDate').value = new Date().toISOString().split('T')[0];
-    document.getElementById('searchInput').addEventListener('input', () => renderGrid());
-    document.getElementById('sortSelect').addEventListener('change', () => renderGrid());
-    
-    // ============ INITIALIZE ============
+    alert('Saved!');
+    document.getElementById('name').value = '';
+    document.getElementById('remarks').value = '';
+    document.getElementById('preview').style.display = 'none';
+    currentImage = null;
     loadRecords();
+}
+
+// Delete record
+async function deleteRecord(id) {
+    if (!confirm('Delete this record?')) return;
+    const { error } = await supabase.from('dtr_records').delete().eq('id', id);
+    if (error) { alert('Error: ' + error.message); return; }
+    loadRecords();
+}
+
+// Image preview
+document.getElementById('image').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            document.getElementById('preview').src = event.target.result;
+            document.getElementById('preview').style.display = 'block';
+            currentImage = event.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
+});
+
+// Set default date
+document.getElementById('date').value = new Date().toISOString().split('T')[0];
+
+// Start
+testConnection();
 </script>
 </body>
 </html>
