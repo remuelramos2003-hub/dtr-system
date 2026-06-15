@@ -3,495 +3,92 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DTR System | Client Time Records</title>
-
-    <!-- Supabase SDK -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <title>DTR System | Central Database</title>
     
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f0f2f5;
-            min-height: 100vh;
-            padding: 20px;
-        }
-        
-        .app-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 24px;
-            overflow: hidden;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
-        
-        .header {
-            background: white;
-            padding: 24px 32px;
-            text-align: center;
-            border-bottom: 1px solid #e9ecef;
-        }
-        
-        .header h1 {
-            font-size: 1.75rem;
-            font-weight: 600;
-            color: #1a1a2e;
-            margin-bottom: 8px;
-        }
-        
-        .header p {
-            color: #6c757d;
-            font-size: 0.875rem;
-        }
-        
-        .status-badge {
-            background: #e8f5e9;
-            color: #2e7d32;
-            padding: 4px 12px;
-            border-radius: 50px;
-            font-size: 12px;
-            display: inline-block;
-            margin-top: 8px;
-        }
-        
-        .stats-row {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 16px;
-            padding: 24px 32px;
-            background: white;
-            border-bottom: 1px solid #e9ecef;
-        }
-        
-        .stat-card {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 16px;
-            text-align: center;
-            transition: all 0.2s;
-            border: 1px solid #e9ecef;
-        }
-        
-        .stat-card:hover {
-            border-color: #4361ee;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-        }
-        
-        .stat-card i {
-            font-size: 1.75rem;
-            color: #4361ee;
-            margin-bottom: 8px;
-        }
-        
-        .stat-card h3 {
-            font-size: 1.75rem;
-            font-weight: 700;
-            margin: 8px 0;
-            color: #1a1a2e;
-        }
-        
-        .stat-card p {
-            color: #6c757d;
-            font-size: 0.8rem;
-            margin: 0;
-        }
-        
-        .main-content {
-            display: grid;
-            grid-template-columns: 380px 1fr;
-            gap: 24px;
-            padding: 32px;
-        }
-        
-        @media (max-width: 768px) {
-            .main-content {
-                grid-template-columns: 1fr;
-                padding: 20px;
-            }
-        }
-        
-        .upload-section {
-            background: #f8f9fa;
-            padding: 24px;
-            border-radius: 16px;
-            border: 1px solid #e9ecef;
-        }
-        
-        .upload-section h3 {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: #1a1a2e;
-            margin-bottom: 20px;
-        }
-        
-        .form-group {
-            margin-bottom: 18px;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 6px;
-            font-weight: 500;
-            color: #495057;
-            font-size: 0.85rem;
-        }
-        
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
-            width: 100%;
-            padding: 10px 12px;
-            border: 1px solid #dee2e6;
-            border-radius: 10px;
-            font-size: 0.9rem;
-            transition: all 0.2s;
-            background: white;
-        }
-        
-        .form-group input:focus,
-        .form-group select:focus,
-        .form-group textarea:focus {
-            outline: none;
-            border-color: #4361ee;
-            box-shadow: 0 0 0 2px rgba(67,97,238,0.1);
-        }
-        
-        .btn {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            font-weight: 500;
-            transition: all 0.2s;
-            font-size: 0.85rem;
-        }
-        
-        .btn-primary {
-            background: #4361ee;
-            color: white;
-            width: 100%;
-        }
-        
-        .btn-primary:hover {
-            background: #304ff2;
-            transform: translateY(-1px);
-        }
-        
-        .btn-success {
-            background: #2e7d32;
-            color: white;
-        }
-        
-        .btn-success:hover {
-            background: #1b5e20;
-        }
-        
-        .btn-danger {
-            background: #dc3545;
-            color: white;
-        }
-        
-        .btn-danger:hover {
-            background: #c82333;
-        }
-        
-        .btn-warning {
-            background: #ffc107;
-            color: #1a1a2e;
-        }
-        
-        .btn-warning:hover {
-            background: #e0a800;
-        }
-        
-        .controls-bar {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-            justify-content: space-between;
-        }
-        
-        .search-box {
-            flex: 1;
-            padding: 10px 12px;
-            border: 1px solid #dee2e6;
-            border-radius: 10px;
-            font-size: 0.85rem;
-            background: white;
-        }
-        
-        .search-box:focus {
-            outline: none;
-            border-color: #4361ee;
-        }
-        
-        .sort-select {
-            padding: 10px 12px;
-            border: 1px solid #dee2e6;
-            border-radius: 10px;
-            background: white;
-            font-size: 0.85rem;
-        }
-        
-        .dtr-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 20px;
-            max-height: 600px;
-            overflow-y: auto;
-            padding-right: 5px;
-        }
-        
-        .dtr-card {
-            background: white;
-            border-radius: 16px;
-            overflow: hidden;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            transition: all 0.2s;
-            cursor: pointer;
-            border: 1px solid #e9ecef;
-        }
-        
-        .dtr-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            border-color: #4361ee;
-        }
-        
-        .dtr-card.selected {
-            border-color: #4361ee;
-            background: #f8f9ff;
-        }
-        
-        .dtr-image {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-            background: #f8f9fa;
-        }
-        
-        .dtr-info {
-            padding: 16px;
-        }
-        
-        .employee-name {
-            font-weight: 600;
-            font-size: 1rem;
-            color: #1a1a2e;
-            margin-bottom: 6px;
-        }
-        
-        .client-name {
-            color: #4361ee;
-            font-size: 0.8rem;
-            font-weight: 500;
-            margin-bottom: 6px;
-        }
-        
-        .date-range {
-            color: #6c757d;
-            font-size: 0.75rem;
-            margin-bottom: 8px;
-        }
-        
-        .preview-image {
-            max-width: 100%;
-            max-height: 150px;
-            border-radius: 10px;
-            margin-top: 10px;
-            display: none;
-        }
-        
-        .toast-message {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: #1a1a2e;
-            color: white;
-            padding: 12px 20px;
-            border-radius: 12px;
-            z-index: 1100;
-            animation: slideIn 0.3s ease;
-            font-size: 0.85rem;
-        }
-        
-        @keyframes slideIn {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-        
-        .date-group {
-            display: grid;
-            grid-template-columns: 1fr auto 1fr;
-            gap: 10px;
-            align-items: center;
-        }
-        
-        .date-group span {
-            color: #6c757d;
-            font-weight: 500;
-        }
-        
-        .text-muted {
-            font-size: 0.7rem;
-            margin-top: 4px;
-            display: block;
-        }
-        
-        .loading-spinner {
-            text-align: center;
-            padding: 40px;
-        }
-        
-        .btn-sm {
-            padding: 6px 12px;
-            font-size: 0.75rem;
-        }
-        
-        .flex-grow-1 {
-            flex-grow: 1;
-        }
-        
-        .d-flex {
-            display: flex;
-        }
-        
-        .gap-2 {
-            gap: 8px;
-        }
-        
-        .mt-2 {
-            margin-top: 8px;
-        }
-        
-        .mt-3 {
-            margin-top: 16px;
-        }
-        
-        @media print {
-            .header, .stats-row, .upload-section, .controls-bar, .btn {
-                display: none;
-            }
-            .dtr-card {
-                page-break-inside: avoid;
-                break-inside: avoid;
-            }
-        }
-        
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        
-        ::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 3px;
-        }
-        
-        ::-webkit-scrollbar-thumb {
-            background: #c1c1c1;
-            border-radius: 3px;
-        }
-        
-        ::-webkit-scrollbar-thumb:hover {
-            background: #a8a8a8;
-        }
+        *{margin:0;padding:0;box-sizing:border-box;}
+        body{font-family:'Segoe UI',sans-serif;background:#f0f2f5;padding:20px;}
+        .app-container{max-width:1400px;margin:0 auto;background:white;border-radius:24px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.1);}
+        .header{background:white;padding:20px 30px;text-align:center;border-bottom:1px solid #e9ecef;}
+        .header h1{font-size:1.5rem;color:#1a1a2e;}
+        .status-badge{background:#e8f5e9;color:#2e7d32;padding:4px 12px;border-radius:50px;font-size:12px;display:inline-block;}
+        .status-badge.error{background:#ffebee;color:#c62828;}
+        .stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:16px;padding:20px 30px;background:#f8f9fa;}
+        .stat-card{background:white;padding:15px;border-radius:16px;text-align:center;}
+        .stat-card i{font-size:1.5rem;color:#4361ee;}
+        .stat-card h3{font-size:1.5rem;font-weight:700;margin:5px 0;color:#1a1a2e;}
+        .stat-card p{color:#6c757d;font-size:0.75rem;margin:0;}
+        .main-content{display:grid;grid-template-columns:380px 1fr;gap:24px;padding:30px;}
+        @media (max-width:768px){.main-content{grid-template-columns:1fr;}}
+        .upload-section{background:#f8f9fa;padding:20px;border-radius:16px;}
+        .form-group{margin-bottom:15px;}
+        .form-group label{display:block;margin-bottom:5px;font-weight:500;font-size:0.85rem;color:#495057;}
+        .form-group input,.form-group select,.form-group textarea{width:100%;padding:10px;border:1px solid #dee2e6;border-radius:10px;}
+        .form-group input:focus,.form-group select:focus{outline:none;border-color:#4361ee;}
+        .btn{padding:10px 16px;border:none;border-radius:10px;cursor:pointer;font-weight:500;}
+        .btn-primary{background:#4361ee;color:white;width:100%;}
+        .btn-primary:hover{background:#304ff2;}
+        .btn-success{background:#2e7d32;color:white;}
+        .btn-danger{background:#dc3545;color:white;}
+        .btn-warning{background:#ffc107;color:#1a1a2e;}
+        .controls-bar{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;}
+        .search-box{flex:1;padding:8px 12px;border:1px solid #dee2e6;border-radius:10px;}
+        .dtr-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;max-height:550px;overflow-y:auto;}
+        .dtr-card{background:white;border-radius:16px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.1);border:1px solid #e9ecef;cursor:pointer;}
+        .dtr-card:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,0.1);}
+        .dtr-card.selected{border-color:#4361ee;background:#f8f9ff;}
+        .dtr-image{width:100%;height:180px;object-fit:cover;background:#f8f9fa;}
+        .dtr-info{padding:12px;}
+        .employee-name{font-weight:600;font-size:0.95rem;color:#1a1a2e;}
+        .client-name{color:#4361ee;font-size:0.75rem;}
+        .date-range{color:#6c757d;font-size:0.7rem;}
+        .preview-image{max-width:100%;max-height:120px;border-radius:8px;margin-top:8px;display:none;}
+        .toast-message{position:fixed;bottom:20px;right:20px;background:#1a1a2e;color:white;padding:10px 16px;border-radius:10px;z-index:1100;font-size:0.85rem;animation:slideIn 0.3s ease;}
+        @keyframes slideIn{from{transform:translateX(100%);opacity:0;}to{transform:translateX(0);opacity:1;}}
+        .date-group{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center;}
+        .date-group span{color:#6c757d;}
+        @media print{.header,.stats-row,.upload-section,.controls-bar,.btn{display:none;}}
+        .btn-sm{padding:5px 10px;font-size:0.75rem;}
+        .d-flex{display:flex;}.gap-2{gap:8px;}.mt-2{margin-top:8px;}.flex-grow-1{flex-grow:1;}
+        .text-center{text-align:center;}.p-5{padding:40px;}
     </style>
 </head>
 <body>
 
 <div class="app-container">
     <div class="header">
-        <h1><i class="bi bi-building"></i> DTR System - Client Time Records</h1>
-        <p>Powered by Supabase | Live Sync Across All Devices</p>
+        <h1><i class="bi bi-cloud-database"></i> DTR System - Central Database</h1>
+        <p>One database | All devices sync in real-time | Access from anywhere</p>
         <span class="status-badge" id="statusBadge"><i class="bi bi-cloud-sync"></i> Connecting...</span>
     </div>
 
     <div class="stats-row">
-        <div class="stat-card">
-            <i class="bi bi-files"></i>
-            <h3 id="totalCount">0</h3>
-            <p>Total Records</p>
-        </div>
-        <div class="stat-card">
-            <i class="bi bi-people"></i>
-            <h3 id="employeeCount">0</h3>
-            <p>Employees</p>
-        </div>
-        <div class="stat-card">
-            <i class="bi bi-calendar-month"></i>
-            <h3 id="monthCount">0</h3>
-            <p>This Month</p>
-        </div>
-        <div class="stat-card">
-            <i class="bi bi-building"></i>
-            <h3 id="deptCount">0</h3>
-            <p>Active Clients</p>
-        </div>
+        <div class="stat-card"><i class="bi bi-files"></i><h3 id="totalCount">0</h3><p>Records</p></div>
+        <div class="stat-card"><i class="bi bi-people"></i><h3 id="employeeCount">0</h3><p>Employees</p></div>
+        <div class="stat-card"><i class="bi bi-calendar-month"></i><h3 id="monthCount">0</h3><p>This Month</p></div>
+        <div class="stat-card"><i class="bi bi-building"></i><h3 id="deptCount">0</h3><p>Clients</p></div>
     </div>
 
     <div class="main-content">
         <div class="upload-section">
-            <h3><i class="bi bi-cloud-upload"></i> Add DTR Record</h3>
+            <h5><i class="bi bi-plus-circle"></i> Add New Record</h5>
             <form id="dtrForm">
-                <input type="hidden" id="editId" value="">
+                <input type="hidden" id="editId">
+                <div class="form-group"><label>Employee Name *</label><input type="text" id="employeeName" required placeholder="Full name"></div>
                 <div class="form-group">
-                    <label>Employee Name *</label>
-                    <input type="text" id="employeeName" required placeholder="Enter full name">
-                </div>
-                <div class="form-group">
-                    <label>Client/Department *</label>
+                    <label>Client *</label>
                     <select id="department" required>
                         <option value="">Select Client</option>
-                        <optgroup label="MAJOR CLIENTS">
-                            <option>AHAM</option><option>ARGO</option><option>BEYOND CONCEPT</option><option>COH</option>
-                            <option>DC SUPERHEROES</option><option>DIAMOND</option><option>DIGITS</option><option>EASTERWIRE</option>
-                            <option>EL FASHION</option><option>ESP</option><option>FBC</option><option>FIL EM</option>
-                            <option>FILOGISTICS</option><option>FILPAC</option><option>FILSTAR</option><option>FOSTER TEKTITE</option>
-                            <option>HAVI LAGUNA</option><option>HEAVENLY</option><option>HOKKAIDO</option><option>IGLOO</option>
-                            <option>JP MERIDIAN</option><option>JS PHIL</option><option>MSLT</option><option>MSLP</option>
-                            <option>PARC CHATEAU</option><option>POWERASEA</option><option>COUGAR</option><option>REDDOT</option>
-                            <option>REPUBLIC CEMENT</option><option>RFM</option><option>SACI</option><option>RPC</option>
-                            <option>TASCO</option><option>WINELEAN</option><option>LINK IMPORT</option><option>KICKSTART</option>
-                            <option>LAKPUE</option><option>EASTERNWIRE</option><option>ASTANA</option><option>REJ</option>
-                            <option>BMR</option><option>OTHER</option><option>MSLD</option><option>MFC</option>
-                        </optgroup>
-                        <optgroup label="MANUFACTURING & INDUSTRIAL">
-                            <option>STEELPLAS</option><option>FPDI</option><option>MIDDLEBY PHILS CORP.</option><option>FRANKE PHILS</option>
-                            <option>ORACLE CHEM CORP.</option><option>INTERPHIL LAB. INC.</option><option>ALLIANCE PACKAGING CORP.</option>
-                            <option>MANILA CORDAGE</option><option>PAPERCON PHILS INC</option><option>PRIMA ANIMAL TRADING CORP.</option>
-                            <option>MANIMALEX</option><option>LINCOLNCHER</option><option>EDWARD KELLER PHILS</option><option>EFCO</option>
-                            <option>ASSEMPRO</option><option>FISHER FARM INC</option><option>FOSTER FARM</option><option>JOCKERS</option>
-                            <option>MED VALE</option><option>NORDIC</option><option>VIKING</option><option>SUNSONIC</option>
-                        </optgroup>
-                        <optgroup label="RETAIL & DISTRIBUTION">
-                            <option>Sleepery</option><option>FOCUS GLOBAL INC.</option><option>MC ASIA FOODTRADE CORP.</option><option>SHOPEE</option>
-                            <option>NOVA PLUS</option><option>LANDERS</option><option>SOLID JADE</option><option>VG</option>
-                            <option>HAVI PLARIDEL</option><option>RICOA</option><option>FIBISCO</option><option>The Hubstop</option>
-                            <option>TOBIE PHARMA</option><option>CRAVE VILLE</option><option>SEVEN DAYS/365 DAYS</option><option>ART PLUS</option>
-                            <option>BEYOND INNOVATION</option><option>BEAUTY ELEMENTS VENTURES INC</option><option>BLUESPACE TECHNOLOGY</option>
-                        </optgroup>
-                        <optgroup label="LOGISTICS & SERVICES">
-                            <option>HAVI</option><option>CARGO BAYAN</option><option>GRH LAND INC.</option><option>LEAD LOGISTICS CARMONA</option>
-                            <option>APL LOGISTICS</option><option>SOLAIRE</option><option>LINDE</option><option>SNEC</option>
-                            <option>YCH</option><option>ROBO MATRIX</option><option>NORTHERN COLDFRONT CORP.</option>
-                        </optgroup>
+                        <option>AHAM</option><option>ARGO</option><option>BEYOND CONCEPT</option><option>COH</option>
+                        <option>DC SUPERHEROES</option><option>DIAMOND</option><option>DIGITS</option><option>EASTERWIRE</option>
+                        <option>EL FASHION</option><option>ESP</option><option>FBC</option><option>FIL EM</option>
+                        <option>FILOGISTICS</option><option>FILPAC</option><option>FILSTAR</option><option>FOSTER TEKTITE</option>
+                        <option>HAVI LAGUNA</option><option>HEAVENLY</option><option>HOKKAIDO</option><option>IGLOO</option>
+                        <option>SHOPEE</option><option>LANDERS</option><option>OTHER</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -501,50 +98,31 @@
                         <span>→</span>
                         <input type="date" id="cutoffTo" required>
                     </div>
-                    <small class="text-muted">Select the payroll cutoff range</small>
                 </div>
-                <div class="form-group">
-                    <label>Remarks</label>
-                    <textarea id="remarks" rows="2" placeholder="Optional notes..."></textarea>
-                </div>
-                <div class="form-group">
-                    <label>DTR Picture *</label>
-                    <input type="file" id="imageFile" accept="image/*">
-                    <img id="imagePreview" class="preview-image">
-                </div>
-                <button type="submit" class="btn btn-primary" id="submitBtn"><i class="bi bi-save"></i> Save to Cloud</button>
-                <button type="button" class="btn btn-warning mt-2" id="cancelEditBtn" style="display:none;" onclick="cancelEdit()"><i class="bi bi-x-circle"></i> Cancel Edit</button>
+                <div class="form-group"><label>Remarks</label><textarea id="remarks" rows="2" placeholder="Optional..."></textarea></div>
+                <div class="form-group"><label>DTR Picture *</label><input type="file" id="imageFile" accept="image/*"><img id="imagePreview" class="preview-image"></div>
+                <button type="submit" class="btn btn-primary" id="submitBtn"><i class="bi bi-save"></i> Save to Database</button>
+                <button type="button" class="btn btn-warning mt-2" id="cancelEditBtn" style="display:none;" onclick="cancelEdit()"><i class="bi bi-x-circle"></i> Cancel</button>
             </form>
         </div>
 
         <div>
             <div class="controls-bar">
-                <input type="text" id="searchInput" class="search-box" placeholder="🔍 Search by name, client...">
-                <select id="sortSelect" class="sort-select">
-                    <option value="latest">Latest First</option>
-                    <option value="oldest">Oldest First</option>
-                    <option value="name">Name A-Z</option>
-                    <option value="dept">Client A-Z</option>
+                <input type="text" id="searchInput" class="search-box" placeholder="🔍 Search...">
+                <select id="sortSelect" class="form-select" style="width:auto;">
+                    <option value="latest">Latest</option><option value="name">Name A-Z</option><option value="dept">Client A-Z</option>
                 </select>
-                <button class="btn btn-success btn-sm" onclick="printSelected()"><i class="bi bi-printer"></i> Print Selected</button>
-                <button class="btn btn-success btn-sm" onclick="printAll()"><i class="bi bi-file-pdf"></i> Print All</button>
+                <button class="btn btn-success btn-sm" onclick="printAll()"><i class="bi bi-printer"></i> Print All</button>
                 <button class="btn btn-danger btn-sm" onclick="deleteSelected()"><i class="bi bi-trash"></i> Delete</button>
                 <button class="btn btn-primary btn-sm" onclick="loadRecords()"><i class="bi bi-arrow-repeat"></i> Refresh</button>
             </div>
-            <div id="dtrGrid" class="dtr-grid">
-                <div class="loading-spinner">
-                    <div class="spinner-border text-primary" role="status">
-                        <span class="visually-hidden">Loading...</span>
-                    </div>
-                    <p class="mt-2">Loading from cloud database...</p>
-                </div>
-            </div>
+            <div id="dtrGrid" class="dtr-grid"><div class="text-center p-5"><div class="spinner-border text-primary"></div><p>Loading from central database...</p></div></div>
         </div>
     </div>
 </div>
 
 <script>
-    // ============ SUPABASE CONFIGURATION ============
+    // ============ SUPABASE CONFIG ============
     const SUPABASE_URL = "https://oioamrxxcgwejaaglvbg.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9pb2Ftcnh4Y2d3ZWphYWdsdmJnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE0NjUxNzYsImV4cCI6MjA5NzA0MTE3Nn0.NrprjEB1cNHCqgYCerhcX3_79UvEBjhmu-ueGl1dlew";
     
@@ -552,12 +130,14 @@
     
     let allRecords = [];
     let selectedIds = new Set();
-    let currentImageData = null;
-    let editingId = null;
-    
+    let currentImage = null;
+    let editId = null;
+
+    // LOAD RECORDS FROM DATABASE
     async function loadRecords() {
         try {
             document.getElementById('statusBadge').innerHTML = '<i class="bi bi-cloud-sync"></i> Syncing...';
+            document.getElementById('statusBadge').className = 'status-badge';
             
             const { data, error } = await supabase
                 .from('dtr_records')
@@ -570,14 +150,16 @@
             renderGrid();
             updateStats();
             document.getElementById('statusBadge').innerHTML = '<i class="bi bi-cloud-check"></i> Connected ✓';
+            document.getElementById('statusBadge').className = 'status-badge';
             
         } catch (error) {
-            console.error(error);
-            document.getElementById('statusBadge').innerHTML = '<i class="bi bi-cloud-slash"></i> Connection Error';
-            showToast('Error: ' + error.message, 'error');
+            console.error('Load error:', error);
+            document.getElementById('statusBadge').innerHTML = '<i class="bi bi-cloud-slash"></i> Error';
+            document.getElementById('statusBadge').className = 'status-badge error';
         }
     }
-    
+
+    // SAVE RECORD TO DATABASE
     async function saveRecord() {
         const employeeName = document.getElementById('employeeName').value;
         const department = document.getElementById('department').value;
@@ -590,7 +172,7 @@
             return;
         }
         
-        if (!currentImageData && !editingId) {
+        if (!currentImage && !editId) {
             showToast('Please select an image', 'error');
             return;
         }
@@ -604,15 +186,15 @@
             cutoff_to: cutoffTo,
             cutoff_range: cutoffRange,
             remarks: remarks || '',
-            image_data: currentImageData
+            image_data: currentImage
         };
         
         try {
-            if (editingId) {
+            if (editId) {
                 const { error } = await supabase
                     .from('dtr_records')
                     .update(recordData)
-                    .eq('id', editingId);
+                    .eq('id', editId);
                 
                 if (error) throw error;
                 showToast('Record updated!', 'success');
@@ -622,7 +204,7 @@
                     .insert([recordData]);
                 
                 if (error) throw error;
-                showToast('Record saved to cloud!', 'success');
+                showToast('Record saved to database!', 'success');
             }
             
             resetForm();
@@ -632,7 +214,8 @@
             showToast('Error: ' + error.message, 'error');
         }
     }
-    
+
+    // DELETE RECORD
     async function deleteRecord(id) {
         if (confirm('Delete this record permanently?')) {
             try {
@@ -650,14 +233,15 @@
             }
         }
     }
-    
+
+    // DELETE SELECTED
     async function deleteSelected() {
         if (selectedIds.size === 0) {
             showToast('Select records to delete', 'warning');
             return;
         }
         
-        if (confirm(`Delete ${selectedIds.size} record(s) from cloud?`)) {
+        if (confirm(`Delete ${selectedIds.size} record(s) from database?`)) {
             try {
                 const idsArray = Array.from(selectedIds);
                 const { error } = await supabase
@@ -674,9 +258,10 @@
             }
         }
     }
-    
+
+    // EDIT RECORD
     function editRecord(record) {
-        editingId = record.id;
+        editId = record.id;
         document.getElementById('employeeName').value = record.employee_name;
         document.getElementById('department').value = record.department;
         document.getElementById('cutoffFrom').value = record.cutoff_from || '';
@@ -686,48 +271,52 @@
         if (record.image_data) {
             document.getElementById('imagePreview').src = record.image_data;
             document.getElementById('imagePreview').style.display = 'block';
-            currentImageData = record.image_data;
+            currentImage = record.image_data;
         }
         
         document.getElementById('submitBtn').innerHTML = '<i class="bi bi-pencil"></i> Update Record';
         document.getElementById('cancelEditBtn').style.display = 'block';
-        
-        document.querySelector('.upload-section').scrollIntoView({ behavior: 'smooth' });
-        showToast('Editing record - click Update when done', 'info');
+        showToast('Editing record - click Update', 'info');
     }
-    
+
     function cancelEdit() {
         resetForm();
         showToast('Edit cancelled', 'info');
     }
-    
+
     function resetForm() {
         document.getElementById('dtrForm').reset();
-        editingId = null;
+        editId = null;
         document.getElementById('imagePreview').style.display = 'none';
-        document.getElementById('imagePreview').src = '';
-        document.getElementById('submitBtn').innerHTML = '<i class="bi bi-save"></i> Save to Cloud';
+        document.getElementById('submitBtn').innerHTML = '<i class="bi bi-save"></i> Save to Database';
         document.getElementById('cancelEditBtn').style.display = 'none';
-        currentImageData = null;
+        currentImage = null;
+        
+        // Set default cutoff dates
+        const today = new Date();
+        const firstDay = new Date(today.getFullYear(), today.getMonth(), 1).toISOString().split('T')[0];
+        const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0).toISOString().split('T')[0];
+        document.getElementById('cutoffFrom').value = firstDay;
+        document.getElementById('cutoffTo').value = lastDay;
     }
-    
+
+    // RENDER GRID
     function renderGrid() {
         const searchTerm = document.getElementById('searchInput').value.toLowerCase();
         let filtered = allRecords.filter(r => 
-            r.employee_name.toLowerCase().includes(searchTerm) ||
-            r.department.toLowerCase().includes(searchTerm)
+            (r.employee_name || '').toLowerCase().includes(searchTerm) ||
+            (r.department || '').toLowerCase().includes(searchTerm)
         );
         
         const sortBy = document.getElementById('sortSelect').value;
-        if (sortBy === 'latest') filtered.sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
-        else if (sortBy === 'oldest') filtered.sort((a,b) => new Date(a.created_at) - new Date(b.created_at));
-        else if (sortBy === 'name') filtered.sort((a,b) => a.employee_name.localeCompare(b.employee_name));
-        else if (sortBy === 'dept') filtered.sort((a,b) => a.department.localeCompare(b.department));
+        if (sortBy === 'name') filtered.sort((a,b) => (a.employee_name || '').localeCompare(b.employee_name || ''));
+        else if (sortBy === 'dept') filtered.sort((a,b) => (a.department || '').localeCompare(b.department || ''));
+        else filtered.sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
         
         const grid = document.getElementById('dtrGrid');
         
         if (filtered.length === 0) {
-            grid.innerHTML = '<div class="loading-spinner"><i class="bi bi-inbox" style="font-size: 2rem; color: #adb5bd;"></i><p class="mt-2">No records found. Upload your first DTR!</p></div>';
+            grid.innerHTML = '<div class="text-center p-5"><i class="bi bi-inbox" style="font-size:2rem;color:#adb5bd;"></i><p class="mt-2">No records. Add your first DTR!</p></div>';
             return;
         }
         
@@ -737,7 +326,7 @@
                 <div class="dtr-info">
                     <div class="employee-name">👤 ${escapeHtml(record.employee_name)}</div>
                     <div class="client-name">🏢 ${escapeHtml(record.department)}</div>
-                    <div class="date-range">📅 Cutoff: ${record.cutoff_range || record.cutoff_from + ' to ' + record.cutoff_to}</div>
+                    <div class="date-range">📅 ${record.cutoff_range || record.cutoff_from + ' → ' + record.cutoff_to}</div>
                     ${record.remarks ? `<div class="date-range">💬 ${escapeHtml(record.remarks)}</div>` : ''}
                     <div class="d-flex gap-2 mt-2">
                         <button class="btn btn-danger btn-sm flex-grow-1" onclick="event.stopPropagation(); deleteRecord(${record.id})">Delete</button>
@@ -747,14 +336,14 @@
             </div>
         `).join('');
     }
-    
+
     function toggleSelect(id) {
         if (selectedIds.has(id)) selectedIds.delete(id);
         else selectedIds.add(id);
         renderGrid();
         updateStats();
     }
-    
+
     function updateStats() {
         document.getElementById('totalCount').textContent = allRecords.length;
         document.getElementById('selectedCount').textContent = selectedIds.size;
@@ -770,25 +359,15 @@
         const clients = new Set(allRecords.map(r => r.department));
         document.getElementById('deptCount').textContent = clients.size;
     }
-    
-    function printSelected() {
-        if (selectedIds.size === 0) { showToast('Select records to print', 'warning'); return; }
-        const toPrint = allRecords.filter(r => selectedIds.has(r.id));
-        generatePrint(toPrint);
-    }
-    
+
     function printAll() {
         if (allRecords.length === 0) { showToast('No records to print', 'warning'); return; }
-        generatePrint(allRecords);
-    }
-    
-    function generatePrint(records) {
         const win = window.open('', '_blank');
-        win.document.write(`<!DOCTYPE html><html><head><title>DTR Report</title><style>body{font-family:Arial;padding:20px;} .header{text-align:center;margin-bottom:30px;} .record{margin-bottom:30px;border:1px solid #ddd;padding:15px;page-break-inside:avoid;} img{max-width:100%;}</style></head><body><div class="header"><h1>DTR Report - Client Time Records</h1><p>Generated: ${new Date().toLocaleString()}</p><p>Total: ${records.length} records</p></div>${records.map(r => `<div class="record"><h3>${escapeHtml(r.employee_name)}</h3><p><strong>Client:</strong> ${escapeHtml(r.department)}</p><p><strong>Cutoff Period:</strong> ${r.cutoff_range || r.cutoff_from + ' to ' + r.cutoff_to}</p>${r.remarks ? `<p><strong>Remarks:</strong> ${escapeHtml(r.remarks)}</p>` : ''}<img src="${r.image_data}"></div>`).join('')}</body></html>`);
+        win.document.write(`<!DOCTYPE html><html><head><title>DTR Report</title><style>body{font-family:Arial;padding:20px;} .header{text-align:center;} .record{margin-bottom:30px;border:1px solid #ddd;padding:15px;page-break-inside:avoid;} img{max-width:100%;}</style></head><body><div class="header"><h1>DTR Report</h1><p>Generated: ${new Date().toLocaleString()}</p><p>Total: ${allRecords.length} records</p></div>${allRecords.map(r => `<div class="record"><h3>${escapeHtml(r.employee_name)}</h3><p><strong>Client:</strong> ${escapeHtml(r.department)}</p><p><strong>Cutoff:</strong> ${r.cutoff_range || r.cutoff_from + ' to ' + r.cutoff_to}</p>${r.remarks ? `<p>Remarks: ${escapeHtml(r.remarks)}</p>` : ''}<img src="${r.image_data}"></div>`).join('')}</body></html>`);
         win.document.close();
         win.print();
     }
-    
+
     function showToast(message, type = 'success') {
         const toast = document.createElement('div');
         toast.className = 'toast-message';
@@ -796,25 +375,26 @@
         document.body.appendChild(toast);
         setTimeout(() => toast.remove(), 3000);
     }
-    
+
     function escapeHtml(text) {
         if (!text) return '';
         const div = document.createElement('div');
         div.textContent = text;
         return div.innerHTML;
     }
-    
+
     function showImage(imageData) {
         const modal = document.createElement('div');
         modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);z-index:2000;display:flex;align-items:center;justify-content:center;cursor:pointer;';
         modal.onclick = () => modal.remove();
         const img = document.createElement('img');
         img.src = imageData;
-        img.style.cssText = 'max-width:90%;max-height:90%;object-fit:contain;border-radius:8px;';
+        img.style.cssText = 'max-width:90%;max-height:90%;border-radius:8px;';
         modal.appendChild(img);
         document.body.appendChild(modal);
     }
-    
+
+    // Image preview
     document.getElementById('imageFile').addEventListener('change', function(e) {
         const file = e.target.files[0];
         if (file) {
@@ -822,20 +402,27 @@
             reader.onload = function(event) {
                 document.getElementById('imagePreview').src = event.target.result;
                 document.getElementById('imagePreview').style.display = 'block';
-                currentImageData = event.target.result;
+                currentImage = event.target.result;
             };
             reader.readAsDataURL(file);
         }
     });
-    
+
     document.getElementById('dtrForm').addEventListener('submit', function(e) {
         e.preventDefault();
         saveRecord();
     });
-    
+
     document.getElementById('searchInput').addEventListener('input', () => renderGrid());
     document.getElementById('sortSelect').addEventListener('change', () => renderGrid());
-    
+
+    // Set default cutoff dates
+    const today = new Date();
+    const firstDay = new Date(today.getFullYear(), today.getMonth(), 1).toISOString().split('T')[0];
+    const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0).toISOString().split('T')[0];
+    document.getElementById('cutoffFrom').value = firstDay;
+    document.getElementById('cutoffTo').value = lastDay;
+
     loadRecords();
 </script>
 </body>
