@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DTR System - Working Database</title>
+    <title>DTR System - Admin & Staffer Portal</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <style>
@@ -51,6 +51,52 @@
             text-align:center;
             color:var(--text-color);
             margin-bottom:20px;
+        }
+        /* Login Page Styles */
+        .login-container {
+            max-width: 450px;
+            margin: 100px auto;
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 35px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+        .login-container h2 {
+            margin-bottom: 10px;
+            color: var(--text-color);
+        }
+        .login-container p {
+            color: #666;
+            margin-bottom: 30px;
+        }
+        .login-container input {
+            margin-bottom: 20px;
+        }
+        .user-badge {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #4361ee;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 600;
+            z-index: 100;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+        .user-badge i {
+            margin-right: 8px;
+        }
+        .logout-btn {
+            background: #dc3545;
+            margin-left: 10px;
+            padding: 4px 12px;
+            font-size: 12px;
+        }
+        .logout-btn:hover {
+            background: #c82333;
         }
         .status{
             text-align:center;
@@ -228,6 +274,21 @@
             background:#c82333;
             transform: translateY(-1px);
         }
+        .edit-btn{
+            background:#f59e0b;
+            color:white;
+            border:none;
+            padding:6px;
+            border-radius:6px;
+            margin-top:10px;
+            width:100%;
+            cursor:pointer;
+            transition: all 0.2s;
+        }
+        .edit-btn:hover{
+            background:#d97706;
+            transform: translateY(-1px);
+        }
         .select-checkbox{
             position:absolute;
             top:10px;
@@ -310,6 +371,9 @@
         .btn-delete-selected:hover{
             background: #c82333;
         }
+        .hidden{
+            display: none;
+        }
         @media(max-width:768px){
             .stats{grid-template-columns:repeat(2,1fr);}
             .mode-toggle{
@@ -324,7 +388,7 @@
             }
         }
         @media print{
-            .form-area, .filter-bar, .print-bar, .stats, .delete-btn, .select-checkbox, .status, .mode-toggle, .guide-box, .btn-delete-selected{
+            .form-area, .filter-bar, .print-bar, .stats, .delete-btn, .edit-btn, .select-checkbox, .status, .mode-toggle, .guide-box, .btn-delete-selected, .user-badge{
                 display:none !important;
             }
             * {
@@ -360,19 +424,47 @@
     </style>
 </head>
 <body>
+
+<!-- Login Container -->
+<div id="loginContainer" class="login-container">
+    <h2><i class="bi bi-shield-lock"></i> DTR System Login</h2>
+    <p>Philman Power Center INC</p>
+    <div class="form-area" style="background:transparent; padding:0;">
+        <select id="roleSelect" style="margin-bottom:15px;">
+            <option value="staffer">Staffer</option>
+            <option value="admin">Admin</option>
+        </select>
+        <input type="password" id="passwordInput" placeholder="Enter Password">
+        <button id="loginBtn">Login</button>
+    </div>
+    <div class="guide-box" style="margin-top:20px;">
+        <i class="bi bi-info-circle"></i> <strong>Demo Credentials:</strong><br>
+        <strong>Admin:</strong> Password: <code>admin123</code><br>
+        <strong>Staffer:</strong> Password: <code>staffer123</code>
+    </div>
+</div>
+
+<!-- Main App Container -->
+<div id="appContainer" style="display:none;">
 <div class="container">
+    <!-- User Badge -->
+    <div class="user-badge">
+        <i class="bi bi-person-circle"></i> <span id="userRoleDisplay">Staffer</span>
+        <button id="logoutBtn" class="logout-btn">Logout</button>
+    </div>
+    
     <h1><i class="bi bi-cloud-database"></i> Philman Power Center INC - DTR System</h1>
     <div id="status" class="status info">🔄 Connecting to database...</div>
 
     <!-- Beginner User Guide -->
-    <div class="guide-box">
+    <div id="guideBox" class="guide-box">
         <i class="bi bi-info-circle"></i> <strong>Quick Guide</strong>
         <ul>
             <li><i class="bi bi-plus-circle"></i> <strong>Add Record:</strong> Fill out the form below, select an image, then click "Save to Database"</li>
             <li><i class="bi bi-search"></i> <strong>Search & Filter:</strong> Use the filter bar to search by name, client, or cutoff date range</li>
             <li><i class="bi bi-check-square"></i> <strong>Select Records:</strong> Check the boxes on cards to select them</li>
-            <li><i class="bi bi-printer"></i> <strong>Print:</strong> Select records, then click "Print Selected" - each DTR prints on one bond paper</li>
-            <li><i class="bi bi-trash"></i> <strong>Delete:</strong> Click delete on a single card OR select multiple cards and click "Delete Selected"</li>
+            <li id="printGuideItem"><i class="bi bi-printer"></i> <strong>Print:</strong> Select records, then click "Print Selected" - each DTR prints on one bond paper</li>
+            <li id="deleteGuideItem"><i class="bi bi-trash"></i> <strong>Delete:</strong> Click delete on a single card OR select multiple cards and click "Delete Selected"</li>
             <li><i class="bi bi-moon-stars"></i> <strong>Dark/Light Mode:</strong> Click the circle button at the bottom right to switch themes</li>
         </ul>
     </div>
@@ -433,7 +525,7 @@
     </div>
 
     <!-- Print Bar -->
-    <div class="print-bar">
+    <div id="adminPrintBar" class="print-bar">
         <button id="selectAllBtn" style="background:#28a745;">Select All</button>
         <button id="deselectAllBtn" style="background:#6c757d;">Deselect All</button>
         <button id="deleteSelectedBtn" class="btn-delete-selected" style="background:#dc3545;"><i class="bi bi-trash"></i> Delete Selected (<span id="deleteSelectedCount">0</span>)</button>
@@ -448,25 +540,102 @@
 <button class="mode-toggle" id="modeToggle" title="Dark/Light Mode">
     <i class="bi bi-moon-stars"></i>
 </button>
+</div>
 
 <script>
-    // Supabase config
+    // ============ USER AUTHENTICATION ============
+    let currentUser = null; // 'admin' or 'staffer'
+    
+    // Demo credentials
+    const credentials = {
+        admin: 'admin123',
+        staffer: 'staffer123'
+    };
+    
+    function login() {
+        const role = document.getElementById('roleSelect').value;
+        const password = document.getElementById('passwordInput').value;
+        
+        if (credentials[role] === password) {
+            currentUser = role;
+            localStorage.setItem('dtrUser', currentUser);
+            showMainApp();
+        } else {
+            alert('Invalid password for ' + role.toUpperCase());
+        }
+    }
+    
+    function logout() {
+        currentUser = null;
+        localStorage.removeItem('dtrUser');
+        document.getElementById('appContainer').style.display = 'none';
+        document.getElementById('loginContainer').style.display = 'block';
+        document.getElementById('passwordInput').value = '';
+    }
+    
+    function showMainApp() {
+        document.getElementById('loginContainer').style.display = 'none';
+        document.getElementById('appContainer').style.display = 'block';
+        document.getElementById('userRoleDisplay').innerText = currentUser === 'admin' ? 'Admin' : 'Staffer';
+        
+        // Apply permissions based on role
+        if (currentUser === 'staffer') {
+            // Staffer: Hide delete and print features, show only submit and view
+            const adminPrintBar = document.getElementById('adminPrintBar');
+            if (adminPrintBar) adminPrintBar.style.display = 'none';
+            
+            // Hide delete guide item
+            const deleteGuideItem = document.getElementById('deleteGuideItem');
+            if (deleteGuideItem) deleteGuideItem.style.display = 'none';
+            
+            // Staffer can change theme
+            document.getElementById('modeToggle').style.display = 'flex';
+            
+            // Staffer can edit their submitted data (edit button will show)
+            // Delete buttons will be hidden per card
+            
+        } else {
+            // Admin: Show everything
+            const adminPrintBar = document.getElementById('adminPrintBar');
+            if (adminPrintBar) adminPrintBar.style.display = 'flex';
+            
+            const deleteGuideItem = document.getElementById('deleteGuideItem');
+            if (deleteGuideItem) deleteGuideItem.style.display = 'block';
+            
+            document.getElementById('modeToggle').style.display = 'flex';
+        }
+        
+        // Reload records to apply permission-based rendering
+        loadRecords();
+    }
+    
+    // Check for existing session
+    function checkSession() {
+        const savedUser = localStorage.getItem('dtrUser');
+        if (savedUser && (savedUser === 'admin' || savedUser === 'staffer')) {
+            currentUser = savedUser;
+            showMainApp();
+        }
+    }
+    
+    // ============ SUPABASE CONFIG ============
     const SUPABASE_URL = "https://oioamrxxcgwejaaglvbg.supabase.co";
     const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9pb2Ftcnh4Y2d3ZWphYWdsdmJnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE0NjUxNzYsImV4cCI6MjA5NzA0MTE3Nn0.NrprjEB1cNHCqgYCerhcX3_79UvEBjhmu-ueGl1dlew";
     
     let allRecords = [];
     let currentImage = null;
     let selectedRecords = new Set();
+    let editingId = null;
 
     // Dark/Light Mode Toggle
     function initTheme() {
         const savedTheme = localStorage.getItem('theme');
         if (savedTheme === 'dark') {
             document.body.classList.add('dark-mode');
-            document.getElementById('modeToggle').innerHTML = '<i class="bi bi-sun"></i>';
+            if(document.getElementById('modeToggle')) document.getElementById('modeToggle').innerHTML = '<i class="bi bi-sun"></i>';
         } else {
             document.body.classList.remove('dark-mode');
-            document.getElementById('modeToggle').innerHTML = '<i class="bi bi-moon-stars"></i>';
+            if(document.getElementById('modeToggle')) document.getElementById('modeToggle').innerHTML = '<i class="bi bi-moon-stars"></i>';
         }
     }
     
@@ -474,22 +643,27 @@
         if (document.body.classList.contains('dark-mode')) {
             document.body.classList.remove('dark-mode');
             localStorage.setItem('theme', 'light');
-            document.getElementById('modeToggle').innerHTML = '<i class="bi bi-moon-stars"></i>';
+            if(document.getElementById('modeToggle')) document.getElementById('modeToggle').innerHTML = '<i class="bi bi-moon-stars"></i>';
         } else {
             document.body.classList.add('dark-mode');
             localStorage.setItem('theme', 'dark');
-            document.getElementById('modeToggle').innerHTML = '<i class="bi bi-sun"></i>';
+            if(document.getElementById('modeToggle')) document.getElementById('modeToggle').innerHTML = '<i class="bi bi-sun"></i>';
         }
     }
     
-    document.getElementById('modeToggle').addEventListener('click', toggleTheme);
+    if(document.getElementById('modeToggle')) {
+        document.getElementById('modeToggle').addEventListener('click', toggleTheme);
+    }
     initTheme();
 
     // Load records
     async function loadRecords() {
         try {
-            document.getElementById('status').innerHTML = '🔄 Syncing...';
-            document.getElementById('status').className = 'status info';
+            const statusDiv = document.getElementById('status');
+            if(statusDiv) {
+                statusDiv.innerHTML = '🔄 Syncing...';
+                statusDiv.className = 'status info';
+            }
             
             const response = await fetch(`${SUPABASE_URL}/rest/v1/dtr_records?select=*&order=created_at.desc`, {
                 headers: {
@@ -507,35 +681,27 @@
             
             applyFiltersAndRender();
             
-            document.getElementById('status').innerHTML = '✅ Connected - Live Database';
-            document.getElementById('status').className = 'status success';
+            if(statusDiv) {
+                statusDiv.innerHTML = '✅ Connected - Live Database';
+                statusDiv.className = 'status success';
+            }
             
         } catch (error) {
             console.error('Error:', error);
-            document.getElementById('status').innerHTML = '❌ Connection Error - Please run SQL in Supabase';
-            document.getElementById('status').className = 'status error';
-            document.getElementById('recordsGrid').innerHTML = `
-                <div style="text-align:center;padding:40px;">
-                    <i class="bi bi-exclamation-triangle" style="font-size:48px;color:#dc3545;"></i>
-                    <h4>Connection Failed</h4>
-                    <p>Please run this SQL in your Supabase SQL Editor:</p>
-                    <code style="display:block;background:#f8f9fa;padding:10px;margin:10px 0;">
-                        ALTER TABLE dtr_records DISABLE ROW LEVEL SECURITY;
-                    </code>
-                    <button onclick="window.open('https://supabase.com/dashboard/project/oioamrxxcgwejaaglvbg/sql/new','_blank')" style="width:auto;margin-top:10px;">
-                        Open SQL Editor
-                    </button>
-                </div>
-            `;
+            const statusDiv = document.getElementById('status');
+            if(statusDiv) {
+                statusDiv.innerHTML = '❌ Connection Error - Please run SQL in Supabase';
+                statusDiv.className = 'status error';
+            }
         }
     }
 
     // Apply all filters and render
     function applyFiltersAndRender() {
-        const searchTerm = document.getElementById('searchName').value.toLowerCase();
-        const filterClient = document.getElementById('filterClient').value;
-        const filterDateFrom = document.getElementById('filterDateFrom').value;
-        const filterDateTo = document.getElementById('filterDateTo').value;
+        const searchTerm = document.getElementById('searchName') ? document.getElementById('searchName').value.toLowerCase() : '';
+        const filterClient = document.getElementById('filterClient') ? document.getElementById('filterClient').value : '';
+        const filterDateFrom = document.getElementById('filterDateFrom') ? document.getElementById('filterDateFrom').value : '';
+        const filterDateTo = document.getElementById('filterDateTo') ? document.getElementById('filterDateTo').value : '';
         
         let filtered = allRecords.filter(r => {
             if (searchTerm && !(r.employee_name || '').toLowerCase().includes(searchTerm)) return false;
@@ -563,14 +729,14 @@
             return;
         }
         
-        if (!currentImage) {
+        if (!currentImage && !editingId) {
             alert('Please select an image');
             return;
         }
         
         const cutoffRange = `${fromDate} to ${toDate}`;
         
-        const newRecord = {
+        const recordData = {
             employee_name: name,
             department: client,
             cutoff_from: fromDate,
@@ -582,21 +748,34 @@
         };
         
         try {
-            const response = await fetch(`${SUPABASE_URL}/rest/v1/dtr_records`, {
-                method: 'POST',
-                headers: {
-                    'apikey': SUPABASE_KEY,
-                    'Authorization': `Bearer ${SUPABASE_KEY}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(newRecord)
-            });
-            
-            if (!response.ok) {
-                throw new Error(`HTTP ${response.status}`);
+            if (editingId) {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/dtr_records?id=eq.${editingId}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(recordData)
+                });
+                
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                alert('Record updated successfully!');
+                editingId = null;
+            } else {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/dtr_records`, {
+                    method: 'POST',
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(recordData)
+                });
+                
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                alert('Record saved to database!');
             }
-            
-            alert('Record saved to database!');
             
             document.getElementById('empName').value = '';
             document.getElementById('remarks').value = '';
@@ -604,6 +783,7 @@
             document.getElementById('preview').src = '';
             document.getElementById('imageFile').value = '';
             currentImage = null;
+            document.getElementById('saveBtn').innerHTML = '<i class="bi bi-save"></i> Save to Database';
             
             await loadRecords();
             
@@ -612,8 +792,38 @@
         }
     }
 
-    // Delete single record
+    // Edit record
+    function editRecord(record) {
+        if (currentUser !== 'admin' && currentUser !== 'staffer') {
+            alert('You need to be logged in to edit');
+            return;
+        }
+        
+        editingId = record.id;
+        document.getElementById('empName').value = record.employee_name;
+        document.getElementById('client').value = record.department;
+        document.getElementById('fromDate').value = record.cutoff_from || '';
+        document.getElementById('toDate').value = record.cutoff_to || '';
+        document.getElementById('remarks').value = record.remarks || '';
+        
+        if (record.image_data) {
+            document.getElementById('preview').src = record.image_data;
+            document.getElementById('preview').style.display = 'block';
+            currentImage = record.image_data;
+        }
+        
+        document.getElementById('saveBtn').innerHTML = '<i class="bi bi-pencil"></i> Update Record';
+        document.getElementById('saveBtn').style.background = '#f59e0b';
+        
+        document.querySelector('.form-area').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Delete single record (Admin only)
     async function deleteRecord(id) {
+        if (currentUser !== 'admin') {
+            alert('Only Admin can delete records');
+            return;
+        }
         if (!confirm('Delete this record permanently?')) return;
         
         try {
@@ -625,9 +835,7 @@
                 }
             });
             
-            if (!response.ok) {
-                throw new Error(`HTTP ${response.status}`);
-            }
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
             
             selectedRecords.delete(id);
             alert('Record deleted');
@@ -638,8 +846,13 @@
         }
     }
 
-    // Delete multiple selected records
+    // Delete multiple selected records (Admin only)
     async function deleteSelectedRecords() {
+        if (currentUser !== 'admin') {
+            alert('Only Admin can delete records');
+            return;
+        }
+        
         const toDelete = allRecords.filter(r => selectedRecords.has(r.id));
         
         if (toDelete.length === 0) {
@@ -669,8 +882,12 @@
         }
     }
 
-    // Toggle select record
+    // Toggle select record (Admin only for selection)
     function toggleSelectRecord(id) {
+        if (currentUser !== 'admin') {
+            alert('Only Admin can select records');
+            return;
+        }
         if (selectedRecords.has(id)) {
             selectedRecords.delete(id);
         } else {
@@ -679,25 +896,30 @@
         applyFiltersAndRender();
     }
 
-    // Select all currently filtered records
+    // Select all currently filtered records (Admin only)
     function selectAllFiltered() {
+        if (currentUser !== 'admin') {
+            alert('Only Admin can select records');
+            return;
+        }
         const filteredRecords = getFilteredRecords();
         filteredRecords.forEach(r => selectedRecords.add(r.id));
         applyFiltersAndRender();
     }
 
-    // Deselect all
+    // Deselect all (Admin only)
     function deselectAll() {
+        if (currentUser !== 'admin') return;
         selectedRecords.clear();
         applyFiltersAndRender();
     }
 
     // Get currently filtered records
     function getFilteredRecords() {
-        const searchTerm = document.getElementById('searchName').value.toLowerCase();
-        const filterClient = document.getElementById('filterClient').value;
-        const filterDateFrom = document.getElementById('filterDateFrom').value;
-        const filterDateTo = document.getElementById('filterDateTo').value;
+        const searchTerm = document.getElementById('searchName') ? document.getElementById('searchName').value.toLowerCase() : '';
+        const filterClient = document.getElementById('filterClient') ? document.getElementById('filterClient').value : '';
+        const filterDateFrom = document.getElementById('filterDateFrom') ? document.getElementById('filterDateFrom').value : '';
+        const filterDateTo = document.getElementById('filterDateTo') ? document.getElementById('filterDateTo').value : '';
         
         return allRecords.filter(r => {
             if (searchTerm && !(r.employee_name || '').toLowerCase().includes(searchTerm)) return false;
@@ -708,8 +930,13 @@
         });
     }
 
-    // Print selected records - FITS BOND PAPER (Portrait/Landscape auto)
+    // Print selected records (Admin only)
     function printSelectedRecords() {
+        if (currentUser !== 'admin') {
+            alert('Only Admin can print records');
+            return;
+        }
+        
         const toPrint = allRecords.filter(r => selectedRecords.has(r.id));
         
         if (toPrint.length === 0) {
@@ -724,28 +951,11 @@
             <head>
                 <title>DTR Pictures - Bond Paper Print</title>
                 <style>
-                    * {
-                        margin: 0;
-                        padding: 0;
-                        box-sizing: border-box;
-                    }
-                    body {
-                        margin: 0;
-                        padding: 0;
-                        background: white;
-                    }
-                    @page {
-                        size: portrait;
-                        margin: 0;
-                    }
-                    @page landscape {
-                        size: landscape;
-                        margin: 0;
-                    }
-                    .print-container {
-                        width: 100%;
-                        min-height: 100vh;
-                    }
+                    * { margin: 0; padding: 0; box-sizing: border-box; }
+                    body { margin: 0; padding: 0; background: white; }
+                    @page { size: portrait; margin: 0; }
+                    @page landscape { size: landscape; margin: 0; }
+                    .print-container { width: 100%; min-height: 100vh; }
                     .print-page {
                         page-break-after: always;
                         break-after: page;
@@ -755,11 +965,6 @@
                         justify-content: center;
                         align-items: center;
                         background: white;
-                        position: relative;
-                    }
-                    .print-page:last-child {
-                        page-break-after: auto;
-                        break-after: auto;
                     }
                     .print-img {
                         max-width: 100%;
@@ -769,68 +974,13 @@
                         object-fit: contain;
                         display: block;
                         margin: 0 auto;
-                        box-shadow: 0 0 0 1px #eee;
-                    }
-                    @media print {
-                        body {
-                            margin: 0;
-                            padding: 0;
-                        }
-                        .print-page {
-                            page-break-after: always;
-                            break-after: page;
-                        }
                     }
                 </style>
-                <script>
-                    function adjustForOrientation() {
-                        const pages = document.querySelectorAll('.print-page');
-                        pages.forEach(page => {
-                            const img = page.querySelector('.print-img');
-                            if (img && img.complete) {
-                                if (img.naturalWidth > img.naturalHeight) {
-                                    page.style.setProperty('height', 'auto');
-                                    page.style.setProperty('min-height', '100vh');
-                                } else {
-                                    page.style.setProperty('height', '100vh');
-                                }
-                            }
-                        });
-                    }
-                    window.onload = function() {
-                        adjustForOrientation();
-                        setTimeout(adjustForOrientation, 100);
-                    };
-                <\/script>
             </head>
             <body>
                 <div class="print-container">
-                    ${toPrint.map((r, index) => {
-                        return `
-                            <div class="print-page" id="page-${index}">
-                                <img class="print-img" src="${r.image_data}" alt="DTR" onload="this.parentElement.style.height='auto';">
-                            </div>
-                        `;
-                    }).join('')}
+                    ${toPrint.map((r, index) => `<div class="print-page"><img class="print-img" src="${r.image_data}"></div>`).join('')}
                 </div>
-                <script>
-                    const imgs = document.querySelectorAll('.print-img');
-                    imgs.forEach(img => {
-                        if (img.complete) {
-                            if (img.naturalWidth > img.naturalHeight) {
-                                img.parentElement.style.height = 'auto';
-                                img.parentElement.style.minHeight = '100vh';
-                            }
-                        } else {
-                            img.addEventListener('load', function() {
-                                if (this.naturalWidth > this.naturalHeight) {
-                                    this.parentElement.style.height = 'auto';
-                                    this.parentElement.style.minHeight = '100vh';
-                                }
-                            });
-                        }
-                    });
-                <\/script>
             </body>
             </html>
         `);
@@ -841,50 +991,58 @@
     // Update selected info display
     function updateSelectedInfo() {
         const count = selectedRecords.size;
-        document.getElementById('selectedCount').innerText = count;
-        document.getElementById('deleteSelectedCount').innerText = count;
-        const selectedInfo = document.getElementById('selectedInfo');
-        if (count > 0) {
-            selectedInfo.innerHTML = `${count} record(s) selected`;
-        } else {
-            selectedInfo.innerHTML = '';
-        }
+        if(document.getElementById('selectedCount')) document.getElementById('selectedCount').innerText = count;
+        if(document.getElementById('deleteSelectedCount')) document.getElementById('deleteSelectedCount').innerText = count;
     }
 
     // Render grid
     function renderGrid(filteredRecords) {
         const grid = document.getElementById('recordsGrid');
         
+        if (!grid) return;
+        
         if (filteredRecords.length === 0) {
             grid.innerHTML = '<div class="loading">No records found. Add your first DTR!</div>';
             return;
         }
         
-        grid.innerHTML = filteredRecords.map(record => `
+        const isAdmin = currentUser === 'admin';
+        
+        grid.innerHTML = filteredRecords.map(record => {
+            let actionButtons = '';
+            if (isAdmin) {
+                // Admin has delete button
+                actionButtons = `<button class="delete-btn" onclick="deleteRecord(${record.id})"><i class="bi bi-trash"></i> Delete</button>`;
+            } else {
+                // Staffer has edit button only
+                actionButtons = `<button class="edit-btn" onclick="editRecord(${JSON.stringify(record).replace(/'/g, "&#39;")})"><i class="bi bi-pencil"></i> Edit</button>`;
+            }
+            
+            return `
             <div class="card ${selectedRecords.has(record.id) ? 'selected' : ''}">
-                <input type="checkbox" class="select-checkbox" ${selectedRecords.has(record.id) ? 'checked' : ''} onchange="toggleSelectRecord(${record.id})">
+                ${isAdmin ? `<input type="checkbox" class="select-checkbox" ${selectedRecords.has(record.id) ? 'checked' : ''} onchange="toggleSelectRecord(${record.id})">` : ''}
                 <img src="${record.image_data}" class="card-img" alt="DTR" onclick="window.open(this.src)">
                 <div class="card-body">
                     <div class="name">👤 ${escapeHtml(record.employee_name)}</div>
                     <div class="client">🏢 ${escapeHtml(record.department)}</div>
                     <div class="date">📅 Cutoff: ${record.cutoff_range || record.cutoff_from + ' → ' + record.cutoff_to}</div>
                     ${record.remarks ? `<div class="date">💬 ${escapeHtml(record.remarks)}</div>` : ''}
-                    <button class="delete-btn" onclick="deleteRecord(${record.id})">Delete</button>
+                    ${actionButtons}
                 </div>
             </div>
-        `).join('');
+        `}).join('');
     }
 
     // Update stats
     function updateStats() {
-        document.getElementById('totalCount').textContent = allRecords.length;
+        if(document.getElementById('totalCount')) document.getElementById('totalCount').textContent = allRecords.length;
         const uniqueEmps = new Set(allRecords.map(r => r.employee_name));
-        document.getElementById('empCount').textContent = uniqueEmps.size;
+        if(document.getElementById('empCount')) document.getElementById('empCount').textContent = uniqueEmps.size;
         const now = new Date();
         const thisMonth = allRecords.filter(r => r.created_at && new Date(r.created_at).getMonth() === now.getMonth());
-        document.getElementById('monthCount').textContent = thisMonth.length;
+        if(document.getElementById('monthCount')) document.getElementById('monthCount').textContent = thisMonth.length;
         const uniqueClients = new Set(allRecords.map(r => r.department));
-        document.getElementById('clientCount').textContent = uniqueClients.size;
+        if(document.getElementById('clientCount')) document.getElementById('clientCount').textContent = uniqueClients.size;
     }
 
     // Helper
@@ -896,44 +1054,58 @@
     }
 
     // Image preview
-    document.getElementById('imageFile').addEventListener('change', function(e) {
-        const file = e.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(event) {
-                const preview = document.getElementById('preview');
-                preview.src = event.target.result;
-                preview.style.display = 'block';
-                currentImage = event.target.result;
-            };
-            reader.readAsDataURL(file);
-        }
-    });
+    if(document.getElementById('imageFile')) {
+        document.getElementById('imageFile').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const preview = document.getElementById('preview');
+                    preview.src = event.target.result;
+                    preview.style.display = 'block';
+                    currentImage = event.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
 
     // Event listeners for live filters
-    document.getElementById('searchName').addEventListener('input', applyFiltersAndRender);
-    document.getElementById('filterClient').addEventListener('change', applyFiltersAndRender);
-    document.getElementById('filterDateFrom').addEventListener('change', applyFiltersAndRender);
-    document.getElementById('filterDateTo').addEventListener('change', applyFiltersAndRender);
+    if(document.getElementById('searchName')) {
+        document.getElementById('searchName').addEventListener('input', applyFiltersAndRender);
+        document.getElementById('filterClient').addEventListener('change', applyFiltersAndRender);
+        document.getElementById('filterDateFrom').addEventListener('change', applyFiltersAndRender);
+        document.getElementById('filterDateTo').addEventListener('change', applyFiltersAndRender);
+    }
     
-    // Print and delete buttons
-    document.getElementById('selectAllBtn').addEventListener('click', selectAllFiltered);
-    document.getElementById('deselectAllBtn').addEventListener('click', deselectAll);
-    document.getElementById('printSelectedBtn').addEventListener('click', printSelectedRecords);
-    document.getElementById('deleteSelectedBtn').addEventListener('click', deleteSelectedRecords);
+    // Print and delete buttons (Admin only - will be conditionally available)
+    if(document.getElementById('selectAllBtn')) {
+        document.getElementById('selectAllBtn').addEventListener('click', selectAllFiltered);
+        document.getElementById('deselectAllBtn').addEventListener('click', deselectAll);
+        document.getElementById('printSelectedBtn').addEventListener('click', printSelectedRecords);
+        document.getElementById('deleteSelectedBtn').addEventListener('click', deleteSelectedRecords);
+    }
     
     // Save button
-    document.getElementById('saveBtn').addEventListener('click', saveRecord);
+    if(document.getElementById('saveBtn')) {
+        document.getElementById('saveBtn').addEventListener('click', saveRecord);
+    }
 
     // Set default dates
     const today = new Date();
     const firstDay = new Date(today.getFullYear(), today.getMonth(), 1).toISOString().split('T')[0];
     const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0).toISOString().split('T')[0];
-    document.getElementById('fromDate').value = firstDay;
-    document.getElementById('toDate').value = lastDay;
+    if(document.getElementById('fromDate')) document.getElementById('fromDate').value = firstDay;
+    if(document.getElementById('toDate')) document.getElementById('toDate').value = lastDay;
 
-    // Start
-    loadRecords();
+    // Login button
+    document.getElementById('loginBtn').addEventListener('click', login);
+    if(document.getElementById('logoutBtn')) {
+        document.getElementById('logoutBtn').addEventListener('click', logout);
+    }
+
+    // Check session on load
+    checkSession();
 </script>
 </body>
 </html>
