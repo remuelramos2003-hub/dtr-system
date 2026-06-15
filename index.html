@@ -6,6 +6,8 @@
     <title>DTR System - Admin & Staffer Portal</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <!-- SweetAlert for beautiful message boxes -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <!-- JSZip Library for creating ZIP files -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
@@ -76,30 +78,64 @@
         .login-container input {
             margin-bottom: 20px;
         }
+        /* Improved User Badge */
         .user-badge {
             position: fixed;
             top: 20px;
             right: 20px;
-            background: #4361ee;
+            background: linear-gradient(135deg, #4361ee, #3b82f6);
             color: white;
-            padding: 8px 16px;
+            padding: 10px 20px;
             border-radius: 50px;
             font-size: 14px;
             font-weight: 600;
             z-index: 100;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
         }
         .user-badge i {
-            margin-right: 8px;
+            font-size: 16px;
         }
-        .logout-btn {
-            background: #dc3545;
-            margin-left: 10px;
-            padding: 4px 12px;
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .user-role {
+            background: rgba(255,255,255,0.2);
+            padding: 4px 10px;
+            border-radius: 30px;
             font-size: 12px;
         }
+        .client-badge {
+            background: #10b981;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .logout-btn {
+            background: rgba(220, 53, 69, 0.9);
+            border: none;
+            padding: 6px 14px;
+            border-radius: 30px;
+            font-size: 12px;
+            color: white;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
         .logout-btn:hover {
-            background: #c82333;
+            background: #dc3545;
+            transform: scale(1.02);
         }
         .status{
             text-align:center;
@@ -380,14 +416,6 @@
         .btn-download:hover{
             background: #7c3aed;
         }
-        .client-badge{
-            background: #10b981;
-            color: white;
-            padding: 2px 8px;
-            border-radius: 20px;
-            font-size: 11px;
-            margin-left: 8px;
-        }
         .hidden{
             display: none;
         }
@@ -402,6 +430,16 @@
             }
             .filter-group{
                 min-width:100%;
+            }
+            .user-badge {
+                top: 10px;
+                right: 10px;
+                padding: 6px 12px;
+                font-size: 11px;
+            }
+            .logout-btn {
+                padding: 4px 10px;
+                font-size: 10px;
             }
         }
         @media print{
@@ -455,17 +493,27 @@
         <input type="password" id="passwordInput" placeholder="Enter Password">
         <button id="loginBtn">Login</button>
     </div>
-    
+    <div class="guide-box" style="margin-top:20px;">
+        <i class="bi bi-info-circle"></i> <strong>Demo Credentials:</strong><br>
+        <strong>Admin:</strong> Password: <code>admin123</code><br>
+        <strong>Staffer AHAM:</strong> Password: <code>aham123</code><br>
+        <strong>Staffer FBC:</strong> Password: <code>fbc123</code>
+    </div>
 </div>
 
 <!-- Main App Container -->
 <div id="appContainer" style="display:none;">
 <div class="container">
-    <!-- User Badge -->
+    <!-- Improved User Badge -->
     <div class="user-badge">
-        <i class="bi bi-person-circle"></i> <span id="userRoleDisplay">Staffer</span>
-        <span id="clientBadge" class="client-badge"></span>
-        <button id="logoutBtn" class="logout-btn">Logout</button>
+        <div class="user-info">
+            <i class="bi bi-person-circle"></i>
+            <span id="userRoleDisplay">Staffer</span>
+            <span id="clientBadge" class="client-badge"></span>
+        </div>
+        <button id="logoutBtn" class="logout-btn">
+            <i class="bi bi-box-arrow-right"></i> Logout
+        </button>
     </div>
     
     <h1><i class="bi bi-cloud-database"></i> Philman Power Center INC - DTR System</h1>
@@ -477,10 +525,11 @@
         <ul>
             <li><i class="bi bi-plus-circle"></i> <strong>Add Record:</strong> Fill out the form below, select an image, then click "Save to Database"</li>
             <li><i class="bi bi-search"></i> <strong>Search & Filter:</strong> Use the filter bar to search by name, client, or cutoff date range</li>
-            <li><i class="bi bi-check-square"></i> <strong>Select Records:</strong> Check the boxes on cards to select them</li>
-            <li id="printGuideItem"><i class="bi bi-printer"></i> <strong>Print:</strong> Select records, then click "Print Selected" - each DTR prints on one bond paper</li>
-            <li id="downloadGuideItem"><i class="bi bi-download"></i> <strong>Batch Download:</strong> Select records, then click "Download Selected as ZIP" to save all images as a ZIP file</li>
-            <li id="deleteGuideItem"><i class="bi bi-trash"></i> <strong>Delete:</strong> Click delete on a single card OR select multiple cards and click "Delete Selected"</li>
+            <li><i class="bi bi-check-square"></i> <strong>Select Records:</strong> Check the boxes on cards to select them (Admin only)</li>
+            <li id="printGuideItem"><i class="bi bi-printer"></i> <strong>Print:</strong> Select records, then click "Print Selected" (Admin only)</li>
+            <li id="downloadGuideItem"><i class="bi bi-download"></i> <strong>Batch Download:</strong> Select records, then click "Download ZIP" (Admin only)</li>
+            <li id="deleteGuideItem"><i class="bi bi-trash"></i> <strong>Delete:</strong> Click delete on a single card OR select multiple cards (Admin only)</li>
+            <li id="editGuideItem"><i class="bi bi-pencil"></i> <strong>Edit:</strong> Click Edit button on any card to modify record</li>
             <li><i class="bi bi-moon-stars"></i> <strong>Dark/Light Mode:</strong> Click the circle button at the bottom right to switch themes</li>
         </ul>
     </div>
@@ -557,15 +606,30 @@
 
 <script>
     // ============ USER AUTHENTICATION ============
-    let currentUser = null; // 'admin', 'staffer_aham', or 'staffer_fbc'
-    let stafferClient = null; // 'AHAM' or 'FBC' for staffers
+    let currentUser = null;
+    let stafferClient = null;
     
-    // Demo credentials
     const credentials = {
         admin: 'admin123',
         staffer_aham: 'aham123',
         staffer_fbc: 'fbc123'
     };
+    
+    async function showMessage(title, message, type = 'success') {
+        const iconMap = {
+            success: 'success',
+            error: 'error',
+            warning: 'warning',
+            info: 'info'
+        };
+        await Swal.fire({
+            title: title,
+            text: message,
+            icon: iconMap[type] || 'info',
+            confirmButtonColor: '#4361ee',
+            confirmButtonText: 'OK'
+        });
+    }
     
     function login() {
         const role = document.getElementById('roleSelect').value;
@@ -574,8 +638,8 @@
         if (credentials[role] === password) {
             currentUser = role;
             localStorage.setItem('dtrUser', currentUser);
+            localStorage.setItem('dtrUserRole', role);
             
-            // Set staffer client if applicable
             if (currentUser === 'staffer_aham') {
                 stafferClient = 'AHAM';
             } else if (currentUser === 'staffer_fbc') {
@@ -586,24 +650,39 @@
             
             showMainApp();
         } else {
-            alert('Invalid password for ' + role.toUpperCase());
+            showMessage('Login Failed', 'Invalid password for ' + role.toUpperCase(), 'error');
         }
     }
     
     function logout() {
-        currentUser = null;
-        stafferClient = null;
-        localStorage.removeItem('dtrUser');
-        document.getElementById('appContainer').style.display = 'none';
-        document.getElementById('loginContainer').style.display = 'block';
-        document.getElementById('passwordInput').value = '';
+        Swal.fire({
+            title: 'Logout',
+            text: 'Are you sure you want to logout?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#dc3545',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Yes, Logout',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                currentUser = null;
+                stafferClient = null;
+                selectedRecords.clear();
+                localStorage.removeItem('dtrUser');
+                localStorage.removeItem('dtrUserRole');
+                document.getElementById('appContainer').style.display = 'none';
+                document.getElementById('loginContainer').style.display = 'block';
+                document.getElementById('passwordInput').value = '';
+                showMessage('Logged Out', 'You have been successfully logged out.', 'success');
+            }
+        });
     }
     
     function showMainApp() {
         document.getElementById('loginContainer').style.display = 'none';
         document.getElementById('appContainer').style.display = 'block';
         
-        // Set display name
         let displayName = '';
         let clientBadgeText = '';
         
@@ -627,19 +706,19 @@
             clientBadge.style.display = 'none';
         }
         
-        // Apply permissions based on role
         const isAdmin = (currentUser === 'admin');
         
         if (!isAdmin) {
-            // Staffer: Hide delete and print features, show only submit and view
             const adminPrintBar = document.getElementById('adminPrintBar');
             if (adminPrintBar) adminPrintBar.style.display = 'none';
             
-            // Hide delete guide item
             const deleteGuideItem = document.getElementById('deleteGuideItem');
             if (deleteGuideItem) deleteGuideItem.style.display = 'none';
+            const printGuideItem = document.getElementById('printGuideItem');
+            if (printGuideItem) printGuideItem.style.display = 'none';
+            const downloadGuideItem = document.getElementById('downloadGuideItem');
+            if (downloadGuideItem) downloadGuideItem.style.display = 'none';
             
-            // For staffers, restrict client selection in form
             const clientSelect = document.getElementById('client');
             if (stafferClient === 'AHAM') {
                 clientSelect.value = 'AHAM';
@@ -649,37 +728,35 @@
                 clientSelect.disabled = true;
             }
             
-            // Hide client filter for staffers (they only see their own client anyway)
             const clientFilterGroup = document.getElementById('clientFilterGroup');
             if (clientFilterGroup) clientFilterGroup.style.display = 'none';
             
         } else {
-            // Admin: Show everything
             const adminPrintBar = document.getElementById('adminPrintBar');
             if (adminPrintBar) adminPrintBar.style.display = 'flex';
             
             const deleteGuideItem = document.getElementById('deleteGuideItem');
-            if (deleteGuideItem) deleteGuideItem.style.display = 'block';
+            if (deleteGuideItem) deleteGuideItem.style.display = 'list-item';
+            const printGuideItem = document.getElementById('printGuideItem');
+            if (printGuideItem) printGuideItem.style.display = 'list-item';
+            const downloadGuideItem = document.getElementById('downloadGuideItem');
+            if (downloadGuideItem) downloadGuideItem.style.display = 'list-item';
             
-            // Enable client selection for admin
             const clientSelect = document.getElementById('client');
             clientSelect.disabled = false;
             
-            // Show client filter for admin
             const clientFilterGroup = document.getElementById('clientFilterGroup');
             if (clientFilterGroup) clientFilterGroup.style.display = 'block';
         }
         
         document.getElementById('modeToggle').style.display = 'flex';
-        
-        // Reload records to apply permission-based rendering
         loadRecords();
     }
     
-    // Check for existing session
     function checkSession() {
         const savedUser = localStorage.getItem('dtrUser');
-        if (savedUser && (savedUser === 'admin' || savedUser === 'staffer_aham' || savedUser === 'staffer_fbc')) {
+        const savedRole = localStorage.getItem('dtrUserRole');
+        if (savedUser && savedRole && (savedUser === 'admin' || savedUser === 'staffer_aham' || savedUser === 'staffer_fbc')) {
             currentUser = savedUser;
             if (currentUser === 'staffer_aham') {
                 stafferClient = 'AHAM';
@@ -699,7 +776,6 @@
     let selectedRecords = new Set();
     let editingId = null;
 
-    // Dark/Light Mode Toggle
     function initTheme() {
         const savedTheme = localStorage.getItem('theme');
         if (savedTheme === 'dark') {
@@ -728,7 +804,6 @@
     }
     initTheme();
 
-    // Load records with client filtering for staffers
     async function loadRecords() {
         try {
             const statusDiv = document.getElementById('status');
@@ -750,7 +825,6 @@
             
             let data = await response.json();
             
-            // Apply client filtering for staffers
             if (stafferClient) {
                 data = data.filter(record => record.department === stafferClient);
             }
@@ -768,13 +842,12 @@
             console.error('Error:', error);
             const statusDiv = document.getElementById('status');
             if(statusDiv) {
-                statusDiv.innerHTML = '❌ Connection Error - Please run SQL in Supabase';
+                statusDiv.innerHTML = '❌ Connection Error';
                 statusDiv.className = 'status error';
             }
         }
     }
 
-    // Apply all filters and render
     function applyFiltersAndRender() {
         const searchTerm = document.getElementById('searchName') ? document.getElementById('searchName').value.toLowerCase() : '';
         const filterClient = document.getElementById('filterClient') ? document.getElementById('filterClient').value : '';
@@ -794,7 +867,16 @@
         updateSelectedInfo();
     }
 
-    // Save record
+    async function checkDuplicateSubmission(name, client, fromDate, toDate, excludeId = null) {
+        const cutoffRange = `${fromDate} to ${toDate}`;
+        return allRecords.some(record => {
+            if (excludeId && record.id === excludeId) return false;
+            return record.employee_name === name && 
+                   record.department === client && 
+                   record.cutoff_range === cutoffRange;
+        });
+    }
+
     async function saveRecord() {
         const name = document.getElementById('empName').value;
         let client = document.getElementById('client').value;
@@ -802,18 +884,23 @@
         const toDate = document.getElementById('toDate').value;
         const remarks = document.getElementById('remarks').value;
         
-        // Force client for staffers
         if (stafferClient) {
             client = stafferClient;
         }
         
         if (!name || !client || !fromDate || !toDate) {
-            alert('Please fill all required fields');
+            await showMessage('Missing Fields', 'Please fill all required fields', 'warning');
             return;
         }
         
         if (!currentImage && !editingId) {
-            alert('Please select an image');
+            await showMessage('No Image', 'Please select an image', 'warning');
+            return;
+        }
+        
+        const isDuplicate = await checkDuplicateSubmission(name, client, fromDate, toDate, editingId);
+        if (isDuplicate) {
+            await showMessage('Duplicate Entry', `Employee "${name}" already has a DTR record for cutoff period ${fromDate} to ${toDate}. Only one submission per cutoff is allowed.`, 'error');
             return;
         }
         
@@ -843,7 +930,7 @@
                 });
                 
                 if (!response.ok) throw new Error(`HTTP ${response.status}`);
-                alert('Record updated successfully!');
+                await showMessage('Success!', 'Record updated successfully!', 'success');
                 editingId = null;
             } else {
                 const response = await fetch(`${SUPABASE_URL}/rest/v1/dtr_records`, {
@@ -857,7 +944,7 @@
                 });
                 
                 if (!response.ok) throw new Error(`HTTP ${response.status}`);
-                alert('Record saved to database!');
+                await showMessage('Success!', 'Record saved to database!', 'success');
             }
             
             document.getElementById('empName').value = '';
@@ -867,19 +954,18 @@
             document.getElementById('imageFile').value = '';
             currentImage = null;
             document.getElementById('saveBtn').innerHTML = '<i class="bi bi-save"></i> Save to Database';
+            document.getElementById('saveBtn').style.background = '#4361ee';
             
             await loadRecords();
             
         } catch (error) {
-            alert('Error: ' + error.message);
+            await showMessage('Error', 'Error: ' + error.message, 'error');
         }
     }
 
-    // Edit record
     function editRecord(record) {
-        // Check if staffer is trying to edit a record not belonging to their client
         if (stafferClient && record.department !== stafferClient) {
-            alert('You can only edit records for your assigned client: ' + stafferClient);
+            showMessage('Access Denied', 'You can only edit records for your assigned client: ' + stafferClient, 'error');
             return;
         }
         
@@ -900,83 +986,104 @@
         document.getElementById('saveBtn').style.background = '#f59e0b';
         
         document.querySelector('.form-area').scrollIntoView({ behavior: 'smooth' });
+        showMessage('Edit Mode', 'You are now editing this record. Make changes and click Update.', 'info');
     }
 
-    // Delete single record (Admin only)
     async function deleteRecord(id) {
         if (currentUser !== 'admin') {
-            alert('Only Admin can delete records');
-            return;
-        }
-        if (!confirm('Delete this record permanently?')) return;
-        
-        try {
-            const response = await fetch(`${SUPABASE_URL}/rest/v1/dtr_records?id=eq.${id}`, {
-                method: 'DELETE',
-                headers: {
-                    'apikey': SUPABASE_KEY,
-                    'Authorization': `Bearer ${SUPABASE_KEY}`
-                }
-            });
-            
-            if (!response.ok) throw new Error(`HTTP ${response.status}`);
-            
-            selectedRecords.delete(id);
-            alert('Record deleted');
-            await loadRecords();
-            
-        } catch (error) {
-            alert('Error: ' + error.message);
-        }
-    }
-
-    // Delete multiple selected records (Admin only)
-    async function deleteSelectedRecords() {
-        if (currentUser !== 'admin') {
-            alert('Only Admin can delete records');
+            await showMessage('Access Denied', 'Only Admin can delete records', 'error');
             return;
         }
         
-        const toDelete = allRecords.filter(r => selectedRecords.has(r.id));
+        const result = await Swal.fire({
+            title: 'Delete Record?',
+            text: 'This action cannot be undone!',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#dc3545',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'Cancel'
+        });
         
-        if (toDelete.length === 0) {
-            alert('No records selected to delete');
-            return;
-        }
-        
-        if (!confirm(`Delete ${toDelete.length} record(s) permanently? This cannot be undone!`)) return;
-        
-        try {
-            for (const record of toDelete) {
-                await fetch(`${SUPABASE_URL}/rest/v1/dtr_records?id=eq.${record.id}`, {
+        if (result.isConfirmed) {
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/dtr_records?id=eq.${id}`, {
                     method: 'DELETE',
                     headers: {
                         'apikey': SUPABASE_KEY,
                         'Authorization': `Bearer ${SUPABASE_KEY}`
                     }
                 });
+                
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                
+                selectedRecords.delete(id);
+                await showMessage('Deleted!', 'Record has been deleted.', 'success');
+                await loadRecords();
+                
+            } catch (error) {
+                await showMessage('Error', 'Error: ' + error.message, 'error');
             }
-            
-            selectedRecords.clear();
-            alert(`${toDelete.length} record(s) deleted`);
-            await loadRecords();
-            
-        } catch (error) {
-            alert('Error: ' + error.message);
         }
     }
 
-    // Batch Download as ZIP (Admin only)
+    async function deleteSelectedRecords() {
+        if (currentUser !== 'admin') {
+            await showMessage('Access Denied', 'Only Admin can delete records', 'error');
+            return;
+        }
+        
+        const toDelete = allRecords.filter(r => selectedRecords.has(r.id));
+        
+        if (toDelete.length === 0) {
+            await showMessage('No Selection', 'No records selected to delete', 'warning');
+            return;
+        }
+        
+        const result = await Swal.fire({
+            title: 'Delete Selected Records?',
+            text: `You are about to delete ${toDelete.length} record(s). This cannot be undone!`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#dc3545',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Yes, delete them!',
+            cancelButtonText: 'Cancel'
+        });
+        
+        if (result.isConfirmed) {
+            try {
+                for (const record of toDelete) {
+                    await fetch(`${SUPABASE_URL}/rest/v1/dtr_records?id=eq.${record.id}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'apikey': SUPABASE_KEY,
+                            'Authorization': `Bearer ${SUPABASE_KEY}`
+                        }
+                    });
+                }
+                
+                selectedRecords.clear();
+                await showMessage('Deleted!', `${toDelete.length} record(s) have been deleted.`, 'success');
+                await loadRecords();
+                
+            } catch (error) {
+                await showMessage('Error', 'Error: ' + error.message, 'error');
+            }
+        }
+    }
+
     async function downloadSelectedAsZip() {
         if (currentUser !== 'admin') {
-            alert('Only Admin can download records');
+            await showMessage('Access Denied', 'Only Admin can download records', 'error');
             return;
         }
         
         const toDownload = allRecords.filter(r => selectedRecords.has(r.id));
         
         if (toDownload.length === 0) {
-            alert('No records selected to download');
+            await showMessage('No Selection', 'No records selected to download', 'warning');
             return;
         }
         
@@ -1008,21 +1115,19 @@
             const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
             saveAs(content, `DTR_Records_${timestamp}.zip`);
             
-            alert(`Successfully downloaded ${toDownload.length} record(s) as ZIP file!`);
+            await showMessage('Download Complete', `Successfully downloaded ${toDownload.length} record(s) as ZIP file!`, 'success');
             
         } catch (error) {
-            console.error('ZIP creation error:', error);
-            alert('Error creating ZIP file: ' + error.message);
+            await showMessage('Error', 'Error creating ZIP file: ' + error.message, 'error');
         } finally {
             downloadBtn.innerHTML = originalText;
             downloadBtn.disabled = false;
         }
     }
 
-    // Toggle select record (Admin only)
     function toggleSelectRecord(id) {
         if (currentUser !== 'admin') {
-            alert('Only Admin can select records');
+            showMessage('Access Denied', 'Only Admin can select records', 'error');
             return;
         }
         if (selectedRecords.has(id)) {
@@ -1033,10 +1138,9 @@
         applyFiltersAndRender();
     }
 
-    // Select all currently filtered records (Admin only)
     function selectAllFiltered() {
         if (currentUser !== 'admin') {
-            alert('Only Admin can select records');
+            showMessage('Access Denied', 'Only Admin can select records', 'error');
             return;
         }
         const filteredRecords = getFilteredRecords();
@@ -1044,14 +1148,12 @@
         applyFiltersAndRender();
     }
 
-    // Deselect all (Admin only)
     function deselectAll() {
         if (currentUser !== 'admin') return;
         selectedRecords.clear();
         applyFiltersAndRender();
     }
 
-    // Get currently filtered records
     function getFilteredRecords() {
         const searchTerm = document.getElementById('searchName') ? document.getElementById('searchName').value.toLowerCase() : '';
         const filterClient = document.getElementById('filterClient') ? document.getElementById('filterClient').value : '';
@@ -1067,17 +1169,16 @@
         });
     }
 
-    // Print selected records (Admin only)
-    function printSelectedRecords() {
+    async function printSelectedRecords() {
         if (currentUser !== 'admin') {
-            alert('Only Admin can print records');
+            await showMessage('Access Denied', 'Only Admin can print records', 'error');
             return;
         }
         
         const toPrint = allRecords.filter(r => selectedRecords.has(r.id));
         
         if (toPrint.length === 0) {
-            alert('No records selected to print');
+            await showMessage('No Selection', 'No records selected to print', 'warning');
             return;
         }
         
@@ -1125,7 +1226,6 @@
         printWindow.print();
     }
 
-    // Update selected info display
     function updateSelectedInfo() {
         const count = selectedRecords.size;
         if(document.getElementById('selectedCount')) document.getElementById('selectedCount').innerText = count;
@@ -1133,7 +1233,6 @@
         if(document.getElementById('downloadCount')) document.getElementById('downloadCount').innerText = count;
     }
 
-    // Render grid
     function renderGrid(filteredRecords) {
         const grid = document.getElementById('recordsGrid');
         
@@ -1169,7 +1268,6 @@
         `}).join('');
     }
 
-    // Update stats
     function updateStats() {
         if(document.getElementById('totalCount')) document.getElementById('totalCount').textContent = allRecords.length;
         const uniqueEmps = new Set(allRecords.map(r => r.employee_name));
@@ -1181,7 +1279,6 @@
         if(document.getElementById('clientCount')) document.getElementById('clientCount').textContent = uniqueClients.size;
     }
 
-    // Helper
     function escapeHtml(text) {
         if (!text) return '';
         const div = document.createElement('div');
@@ -1189,7 +1286,6 @@
         return div.innerHTML;
     }
 
-    // Image preview
     if(document.getElementById('imageFile')) {
         document.getElementById('imageFile').addEventListener('change', function(e) {
             const file = e.target.files[0];
@@ -1206,7 +1302,6 @@
         });
     }
 
-    // Event listeners for live filters
     if(document.getElementById('searchName')) {
         document.getElementById('searchName').addEventListener('input', applyFiltersAndRender);
         document.getElementById('filterClient').addEventListener('change', applyFiltersAndRender);
@@ -1214,7 +1309,6 @@
         document.getElementById('filterDateTo').addEventListener('change', applyFiltersAndRender);
     }
     
-    // Print and delete buttons
     if(document.getElementById('selectAllBtn')) {
         document.getElementById('selectAllBtn').addEventListener('click', selectAllFiltered);
         document.getElementById('deselectAllBtn').addEventListener('click', deselectAll);
@@ -1223,25 +1317,21 @@
         document.getElementById('downloadSelectedBtn').addEventListener('click', downloadSelectedAsZip);
     }
     
-    // Save button
     if(document.getElementById('saveBtn')) {
         document.getElementById('saveBtn').addEventListener('click', saveRecord);
     }
 
-    // Set default dates
     const today = new Date();
     const firstDay = new Date(today.getFullYear(), today.getMonth(), 1).toISOString().split('T')[0];
     const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0).toISOString().split('T')[0];
     if(document.getElementById('fromDate')) document.getElementById('fromDate').value = firstDay;
     if(document.getElementById('toDate')) document.getElementById('toDate').value = lastDay;
 
-    // Login button
     document.getElementById('loginBtn').addEventListener('click', login);
     if(document.getElementById('logoutBtn')) {
         document.getElementById('logoutBtn').addEventListener('click', logout);
     }
 
-    // Check session on load
     checkSession();
 </script>
 </body>
