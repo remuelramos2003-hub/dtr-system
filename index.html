@@ -42,29 +42,41 @@
             .form-area, .filter-bar, .print-bar, .stats, .delete-btn, .select-checkbox, .status, h1, .container, .search-bar{
                 display:none !important;
             }
-            .card{
-                border: none;
+            * {
                 margin: 0;
                 padding: 0;
-                page-break-inside: avoid;
-                break-inside: avoid;
+                box-sizing: border-box;
             }
-            .card-img{
+            body {
+                margin: 0;
+                padding: 0;
+                background: white;
+            }
+            .print-page {
+                page-break-after: always;
+                break-after: page;
+                margin: 0;
+                padding: 0;
                 width: 100%;
-                height: auto;
-                display: block;
+                height: 100%;
+                display: flex;
+                justify-content: center;
+                align-items: center;
             }
-            .card-body, .name, .client, .date, .delete-btn{
-                display: none;
+            .print-img {
+                max-width: 100%;
+                max-height: 100%;
+                object-fit: contain;
+                display: block;
+                margin: 0 auto;
             }
         }
         .loading{text-align:center;padding:40px;color:#666;}
-        .filter-group{display:flex;gap:10px;flex-wrap:wrap;}
     </style>
 </head>
 <body>
 <div class="container">
-    <h1><i class="bi bi-cloud-database"></i> DTR System - Live Database</h1>
+    <h1><i class="bi bi-cloud-database"></i> Philman Power Center INC - DTR System</h1>
     <div id="status" class="status info">🔄 Connecting to database...</div>
 
     <div class="stats">
@@ -179,13 +191,9 @@
         const filterDateTo = document.getElementById('filterDateTo').value;
         
         let filtered = allRecords.filter(r => {
-            // Name filter
             if (searchTerm && !(r.employee_name || '').toLowerCase().includes(searchTerm)) return false;
-            // Client filter
             if (filterClient && r.department !== filterClient) return false;
-            // Date from filter
             if (filterDateFrom && r.cutoff_from && r.cutoff_from < filterDateFrom) return false;
-            // Date to filter
             if (filterDateTo && r.cutoff_to && r.cutoff_to > filterDateTo) return false;
             return true;
         });
@@ -243,7 +251,6 @@
             
             alert('Record saved to database!');
             
-            // Reset form
             document.getElementById('empName').value = '';
             document.getElementById('remarks').value = '';
             document.getElementById('preview').style.display = 'none';
@@ -323,7 +330,7 @@
         });
     }
 
-    // Print selected records - RAW PICTURES ONLY
+    // Print selected records - FITS BOND PAPER (Portrait/Landscape auto)
     function printSelectedRecords() {
         const toPrint = allRecords.filter(r => selectedRecords.has(r.id));
         
@@ -337,50 +344,121 @@
             <!DOCTYPE html>
             <html>
             <head>
-                <title>DTR Pictures</title>
+                <title>DTR Pictures - Bond Paper Print</title>
                 <style>
+                    * {
+                        margin: 0;
+                        padding: 0;
+                        box-sizing: border-box;
+                    }
                     body {
                         margin: 0;
                         padding: 0;
+                        background: white;
+                    }
+                    @page {
+                        size: portrait;
+                        margin: 0;
+                    }
+                    @page landscape {
+                        size: landscape;
+                        margin: 0;
                     }
                     .print-container {
-                        margin: 0;
-                        padding: 0;
+                        width: 100%;
+                        min-height: 100vh;
                     }
-                    .print-item {
+                    .print-page {
                         page-break-after: always;
                         break-after: page;
-                        margin: 0;
-                        padding: 0;
-                        display: block;
-                    }
-                    .print-item img {
                         width: 100%;
-                        height: auto;
-                        display: block;
-                        margin: 0;
-                        padding: 0;
+                        height: 100vh;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        background: white;
+                        position: relative;
                     }
+                    .print-page:last-child {
+                        page-break-after: auto;
+                        break-after: auto;
+                    }
+                    .print-img {
+                        max-width: 100%;
+                        max-height: 100%;
+                        width: auto;
+                        height: auto;
+                        object-fit: contain;
+                        display: block;
+                        margin: 0 auto;
+                        box-shadow: 0 0 0 1px #eee;
+                    }
+                    /* Detect image orientation and adjust */
                     @media print {
                         body {
                             margin: 0;
                             padding: 0;
                         }
-                        .print-item {
+                        .print-page {
                             page-break-after: always;
                             break-after: page;
                         }
                     }
                 </style>
+                <script>
+                    // Auto-detect and adjust for landscape/portrait
+                    function adjustForOrientation() {
+                        const pages = document.querySelectorAll('.print-page');
+                        pages.forEach(page => {
+                            const img = page.querySelector('.print-img');
+                            if (img && img.complete) {
+                                if (img.naturalWidth > img.naturalHeight) {
+                                    // Landscape image - set page to landscape
+                                    page.style.setProperty('height', 'auto');
+                                    page.style.setProperty('min-height', '100vh');
+                                } else {
+                                    // Portrait image - keep portrait
+                                    page.style.setProperty('height', '100vh');
+                                }
+                            }
+                        });
+                    }
+                    window.onload = function() {
+                        adjustForOrientation();
+                        setTimeout(adjustForOrientation, 100);
+                    };
+                <\/script>
             </head>
             <body>
                 <div class="print-container">
-                    ${toPrint.map(r => `
-                        <div class="print-item">
-                            <img src="${r.image_data}" alt="DTR">
-                        </div>
-                    `).join('')}
+                    ${toPrint.map((r, index) => {
+                        // Detect if image is likely landscape or portrait
+                        return `
+                            <div class="print-page" id="page-${index}">
+                                <img class="print-img" src="${r.image_data}" alt="DTR" onload="this.parentElement.style.height='auto';">
+                            </div>
+                        `;
+                    }).join('')}
                 </div>
+                <script>
+                    // Final orientation adjustment
+                    const imgs = document.querySelectorAll('.print-img');
+                    imgs.forEach(img => {
+                        if (img.complete) {
+                            if (img.naturalWidth > img.naturalHeight) {
+                                img.parentElement.style.height = 'auto';
+                                img.parentElement.style.minHeight = '100vh';
+                            }
+                        } else {
+                            img.addEventListener('load', function() {
+                                if (this.naturalWidth > this.naturalHeight) {
+                                    this.parentElement.style.height = 'auto';
+                                    this.parentElement.style.minHeight = '100vh';
+                                }
+                            });
+                        }
+                    });
+                <\/script>
             </body>
             </html>
         `);
