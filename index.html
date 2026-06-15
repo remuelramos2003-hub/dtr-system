@@ -491,12 +491,7 @@
         <input type="password" id="passwordInput" placeholder="Enter Password">
         <button id="loginBtn">Login</button>
     </div>
-    <div class="guide-box" style="margin-top:20px;">
-        <i class="bi bi-info-circle"></i> <strong>Demo Credentials:</strong><br>
-        <strong>Admin:</strong> Password: <code>admin123</code><br>
-        <strong>Staffer AHAM:</strong> Password: <code>aham123</code><br>
-        <strong>Staffer FBC:</strong> Password: <code>fbc123</code>
-    </div>
+    
 </div>
 
 <!-- Main App Container -->
@@ -607,7 +602,12 @@
     let currentUser = null; // 'admin', 'staffer_aham', or 'staffer_fbc'
     let stafferClient = null; // 'AHAM' or 'FBC' for staffers
     
-   
+    // Demo credentials
+    const credentials = {
+        admin: 'admin123',
+        staffer_aham: 'aham123',
+        staffer_fbc: 'fbc123'
+    };
     
     function login() {
         const role = document.getElementById('roleSelect').value;
