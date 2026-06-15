@@ -38,7 +38,26 @@
         .select-checkbox{position:absolute;top:10px;right:10px;width:22px;height:22px;cursor:pointer;z-index:10;}
         .preview-img{max-width:100%;max-height:150px;margin-top:10px;border-radius:8px;display:none;}
         @media(max-width:768px){.stats{grid-template-columns:repeat(2,1fr);}}
-        @media print{.form-area,.filter-bar,.print-bar,.stats,.delete-btn,.select-checkbox{display:none;}}
+        @media print{
+            .form-area, .filter-bar, .print-bar, .stats, .delete-btn, .select-checkbox, .status, h1, .container, .search-bar{
+                display:none !important;
+            }
+            .card{
+                border: none;
+                margin: 0;
+                padding: 0;
+                page-break-inside: avoid;
+                break-inside: avoid;
+            }
+            .card-img{
+                width: 100%;
+                height: auto;
+                display: block;
+            }
+            .card-body, .name, .client, .date, .delete-btn{
+                display: none;
+            }
+        }
         .loading{text-align:center;padding:40px;color:#666;}
         .filter-group{display:flex;gap:10px;flex-wrap:wrap;}
     </style>
@@ -304,7 +323,7 @@
         });
     }
 
-    // Print selected records
+    // Print selected records - RAW PICTURES ONLY
     function printSelectedRecords() {
         const toPrint = allRecords.filter(r => selectedRecords.has(r.id));
         
@@ -313,36 +332,60 @@
             return;
         }
         
-        const win = window.open('', '_blank');
-        win.document.write(`
+        const printWindow = window.open('', '_blank');
+        printWindow.document.write(`
+            <!DOCTYPE html>
             <html>
             <head>
-                <title>DTR Report - Selected Records</title>
+                <title>DTR Pictures</title>
                 <style>
-                    body{font-family:Arial;padding:20px;}
-                    h1{text-align:center;}
-                    .record{margin-bottom:30px;border:1px solid #ddd;padding:15px;page-break-inside:avoid;}
-                    img{max-width:100%;}
+                    body {
+                        margin: 0;
+                        padding: 0;
+                    }
+                    .print-container {
+                        margin: 0;
+                        padding: 0;
+                    }
+                    .print-item {
+                        page-break-after: always;
+                        break-after: page;
+                        margin: 0;
+                        padding: 0;
+                        display: block;
+                    }
+                    .print-item img {
+                        width: 100%;
+                        height: auto;
+                        display: block;
+                        margin: 0;
+                        padding: 0;
+                    }
+                    @media print {
+                        body {
+                            margin: 0;
+                            padding: 0;
+                        }
+                        .print-item {
+                            page-break-after: always;
+                            break-after: page;
+                        }
+                    }
                 </style>
             </head>
             <body>
-                <h1>DTR Report - Selected Records</h1>
-                <p style="text-align:center">Generated: ${new Date().toLocaleString()}</p>
-                <p style="text-align:center">Selected Records: ${toPrint.length}</p>
-                ${toPrint.map(r => `
-                    <div class="record">
-                        <h3>${escapeHtml(r.employee_name)}</h3>
-                        <p><strong>Client:</strong> ${escapeHtml(r.department)}</p>
-                        <p><strong>Cutoff:</strong> ${r.cutoff_range || r.cutoff_from + ' to ' + r.cutoff_to}</p>
-                        ${r.remarks ? `<p><strong>Remarks:</strong> ${escapeHtml(r.remarks)}</p>` : ''}
-                        <img src="${r.image_data}">
-                    </div>
-                `).join('')}
+                <div class="print-container">
+                    ${toPrint.map(r => `
+                        <div class="print-item">
+                            <img src="${r.image_data}" alt="DTR">
+                        </div>
+                    `).join('')}
+                </div>
             </body>
             </html>
         `);
-        win.document.close();
-        win.print();
+        printWindow.document.close();
+        printWindow.print();
     }
 
     // Update selected info display
