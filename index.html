@@ -219,9 +219,13 @@
         
         if (userRole === 'staffer') {
             const dealerSelect = document.getElementById('dealer');
-            if (userAssignment === 'AHAM') dealerSelect.value = 'AHAM OFFICE';
-            else dealerSelect.value = 'FBC';
-            dealerSelect.disabled = true;
+            if (userAssignment === 'AHAM') {
+                dealerSelect.value = 'AHAM OFFICE';
+                dealerSelect.disabled = true;
+            } else if (userAssignment === 'FBC') {
+                dealerSelect.value = 'FBC';
+                dealerSelect.disabled = true;
+            }
             document.getElementById('adminPrintBar').style.display = 'none';
             document.getElementById('outletFilterGroup').style.display = 'none';
         } else if (userRole === 'coordinator') {
@@ -245,7 +249,6 @@
         }
     }
     
-    // Image preview
     document.getElementById('imageFiles').addEventListener('change', function(e) {
         currentImages = Array.from(e.target.files);
         const container = document.getElementById('previewContainer');
@@ -329,32 +332,71 @@
     }
     
     async function saveRecord() {
-        const name = document.getElementById('empName').value;
+        // Get form values
+        const name = document.getElementById('empName').value.trim();
         const outlet = document.getElementById('outlet').value;
         let dealer = document.getElementById('dealer').value;
-        const from = document.getElementById('fromDate').value;
-        const to = document.getElementById('toDate').value;
+        const fromDate = document.getElementById('fromDate').value;
+        const toDate = document.getElementById('toDate').value;
         const remarks = document.getElementById('remarks').value;
         
         // Override dealer for staffers
-        if (userRole === 'staffer' && userAssignment === 'AHAM') dealer = 'AHAM OFFICE';
-        else if (userRole === 'staffer' && userAssignment === 'FBC') dealer = 'FBC';
+        if (userRole === 'staffer') {
+            if (userAssignment === 'AHAM') dealer = 'AHAM OFFICE';
+            else if (userAssignment === 'FBC') dealer = 'FBC';
+        }
         
         // Validation
-        if (!name) { showMessage('Error', 'Please enter employee name', 'error'); return; }
-        if (!outlet) { showMessage('Error', 'Please select outlet', 'error'); return; }
-        if (!dealer) { showMessage('Error', 'Please select dealer', 'error'); return; }
-        if (!from || !to) { showMessage('Error', 'Please select cutoff dates', 'error'); return; }
-        if (currentImages.length === 0) { showMessage('Error', 'Please select at least one image', 'error'); return; }
+        if (!name) {
+            showMessage('Error', 'Please enter employee name', 'error');
+            return;
+        }
+        if (!outlet) {
+            showMessage('Error', 'Please select outlet', 'error');
+            return;
+        }
+        if (!dealer) {
+            showMessage('Error', 'Please select dealer', 'error');
+            return;
+        }
+        if (!fromDate || !toDate) {
+            showMessage('Error', 'Please select cutoff dates', 'error');
+            return;
+        }
+        if (currentImages.length === 0) {
+            showMessage('Error', 'Please select at least one image', 'error');
+            return;
+        }
         
-        const cutoffRange = `${from} to ${to}`;
+        const cutoffRange = `${fromDate} to ${toDate}`;
         const batchId = Date.now().toString();
+        let successCount = 0;
+        let errorCount = 0;
+        
+        // Show loading
+        const saveBtn = document.getElementById('saveBtn');
+        const originalText = saveBtn.innerHTML;
+        saveBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Saving...';
+        saveBtn.disabled = true;
         
         try {
-            let successCount = 0;
-            
-            for (let img of currentImages) {
+            for (let i = 0; i < currentImages.length; i++) {
+                const img = currentImages[i];
                 const imgData = await readFileAsBase64(img);
+                
+                const recordData = {
+                    employee_name: name,
+                    outlet: outlet,
+                    dealer: dealer,
+                    cutoff_from: fromDate,
+                    cutoff_to: toDate,
+                    cutoff_range: cutoffRange,
+                    remarks: remarks || '',
+                    image_data: imgData,
+                    batch_id: batchId,
+                    created_at: new Date().toISOString()
+                };
+                
                 const response = await fetch(`${SUPABASE_URL}/rest/v1/dtr_records`, {
                     method: 'POST',
                     headers: {
@@ -362,25 +404,15 @@
                         'Authorization': `Bearer ${SUPABASE_KEY}`,
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({
-                        employee_name: name,
-                        outlet: outlet,
-                        dealer: dealer,
-                        cutoff_from: from,
-                        cutoff_to: to,
-                        cutoff_range: cutoffRange,
-                        remarks: remarks || '',
-                        image_data: imgData,
-                        batch_id: batchId,
-                        created_at: new Date().toISOString()
-                    })
+                    body: JSON.stringify(recordData)
                 });
                 
                 if (response.ok) {
                     successCount++;
                 } else {
+                    errorCount++;
                     const errorText = await response.text();
-                    console.error('Save error:', errorText);
+                    console.error(`Error saving image ${i+1}:`, errorText);
                 }
             }
             
@@ -393,7 +425,9 @@
                 document.getElementById('imageFiles').value = '';
                 document.getElementById('previewContainer').innerHTML = '';
                 document.getElementById('outlet').value = '';
-                if (userRole !== 'staffer') document.getElementById('dealer').value = '';
+                if (userRole !== 'staffer') {
+                    document.getElementById('dealer').value = '';
+                }
                 currentImages = [];
                 
                 // Reset dates to current month
@@ -403,11 +437,14 @@
                 
                 await loadRecords();
             } else {
-                showMessage('Error', 'Failed to save images', 'error');
+                showMessage('Error', 'Failed to save images. Please check console for details.', 'error');
             }
         } catch(e) {
             console.error('Save error:', e);
             showMessage('Error', e.message, 'error');
+        } finally {
+            saveBtn.innerHTML = originalText;
+            saveBtn.disabled = false;
         }
     }
     
