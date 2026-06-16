@@ -9,6 +9,9 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <!-- Select2 for combobox -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <style>
         :root {
             --bg-color: #f0f2f5;
@@ -145,7 +148,7 @@
             border: 1px solid var(--border-color);
         }
         .form-area h4{color:var(--text-color);margin-bottom:15px;}
-        input,select,textarea{
+        input,textarea{
             width:100%;
             padding:10px;
             margin:8px 0;
@@ -154,10 +157,26 @@
             background:var(--input-bg);
             color:var(--text-color);
         }
-        input:focus,select:focus,textarea:focus{
+        input:focus,textarea:focus{
             outline:none;
             border-color:#4361ee;
             box-shadow:0 0 0 2px rgba(67,97,238,0.2);
+        }
+        .select2-container--default .select2-selection--single {
+            background-color: var(--input-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            height: 42px;
+            padding: 5px;
+            color: var(--text-color);
+        }
+        .select2-dropdown {
+            background-color: var(--card-bg);
+            border-color: var(--border-color);
+        }
+        .select2-search__field {
+            background-color: var(--input-bg);
+            color: var(--text-color);
         }
         button{
             background:#4361ee;
@@ -197,6 +216,10 @@
             width:100%;
             margin:0;
             padding:10px;
+            border:1px solid var(--border-color);
+            border-radius:8px;
+            background:var(--input-bg);
+            color:var(--text-color);
         }
         .print-bar{
             display:flex;
@@ -488,8 +511,8 @@
         <div class="two-columns">
             <div>
                 <label style="font-size:12px; color:#666;">Outlet *</label>
-                <select id="outlet" required size="5" style="height:120px;">
-                    <option value="">Select Outlet</option>
+                <select id="outlet" class="combobox" style="width:100%;">
+                    <option value="">Search or select outlet...</option>
                     <option>MARILAO,BULACAN</option><option>MORATO AVE.</option><option>GENERAL SANTOS</option>
                     <option>CEBU CITY</option><option>ROSALES,PANGASINAN</option><option>BOHOL</option>
                     <option>STA.ROSA,LAGUNA</option><option>NAIC,CAVITE</option><option>BANKAL/BAJADA</option>
@@ -529,8 +552,8 @@
             </div>
             <div>
                 <label style="font-size:12px; color:#666;">Dealer *</label>
-                <select id="dealer" required size="5" style="height:120px;">
-                    <option value="">Select Dealer</option>
+                <select id="dealer" class="combobox" style="width:100%;">
+                    <option value="">Search or select dealer...</option>
                     <option>SACI</option><option>AHAM OFFICE</option><option>SVI</option><option>S&R</option>
                     <option>BOHOL QUALITY</option><option>SSM</option><option>GAISANO GRAND</option>
                     <option>ANSONS</option><option>GAISANO MALL</option><option>MEGASAVER</option>
@@ -572,10 +595,6 @@
             <div class="filter-group">
                 <label><i class="bi bi-search"></i> Search Employee</label>
                 <input type="text" id="searchEmployee" placeholder="Enter employee name...">
-            </div>
-            <div class="filter-group">
-                <label><i class="bi bi-calendar"></i> Cutoff Period</label>
-                <select id="filterCutoff"><option value="all">All Cutoffs</option></select>
             </div>
             <button id="printReportBtn" style="width:auto; background:#2e7d32;"><i class="bi bi-printer"></i> Print Report</button>
         </div>
@@ -621,7 +640,6 @@
     let currentUser = null, userRole = null, userAssignment = null;
     let allRecords = [], imageFilesList = [], selectedRecords = new Set(), editingId = null;
     
-    // CORRECT CREDENTIALS
     const credentials = {
         admin: 'admin123',
         coordinator_aham: 'coordaham123',
@@ -634,6 +652,19 @@
         await Swal.fire({ title, text: message, icon: type, confirmButtonColor: '#4361ee', confirmButtonText: 'OK' });
     }
     
+    function initComboboxes() {
+        setTimeout(() => {
+            if ($('.combobox').length) {
+                $('.combobox').select2({
+                    placeholder: 'Search or select...',
+                    allowClear: true,
+                    width: '100%',
+                    dropdownParent: $('#stafferForm')
+                });
+            }
+        }, 100);
+    }
+    
     function login() {
         const role = document.getElementById('roleSelect').value;
         const password = document.getElementById('passwordInput').value;
@@ -641,7 +672,6 @@
             currentUser = role;
             localStorage.setItem('dtrUser', currentUser);
             
-            // CORRECT ROLE ASSIGNMENT
             if (role === 'admin') {
                 userRole = 'admin';
                 userAssignment = null;
@@ -680,6 +710,7 @@
     function showMainApp() {
         document.getElementById('loginContainer').style.display = 'none';
         document.getElementById('appContainer').style.display = 'block';
+        initComboboxes();
         
         let displayName = '', assignText = '';
         if (userRole === 'admin') {
@@ -696,6 +727,7 @@
             document.getElementById('adminPrintBar').style.display = 'flex';
             document.getElementById('outletFilterGroup').style.display = 'block';
             document.getElementById('outlet').disabled = false;
+            document.getElementById('dealer').disabled = false;
         } else if (userRole === 'coordinator') {
             displayName = 'Coordinator'; assignText = userAssignment;
             document.getElementById('stafferForm').style.display = 'none';
@@ -720,13 +752,13 @@
             document.getElementById('viewGuideItem').style.display = 'none';
             document.getElementById('adminPrintBar').style.display = 'none';
             document.getElementById('outletFilterGroup').style.display = 'none';
-            // For staffers, lock the dealer to their assigned value (AHAM or FBC)
+            // Lock dealer for staffers
             const dealerSelect = document.getElementById('dealer');
             if (userAssignment === 'AHAM') {
-                dealerSelect.value = 'AHAM OFFICE';
+                $(dealerSelect).val('AHAM OFFICE').trigger('change');
                 dealerSelect.disabled = true;
             } else if (userAssignment === 'FBC') {
-                dealerSelect.value = 'FBC';
+                $(dealerSelect).val('FBC').trigger('change');
                 dealerSelect.disabled = true;
             }
         }
@@ -808,6 +840,7 @@
                 headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
             });
             let data = await res.json();
+            // Filter by coordinator's assigned dealer
             if (userAssignment === 'AHAM') data = data.filter(r => r.dealer === 'AHAM OFFICE' || r.dealer?.includes('AHAM'));
             else if (userAssignment === 'FBC') data = data.filter(r => r.dealer === 'FBC');
             
@@ -835,12 +868,15 @@
                 headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
             });
             let data = await res.json();
-            // Filter by dealer for staffers
+            
+            // Filter by user role and assignment
             if (userRole === 'staffer' && userAssignment === 'AHAM') {
                 data = data.filter(r => r.dealer === 'AHAM OFFICE' || r.dealer?.includes('AHAM'));
             } else if (userRole === 'staffer' && userAssignment === 'FBC') {
                 data = data.filter(r => r.dealer === 'FBC');
             }
+            // Admin sees all data, Coordinator sees filtered in their own view
+            
             allRecords = data || [];
             
             const outlets = [...new Set(allRecords.map(r => r.outlet).filter(Boolean))];
@@ -885,8 +921,8 @@
 
     async function saveRecord() {
         let name = document.getElementById('empName').value;
-        let outlet = document.getElementById('outlet').value;
-        let dealer = document.getElementById('dealer').value;
+        let outlet = $('#outlet').val();
+        let dealer = $('#dealer').val();
         const from = document.getElementById('fromDate').value;
         const to = document.getElementById('toDate').value;
         const remarks = document.getElementById('remarks').value;
@@ -901,6 +937,7 @@
         const range = `${from} to ${to}`;
         try {
             if (editingId) {
+                // Update existing records in batch
                 for (let img of imageFilesList) {
                     const imgData = await readFile(img);
                     await fetch(`${SUPABASE_URL}/rest/v1/dtr_records?id=eq.${editingId}`, {
@@ -921,8 +958,11 @@
                 }
                 await showMessage('Success!', `${imageFilesList.length} image(s) saved!`, 'success');
             }
+            // Reset form
             document.getElementById('empName').value = ''; document.getElementById('remarks').value = ''; document.getElementById('imageFiles').value = '';
             document.getElementById('imagePreviewContainer').innerHTML = ''; imageFilesList = [];
+            $('#outlet').val(null).trigger('change');
+            if (userRole !== 'staffer') $('#dealer').val(null).trigger('change');
             
             if (userRole === 'coordinator') loadSubmissionSummary();
             else loadRecords();
@@ -937,8 +977,8 @@
         }
         editingId = record.id;
         document.getElementById('empName').value = record.employee_name;
-        document.getElementById('outlet').value = record.outlet;
-        document.getElementById('dealer').value = record.dealer;
+        $('#outlet').val(record.outlet).trigger('change');
+        $('#dealer').val(record.dealer).trigger('change');
         document.getElementById('fromDate').value = record.cutoff_from || '';
         document.getElementById('toDate').value = record.cutoff_to || '';
         document.getElementById('remarks').value = record.remarks || '';
@@ -981,11 +1021,14 @@
         const grid = document.getElementById('recordsGrid');
         if (!grid) return;
         if (records.length === 0) { grid.innerHTML = '<div class="loading">No records found.</div>'; return; }
+        
+        // Group by batch_id
         const grouped = {};
         records.forEach(r => { const key = r.batch_id || r.id; if (!grouped[key]) grouped[key] = { ...r, images: [r.image_data] }; else grouped[key].images.push(r.image_data); });
         const list = Object.values(grouped);
         const isAdmin = userRole === 'admin';
-        grid.innerHTML = list.map(g => `<div class="card">${isAdmin ? `<input type="checkbox" class="select-checkbox" ${selectedRecords.has(g.id) ? 'checked' : ''} onchange="toggleSelectRecord(${g.id})">` : ''}<img src="${g.images[0]}" class="card-img" onclick="window.open(this.src)"><div class="card-body"><div class="name">👤 ${escapeHtml(g.employee_name)}</div><div class="outlet-text">📍 ${escapeHtml(g.outlet)}</div><div class="dealer-text">🏪 ${escapeHtml(g.dealer)}</div><div class="date">📅 ${g.cutoff_range}</div>${g.remarks ? `<div class="date">💬 ${escapeHtml(g.remarks)}</div>` : ''}<div class="batch-badge">📸 ${g.images.length} images</div>${isAdmin ? `<button class="delete-btn" onclick="deleteRecord(${g.id})">Delete Batch</button>` : ''}${userRole === 'staffer' ? `<button class="edit-btn" onclick='editRecord({id:${g.id}, employee_name:"${g.employee_name}", outlet:"${g.outlet}", dealer:"${g.dealer}", cutoff_from:"${g.cutoff_from}", cutoff_to:"${g.cutoff_to}", remarks:"${g.remarks || ''}"})'>Edit</button>` : ''}</div></div>`).join('');
+        
+        grid.innerHTML = list.map(g => `<div class="card">${isAdmin ? `<input type="checkbox" class="select-checkbox" ${selectedRecords.has(g.id) ? 'checked' : ''} onchange="toggleSelectRecord(${g.id})">` : ''}<img src="${g.images[0]}" class="card-img" onclick="window.open(this.src)"><div class="card-body"><div class="name">👤 ${escapeHtml(g.employee_name)}</div><div class="outlet-text">📍 ${escapeHtml(g.outlet)}</div><div class="dealer-text">🏪 ${escapeHtml(g.dealer)}</div><div class="date">📅 ${g.cutoff_range}</div>${g.remarks ? `<div class="date">💬 ${escapeHtml(g.remarks)}</div>` : ''}<div class="batch-badge">📸 ${g.images.length} images</div>${isAdmin ? `<button class="delete-btn" onclick="deleteRecord(${g.id})">Delete Batch</button>` : ''}${userRole === 'staffer' ? `<button class="edit-btn" onclick='editRecord(${JSON.stringify(g).replace(/'/g, "&#39;")})'>Edit</button>` : ''}</div></div>`).join('');
     }
 
     function updateStats() {
@@ -995,6 +1038,9 @@
         const uniqueOutlets = new Set(allRecords.map(r => r.outlet));
         if (document.getElementById('outletCount')) document.getElementById('outletCount').textContent = uniqueOutlets.size;
         if (document.getElementById('imageCount')) document.getElementById('imageCount').textContent = allRecords.length;
+        const now = new Date();
+        const thisMonth = allRecords.filter(r => r.created_at && new Date(r.created_at).getMonth() === now.getMonth());
+        if (document.getElementById('monthCount')) document.getElementById('monthCount').textContent = thisMonth.length;
     }
 
     function toggleSelectRecord(id) { if (selectedRecords.has(id)) selectedRecords.delete(id); else selectedRecords.add(id); applyFiltersAndRender(); }
