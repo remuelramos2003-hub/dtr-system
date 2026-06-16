@@ -452,9 +452,7 @@
         <i class="bi bi-info-circle"></i> <strong>Quick Guide</strong>
         <ul>
             <li>📸 Select multiple images - each DTR picture saves as a separate record</li>
-            <li>🔍 Use filters to search by name, outlet, or cutoff period</li>
-            <li>✅ Select checkboxes to print or download multiple DTRs (Admin only)</li>
-            <li>✏️ Staffers can edit their own records</li>
+            <li>🔍 Use filters to search by name or cutoff period</li>
             <li>🖼️ Click on any image or thumbnail to view in fullscreen with navigation</li>
         </ul>
     </div>
@@ -620,26 +618,6 @@
         </div>
         <div id="submissionGrid" class="grid"><div class="loading">Loading submissions...</div></div>
     </div>
-
-    <!-- Regular Records View (Staffer only) -->
-    <div id="regularView">
-        <div class="filter-bar">
-            <div class="filter-group"><label>Search by Name</label><input type="text" id="searchName" placeholder="Enter name..."></div>
-            <div class="filter-group" id="outletFilterGroup"><label>Filter by Outlet</label><select id="filterOutlet"><option value="">All Outlets</option></select></div>
-            <div class="filter-group"><label>From Date</label><input type="date" id="filterDateFrom"></div>
-            <div class="filter-group"><label>To Date</label><input type="date" id="filterDateTo"></div>
-        </div>
-
-        <div id="adminPrintBar" class="print-bar">
-            <button id="selectAllBtn" style="background:#28a745;">Select All</button>
-            <button id="deselectAllBtn" style="background:#6c757d;">Deselect All</button>
-            <button id="deleteSelectedBtn" style="background:#dc3545;">Delete Selected (<span id="deleteCount">0</span>)</button>
-            <button id="printSelectedBtn" style="background:#17a2b8;">Print Selected (<span id="printCount">0</span>)</button>
-            <button id="downloadSelectedBtn" style="background:#8b5cf6;">Download ZIP (<span id="downloadCount">0</span>)</button>
-        </div>
-
-        <div id="recordsGrid" class="grid"><div class="loading">Loading records...</div></div>
-    </div>
 </div>
 <button class="mode-toggle" id="modeToggle"><i class="bi bi-moon-stars"></i></button>
 </div>
@@ -794,20 +772,21 @@
         const outletSelect = document.getElementById('outlet');
         const adminSelector = document.getElementById('adminSelector');
         const adminTabs = document.getElementById('adminDealerTabs');
+        const submissionView = document.getElementById('submissionView');
+        const stafferForm = document.getElementById('stafferForm');
         
         if (userRole === 'admin') {
+            // Admin: Show submission view with tabs + staffer form
             adminSelector.classList.remove('hidden');
             selectDealerType('AHAM');
             dealerSelect.disabled = false;
             outletSelect.disabled = false;
-            document.getElementById('adminPrintBar').style.display = 'flex';
-            document.getElementById('outletFilterGroup').style.display = 'block';
-            document.getElementById('stafferForm').style.display = 'block';
-            document.getElementById('regularView').style.display = 'block';
-            document.getElementById('submissionView').style.display = 'block';
+            stafferForm.style.display = 'block';
+            submissionView.style.display = 'block';
             adminTabs.classList.remove('hidden');
-            document.getElementById('coordinatorView').style.display = 'none';
+            document.getElementById('regularView').style.display = 'none';
         } else if (userRole === 'staffer') {
+            // Staffer: Only show form and their records
             adminSelector.classList.add('hidden');
             adminTabs.classList.add('hidden');
             document.getElementById('outletContainer').style.display = 'block';
@@ -820,19 +799,16 @@
                 dealerSelect.disabled = true;
                 outletSelect.disabled = false;
             }
-            document.getElementById('adminPrintBar').style.display = 'none';
-            document.getElementById('outletFilterGroup').style.display = 'none';
-            document.getElementById('submissionView').style.display = 'none';
-            document.getElementById('regularView').style.display = 'block';
-            document.getElementById('stafferForm').style.display = 'block';
+            stafferForm.style.display = 'block';
+            submissionView.style.display = 'none';
+            document.getElementById('regularView').style.display = 'none';
         } else if (userRole === 'coordinator') {
+            // Coordinator: Only show submission view (no form)
             adminSelector.classList.add('hidden');
             adminTabs.classList.add('hidden');
-            document.getElementById('stafferForm').style.display = 'none';
-            document.getElementById('adminPrintBar').style.display = 'none';
-            document.getElementById('outletFilterGroup').style.display = 'none';
+            stafferForm.style.display = 'none';
+            submissionView.style.display = 'block';
             document.getElementById('regularView').style.display = 'none';
-            document.getElementById('submissionView').style.display = 'block';
         }
         
         checkDarkMode();
@@ -899,34 +875,11 @@
             else if (userRole === 'staffer' && userAssignment === 'FBC') data = data.filter(r => r.dealer === 'FBC');
             
             allRecords = data || [];
-            
-            const outlets = [...new Set(allRecords.map(r => r.outlet).filter(Boolean))];
-            const filterOutlet = document.getElementById('filterOutlet');
-            filterOutlet.innerHTML = '<option value="">All Outlets</option>';
-            outlets.forEach(o => { const opt = document.createElement('option'); opt.value = o; opt.textContent = o; filterOutlet.appendChild(opt); });
-            
-            applyFilters();
+            // Staffers don't need to show grid now - they only submit
         } catch(e) { 
             document.getElementById('status').innerHTML = '❌ Connection Error';
             document.getElementById('status').className = 'status error';
         }
-    }
-    
-    function applyFilters() {
-        const search = document.getElementById('searchName').value.toLowerCase();
-        const outlet = document.getElementById('filterOutlet').value;
-        const from = document.getElementById('filterDateFrom').value;
-        const to = document.getElementById('filterDateTo').value;
-        
-        let filtered = allRecords.filter(r => {
-            if (search && !r.employee_name.toLowerCase().includes(search)) return false;
-            if (outlet && r.outlet !== outlet) return false;
-            if (from && r.cutoff_from && r.cutoff_from < from) return false;
-            if (to && r.cutoff_to && r.cutoff_to > to) return false;
-            return true;
-        });
-        
-        renderGrid(filtered);
     }
     
     function readFileAsBase64(file) {
@@ -1055,8 +1008,6 @@
                 
                 if (userRole === 'admin' || userRole === 'coordinator') {
                     loadSubmissionSummary();
-                } else {
-                    await loadRecords();
                 }
             }
         } catch(e) {
@@ -1252,173 +1203,13 @@
         win.print();
     }
     
-    function renderGrid(records) {
-        const grid = document.getElementById('recordsGrid');
-        if (records.length === 0) { 
-            grid.innerHTML = '<div class="loading">No records found.</div>'; 
-            return; 
-        }
-        
-        const grouped = {};
-        records.forEach(r => { 
-            const key = r.batch_id || r.id; 
-            if (!grouped[key]) {
-                grouped[key] = { ...r, images: [] };
-            }
-            grouped[key].images.push(r.image_data);
-        });
-        
-        const list = Object.values(grouped);
-        const isAdmin = userRole === 'admin';
-        
-        grid.innerHTML = list.map(g => {
-            const mainImage = g.images[0] || '';
-            const thumbnails = g.images.slice(1);
-            const batchId = g.batch_id || g.id;
-            const allImages = g.images;
-            
-            return `
-            <div class="card">
-                ${isAdmin ? `<input type="checkbox" class="select-checkbox" data-id="${batchId}" ${selectedRecords.has(batchId) ? 'checked' : ''}>` : ''}
-                <img src="${mainImage}" class="card-img" onclick="openImageViewer(${JSON.stringify(allImages)}, '${batchId}')">
-                <div class="card-body">
-                    <div class="name">👤 ${escapeHtml(g.employee_name)}</div>
-                    <div class="outlet-text">📍 ${escapeHtml(g.outlet || 'N/A')}</div>
-                    <div class="dealer-text">🏪 ${escapeHtml(g.dealer)}</div>
-                    <div class="date">📅 ${g.cutoff_range}</div>
-                    ${g.remarks ? `<div class="date">💬 ${escapeHtml(g.remarks)}</div>` : ''}
-                    <div class="batch-badge">📸 ${g.images.length} images <span style="font-size:10px;cursor:pointer;color:#4361ee;" onclick="openImageViewer(${JSON.stringify(allImages)}, '${batchId}')">(View All)</span></div>
-                    ${thumbnails.length > 0 ? `
-                        <div class="thumbnail-gallery">
-                            ${thumbnails.map((img, idx) => `<img src="${img}" onclick="event.stopPropagation(); openImageViewer(${JSON.stringify(allImages)}, '${batchId}')" title="Image ${idx+2}">`).join('')}
-                        </div>
-                    ` : ''}
-                    ${isAdmin ? `<button class="delete-btn" onclick="deleteRecord('${batchId}')">Delete Batch</button>` : ''}
-                </div>
-            </div>
-        `}).join('');
-        
-        document.querySelectorAll('.select-checkbox').forEach(cb => {
-            cb.addEventListener('change', (e) => {
-                const id = e.target.dataset.id;
-                if (e.target.checked) selectedRecords.add(id);
-                else selectedRecords.delete(id);
-                document.getElementById('deleteCount').innerText = selectedRecords.size;
-                document.getElementById('printCount').innerText = selectedRecords.size;
-                document.getElementById('downloadCount').innerText = selectedRecords.size;
-            });
-        });
-    }
-    
-    async function deleteRecord(batchId) {
-        if (userRole !== 'admin') { showMessage('Access Denied', 'Only Admin can delete', 'error'); return; }
-        const result = await Swal.fire({ title: 'Delete?', text: 'Cannot be undone!', icon: 'warning', showCancelButton: true, confirmButtonColor: '#dc3545' });
-        if (result.isConfirmed) {
-            await fetch(`${SUPABASE_URL}/rest/v1/dtr_records?batch_id=eq.${batchId}`, {
-                method: 'DELETE', headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
-            });
-            await loadRecords();
-        }
-    }
-    
-    async function deleteSelected() {
-        if (userRole !== 'admin') return;
-        const toDelete = [...selectedRecords];
-        if (toDelete.length === 0) return;
-        const result = await Swal.fire({ title: `Delete ${toDelete.length} batches?`, text: 'Cannot be undone!', icon: 'warning', showCancelButton: true });
-        if (result.isConfirmed) {
-            for (let id of toDelete) {
-                await fetch(`${SUPABASE_URL}/rest/v1/dtr_records?batch_id=eq.${id}`, {
-                    method: 'DELETE', headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
-                });
-            }
-            selectedRecords.clear();
-            await loadRecords();
-        }
-    }
-    
-    async function printSelected() {
-        const toPrint = [];
-        allRecords.forEach(r => {
-            if (selectedRecords.has(r.batch_id || r.id)) {
-                toPrint.push(r.image_data);
-            }
-        });
-        if (toPrint.length === 0) { showMessage('No Selection', 'Select records to print', 'warning'); return; }
-        const win = window.open('', '_blank');
-        win.document.write(`<html><head><title>DTR Print</title><style>.page{page-break-after:always;height:100vh;display:flex;justify-content:center;align-items:center;} img{max-width:100%;max-height:100%;object-fit:contain;}</style></head><body>${toPrint.map(img => `<div class="page"><img src="${img}"></div>`).join('')}</body></html>`);
-        win.document.close(); win.print();
-    }
-    
-    async function downloadSelected() {
-        const toDownload = [];
-        allRecords.forEach(r => {
-            if (selectedRecords.has(r.batch_id || r.id)) {
-                toDownload.push(r.image_data);
-            }
-        });
-        if (toDownload.length === 0) { showMessage('No Selection', 'Select records to download', 'warning'); return; }
-        const btn = document.getElementById('downloadSelectedBtn');
-        const orig = btn.innerHTML;
-        btn.innerHTML = 'Creating ZIP...';
-        btn.disabled = true;
-        try {
-            const zip = new JSZip();
-            const folder = zip.folder('DTR_Records');
-            for (let i = 0; i < toDownload.length; i++) {
-                const b64 = toDownload[i].split(',')[1];
-                const bin = atob(b64);
-                const arr = new Uint8Array(bin.length);
-                for (let j = 0; j < bin.length; j++) arr[j] = bin.charCodeAt(j);
-                folder.file(`image_${i+1}.png`, arr);
-            }
-            const content = await zip.generateAsync({ type: 'blob' });
-            saveAs(content, `DTR_Records_${Date.now()}.zip`);
-            showMessage('Complete', `${toDownload.length} images downloaded`, 'success');
-        } catch(e) { showMessage('Error', e.message, 'error'); }
-        finally { btn.innerHTML = orig; btn.disabled = false; }
-    }
-    
-    function selectAllFiltered() {
-        const filtered = getFilteredRecords();
-        filtered.forEach(r => selectedRecords.add(r.batch_id || r.id));
-        applyFilters();
-    }
-    
-    function deselectAll() { selectedRecords.clear(); applyFilters(); }
-    
-    function getFilteredRecords() {
-        const search = document.getElementById('searchName').value.toLowerCase();
-        const outlet = document.getElementById('filterOutlet').value;
-        const from = document.getElementById('filterDateFrom').value;
-        const to = document.getElementById('filterDateTo').value;
-        return allRecords.filter(r => {
-            if (search && !r.employee_name.toLowerCase().includes(search)) return false;
-            if (outlet && r.outlet !== outlet) return false;
-            if (from && r.cutoff_from && r.cutoff_from < from) return false;
-            if (to && r.cutoff_to && r.cutoff_to > to) return false;
-            return true;
-        });
-    }
-    
     function escapeHtml(t) { if (!t) return ''; const d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
     
     // Event listeners for submission filters
     document.getElementById('searchEmployee')?.addEventListener('input', applySubmissionFilters);
     document.getElementById('filterCutoff')?.addEventListener('change', applySubmissionFilters);
     
-    // Regular view filters
-    document.getElementById('searchName').addEventListener('input', applyFilters);
-    document.getElementById('filterOutlet').addEventListener('change', applyFilters);
-    document.getElementById('filterDateFrom').addEventListener('change', applyFilters);
-    document.getElementById('filterDateTo').addEventListener('change', applyFilters);
-    
-    // Print and action buttons
-    document.getElementById('selectAllBtn').addEventListener('click', selectAllFiltered);
-    document.getElementById('deselectAllBtn').addEventListener('click', deselectAll);
-    document.getElementById('deleteSelectedBtn').addEventListener('click', deleteSelected);
-    document.getElementById('printSelectedBtn').addEventListener('click', printSelected);
-    document.getElementById('downloadSelectedBtn').addEventListener('click', downloadSelected);
+    // Print button
     document.getElementById('printReportBtn').addEventListener('click', printSubmissionReport);
     document.getElementById('saveBtn').addEventListener('click', saveRecord);
     
