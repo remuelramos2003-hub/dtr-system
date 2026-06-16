@@ -55,6 +55,7 @@
         .mode-toggle{position:fixed;bottom:20px;right:20px;width:50px;height:50px;border-radius:50%;background:#4361ee;color:white;border:none;font-size:24px;cursor:pointer;z-index:1000;}
         @media(max-width:768px){.stats{grid-template-columns:repeat(3,1fr);}.two-columns{grid-template-columns:1fr;}}
         .loading{text-align:center;padding:40px;color:#666;}
+        select:disabled { background-color: #e9ecef; cursor: not-allowed; }
     </style>
 </head>
 <body>
@@ -113,20 +114,33 @@
             <div>
                 <label>Outlet *</label>
                 <select id="outlet">
-                    <option value="">Select Outlet</option>
-                    <option>MARILAO,BULACAN</option><option>MORATO AVE.</option><option>GENERAL SANTOS</option>
-                    <option>CEBU CITY</option><option>ROSALES,PANGASINAN</option><option>BOHOL</option>
-                    <option>STA.ROSA,LAGUNA</option><option>NAIC,CAVITE</option><option>CAMILING</option>
-                    <option>warehouse</option><option>CLARK,PAMPANGA</option><option>DAVAO</option>
+                    <option value="">-- Select Outlet --</option>
+                    <option value="MARILAO,BULACAN">MARILAO,BULACAN</option>
+                    <option value="MORATO AVE.">MORATO AVE.</option>
+                    <option value="GENERAL SANTOS">GENERAL SANTOS</option>
+                    <option value="CEBU CITY">CEBU CITY</option>
+                    <option value="ROSALES,PANGASINAN">ROSALES,PANGASINAN</option>
+                    <option value="BOHOL">BOHOL</option>
+                    <option value="STA.ROSA,LAGUNA">STA.ROSA,LAGUNA</option>
+                    <option value="NAIC,CAVITE">NAIC,CAVITE</option>
+                    <option value="CAMILING">CAMILING</option>
+                    <option value="warehouse">warehouse</option>
+                    <option value="CLARK,PAMPANGA">CLARK,PAMPANGA</option>
+                    <option value="DAVAO">DAVAO</option>
                 </select>
             </div>
             <div>
                 <label>Dealer *</label>
                 <select id="dealer">
-                    <option value="">Select Dealer</option>
-                    <option>AHAM OFFICE</option><option>FBC</option>
-                    <option>SACI</option><option>SVI</option><option>S&R</option>
-                    <option>SSM</option><option>GAISANO GRAND</option><option>SMCO</option>
+                    <option value="">-- Select Dealer --</option>
+                    <option value="AHAM OFFICE">AHAM OFFICE</option>
+                    <option value="FBC">FBC</option>
+                    <option value="SACI">SACI</option>
+                    <option value="SVI">SVI</option>
+                    <option value="S&R">S&R</option>
+                    <option value="SSM">SSM</option>
+                    <option value="GAISANO GRAND">GAISANO GRAND</option>
+                    <option value="SMCO">SMCO</option>
                 </select>
             </div>
         </div>
@@ -217,8 +231,11 @@
         document.getElementById('userRoleDisplay').innerText = displayName;
         document.getElementById('assignBadge').innerText = assignText;
         
+        const dealerSelect = document.getElementById('dealer');
+        const outletSelect = document.getElementById('outlet');
+        
         if (userRole === 'staffer') {
-            const dealerSelect = document.getElementById('dealer');
+            // Lock dealer for staffers
             if (userAssignment === 'AHAM') {
                 dealerSelect.value = 'AHAM OFFICE';
                 dealerSelect.disabled = true;
@@ -226,11 +243,16 @@
                 dealerSelect.value = 'FBC';
                 dealerSelect.disabled = true;
             }
+            // Staffers can select any outlet
+            outletSelect.disabled = false;
             document.getElementById('adminPrintBar').style.display = 'none';
             document.getElementById('outletFilterGroup').style.display = 'none';
         } else if (userRole === 'coordinator') {
             document.getElementById('stafferForm').style.display = 'none';
             document.getElementById('adminPrintBar').style.display = 'none';
+        } else if (userRole === 'admin') {
+            dealerSelect.disabled = false;
+            outletSelect.disabled = false;
         }
         
         loadRecords();
@@ -332,7 +354,7 @@
     }
     
     async function saveRecord() {
-        // Get form values
+        // Get form values - use .value directly from select elements
         const name = document.getElementById('empName').value.trim();
         const outlet = document.getElementById('outlet').value;
         let dealer = document.getElementById('dealer').value;
@@ -346,17 +368,17 @@
             else if (userAssignment === 'FBC') dealer = 'FBC';
         }
         
-        // Validation
+        // Validation - show specific error messages
         if (!name) {
             showMessage('Error', 'Please enter employee name', 'error');
             return;
         }
-        if (!outlet) {
-            showMessage('Error', 'Please select outlet', 'error');
+        if (!outlet || outlet === '') {
+            showMessage('Error', 'Please select an outlet', 'error');
             return;
         }
-        if (!dealer) {
-            showMessage('Error', 'Please select dealer', 'error');
+        if (!dealer || dealer === '') {
+            showMessage('Error', 'Please select a dealer', 'error');
             return;
         }
         if (!fromDate || !toDate) {
@@ -396,6 +418,8 @@
                     batch_id: batchId,
                     created_at: new Date().toISOString()
                 };
+                
+                console.log('Saving record:', recordData);
                 
                 const response = await fetch(`${SUPABASE_URL}/rest/v1/dtr_records`, {
                     method: 'POST',
