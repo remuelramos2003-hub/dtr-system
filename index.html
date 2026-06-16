@@ -514,39 +514,8 @@
                     <option value="">Search or select outlet...</option>
                     <option>MARILAO,BULACAN</option><option>MORATO AVE.</option><option>GENERAL SANTOS</option>
                     <option>CEBU CITY</option><option>ROSALES,PANGASINAN</option><option>BOHOL</option>
-                    <option>STA.ROSA,LAGUNA</option><option>NAIC,CAVITE</option><option>BANKAL/BAJADA</option>
-                    <option>ILLUSTRE</option><option>ETON QC,</option><option>EMPORIUM,MAKATI CITY</option>
-                    <option>ROXAS</option><option>CLARK,PAMPANGA</option><option>CAMILING</option>
-                    <option>warehouse</option><option>SAN PABLO,LAGUNA</option><option>NOVALICHES,QC</option>
-                    <option>CARCAR CITY,CEBU</option><option>LUCENA</option><option>CDO 2</option>
-                    <option>MANAOAG</option><option>IRIGA CITY</option><option>KAWIT</option>
-                    <option>MARIKINA</option><option>MASBATE</option><option>LA TRINIDAD,BENGUET</option>
-                    <option>DCWC AGDAO</option><option>NAGA CITY,CAMARINES SUR</option><option>MANGALDAN</option>
-                    <option>MUZON/STA.MARIA</option><option>TARLAC</option><option>DAVAO</option>
-                    <option>CONSOLACION CEBU</option><option>SAVEMORE NUÑEZ</option><option>DASMA., CAVITE</option>
-                    <option>TRECE MARTIRES</option><option>DAVAO /GMALL -BAJADA</option><option>SEASIDE,CEBU CITY</option>
-                    <option>NEW MANILA</option><option>TABUNOK,CEBU</option><option>BACOLOD</option>
-                    <option>AYALA CEBU</option><option>IMUS/DASMA/BACOOR</option><option>IROSIN</option>
-                    <option>SQUARE,PANGASINAN</option><option>PLARIDEL</option><option>CHEF'S MAGIC/AHAM</option>
-                    <option>ABRA</option><option>UGAC</option><option>CENTRO,NAGA</option>
-                    <option>PAMPANGA</option><option>CAINTA,RIZAL</option><option>BALIWAG</option>
-                    <option>GOA,CAMARINES SUR</option><option>AHAM OFFICE</option><option>STA.ANA,PAMPANGA</option>
-                    <option>DAU</option><option>NAGA</option><option>LIPA,BATANGAS</option>
-                    <option>BICUTAN</option><option>NOVALICHES 1</option><option>LAGUNA</option>
-                    <option>TANZA,CAVITE</option><option>DAET,CAMARINES SUR</option><option>ROSARIO,LA UNION</option>
-                    <option>PILI</option><option>CALBAYOG</option><option>NAGA POLANGUI 2</option>
-                    <option>ARCOVIA,PASIG</option><option>CATANAUAN</option><option>RIVERBANK</option>
-                    <option>DUMAGUETE CITY</option><option>IBA,ZAMBALES</option><option>SIPOCOT,CAMARINES SUR</option>
-                    <option>EXHIBITORS MANILA</option><option>NUVALI,LAGUNA</option><option>DAGUPAN,PANGASINAN</option>
-                    <option>MOALBOAL</option><option>CABANATUAN,NUEVA ECIJA</option><option>SUNSTAR/PAGSANJAN</option>
-                    <option>NORTH CALOOCAN</option><option>CALAMBA,LAGUNA</option><option>FAIRVIEW MAIN</option>
-                    <option>ILOILO</option><option>DAVAO DEL SUR , DIGOS CITY</option><option>ZAMBOANGA</option>
-                    <option>ILOILO CITY, ILOILO</option><option>CONDONI</option><option>GUIMBA</option>
-                    <option>MINGLANILLA,CEBU</option><option>CALBANGA</option><option>CATARMAN</option>
-                    <option>ALABANG/ TAGUIG</option><option>DARAGA,ALBAY</option><option>LAOG CITY, ILOCOS NORTE</option>
-                    <option>Mamandil Talavera Nueva Ecija</option><option>SOUTHMALL,LAS PINAS</option>
-                    <option>PACO,MANILA</option><option>VELEZ,CAGAYAN DE ORO CITY</option>
-                    <option>COMMONWEALTH Q.C</option><option>SAN FERNANDO</option><option>MARQUEE</option>
+                    <option>STA.ROSA,LAGUNA</option><option>NAIC,CAVITE</option><option>CAMILING</option>
+                    <option>warehouse</option><option>CLARK,PAMPANGA</option><option>DAVAO</option>
                 </select>
             </div>
             <div>
@@ -558,14 +527,6 @@
                     <option>ANSONS</option><option>GAISANO MALL</option><option>MEGASAVER</option>
                     <option>ALSONS</option><option>METRO</option><option>CSI</option><option>CONSUMERS</option>
                     <option>SNR</option><option>SMCO</option><option>DCWC</option><option>SAVEMORE</option>
-                    <option>ROYAL STAR</option><option>AMERICAN HOME</option><option>LCC</option>
-                    <option>MIKE'S</option><option>BODEGA HOMEPLUS</option><option>WILLY & SONS</option>
-                    <option>TARGET MALL</option><option>TIONGSAN</option><option>LANDERS</option>
-                    <option>ROBINSON</option><option>RRS</option><option>PUREGOLD</option><option>KCC</option>
-                    <option>NIG MKTG</option><option>SM HEROES HALL</option><option>R/A</option><option>CTC</option>
-                    <option>REIN AND RAINY</option><option>ASIAN HOME</option><option>FC HOME</option>
-                    <option>WAREHOUSE</option><option>HOMEWORLD</option><option>WESTERN</option>
-                    <option>ROYALSTAR</option><option>GAISANO</option>
                 </select>
             </div>
         </div>
@@ -813,6 +774,7 @@
     document.getElementById('modeToggle').addEventListener('click', toggleTheme);
     initTheme();
 
+    // FIXED: Image preview with correct indexing
     document.getElementById('imageFiles').addEventListener('change', function(e) {
         imageFilesList = Array.from(e.target.files);
         const container = document.getElementById('imagePreviewContainer');
@@ -822,6 +784,7 @@
             reader.onload = ev => {
                 const div = document.createElement('div');
                 div.className = 'preview-item';
+                div.setAttribute('data-idx', idx);
                 div.innerHTML = `<img src="${ev.target.result}"><div class="remove-image" data-index="${idx}">×</div>`;
                 container.appendChild(div);
             };
@@ -829,14 +792,31 @@
         });
     });
     
+    // FIXED: Remove image handler with proper re-indexing
     document.getElementById('imagePreviewContainer').addEventListener('click', e => {
         if (e.target.classList.contains('remove-image')) {
-            const idx = parseInt(e.target.dataset.index);
+            const idx = parseInt(e.target.getAttribute('data-index'));
             imageFilesList.splice(idx, 1);
+            
+            // Rebuild file list
             const dt = new DataTransfer();
             imageFilesList.forEach(f => dt.items.add(f));
             document.getElementById('imageFiles').files = dt.files;
-            document.getElementById('imageFiles').dispatchEvent(new Event('change'));
+            
+            // Refresh preview
+            const container = document.getElementById('imagePreviewContainer');
+            container.innerHTML = '';
+            imageFilesList.forEach((file, newIdx) => {
+                const reader = new FileReader();
+                reader.onload = ev => {
+                    const div = document.createElement('div');
+                    div.className = 'preview-item';
+                    div.setAttribute('data-idx', newIdx);
+                    div.innerHTML = `<img src="${ev.target.result}"><div class="remove-image" data-index="${newIdx}">×</div>`;
+                    container.appendChild(div);
+                };
+                reader.readAsDataURL(file);
+            });
         }
     });
 
@@ -925,10 +905,11 @@
         });
     }
 
+    // FIXED: Save record function
     async function saveRecord() {
         let name = document.getElementById('empName').value;
-        let outlet = $('#outlet').val();
-        let dealer = $('#dealer').val();
+        let outlet = document.getElementById('outlet').value;
+        let dealer = document.getElementById('dealer').value;
         const from = document.getElementById('fromDate').value;
         const to = document.getElementById('toDate').value;
         const remarks = document.getElementById('remarks').value;
@@ -966,11 +947,23 @@
                 // Insert new records
                 for (let img of imageFilesList) {
                     const imgData = await readFile(img);
-                    await fetch(`${SUPABASE_URL}/rest/v1/dtr_records`, {
+                    const response = await fetch(`${SUPABASE_URL}/rest/v1/dtr_records`, {
                         method: 'POST', 
                         headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ employee_name: name, outlet, dealer, cutoff_from: from, cutoff_to: to, cutoff_range: range, remarks, image_data: imgData, batch_id: editingId })
+                        body: JSON.stringify({ 
+                            employee_name: name, 
+                            outlet: outlet, 
+                            dealer: dealer, 
+                            cutoff_from: from, 
+                            cutoff_to: to, 
+                            cutoff_range: range, 
+                            remarks: remarks || '', 
+                            image_data: imgData, 
+                            batch_id: editingId,
+                            created_at: new Date().toISOString()
+                        })
                     });
+                    if (!response.ok) throw new Error(await response.text());
                 }
                 await showMessage('Success!', 'Record updated!', 'success');
                 editingId = null;
@@ -985,11 +978,23 @@
                 const batchId = Date.now().toString();
                 for (let img of imageFilesList) {
                     const imgData = await readFile(img);
-                    await fetch(`${SUPABASE_URL}/rest/v1/dtr_records`, {
+                    const response = await fetch(`${SUPABASE_URL}/rest/v1/dtr_records`, {
                         method: 'POST', 
                         headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ employee_name: name, outlet, dealer, cutoff_from: from, cutoff_to: to, cutoff_range: range, remarks, image_data: imgData, batch_id: batchId })
+                        body: JSON.stringify({ 
+                            employee_name: name, 
+                            outlet: outlet, 
+                            dealer: dealer, 
+                            cutoff_from: from, 
+                            cutoff_to: to, 
+                            cutoff_range: range, 
+                            remarks: remarks || '', 
+                            image_data: imgData, 
+                            batch_id: batchId,
+                            created_at: new Date().toISOString()
+                        })
                     });
+                    if (!response.ok) throw new Error(await response.text());
                 }
                 await showMessage('Success!', `${imageFilesList.length} image(s) saved!`, 'success');
             }
@@ -1000,11 +1005,19 @@
             document.getElementById('imageFiles').value = '';
             document.getElementById('imagePreviewContainer').innerHTML = ''; 
             imageFilesList = [];
-            $('#outlet').val(null).trigger('change');
-            if (userRole === 'admin') $('#dealer').val(null).trigger('change');
+            document.getElementById('outlet').value = '';
+            if (userRole === 'admin') document.getElementById('dealer').value = '';
+            
+            // Reset Select2 if used
+            if ($('#outlet').hasClass('select2-hidden-accessible')) {
+                $('#outlet').val(null).trigger('change');
+            }
+            if ($('#dealer').hasClass('select2-hidden-accessible') && userRole === 'admin') {
+                $('#dealer').val(null).trigger('change');
+            }
             
             if (userRole === 'coordinator') loadSubmissionSummary();
-            else loadRecords();
+            else await loadRecords();
         } catch(e) { 
             console.error(e);
             showMessage('Error', e.message, 'error'); 
