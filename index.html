@@ -713,7 +713,8 @@
         
         let displayName = '', assignText = '';
         if (userRole === 'admin') {
-            displayName = 'Admin'; assignText = 'Full Access';
+            displayName = 'Admin';
+            assignText = 'Full Access';
             document.getElementById('stafferForm').style.display = 'block';
             document.getElementById('coordinatorView').style.display = 'none';
             document.getElementById('regularView').style.display = 'block';
@@ -728,7 +729,8 @@
             document.getElementById('outlet').disabled = false;
             document.getElementById('dealer').disabled = false;
         } else if (userRole === 'coordinator') {
-            displayName = 'Coordinator'; assignText = userAssignment;
+            displayName = 'Coordinator';
+            assignText = userAssignment;
             document.getElementById('stafferForm').style.display = 'none';
             document.getElementById('coordinatorView').style.display = 'block';
             document.getElementById('regularView').style.display = 'none';
@@ -739,7 +741,8 @@
             document.getElementById('editGuideItem').style.display = 'none';
             document.getElementById('viewGuideItem').style.display = 'list-item';
         } else if (userRole === 'staffer') {
-            displayName = 'Staffer'; assignText = userAssignment;
+            displayName = 'Staffer';
+            assignText = userAssignment;
             document.getElementById('stafferForm').style.display = 'block';
             document.getElementById('coordinatorView').style.display = 'none';
             document.getElementById('regularView').style.display = 'block';
@@ -754,11 +757,15 @@
             // Lock dealer for staffers
             const dealerSelect = document.getElementById('dealer');
             if (userAssignment === 'AHAM') {
-                $(dealerSelect).val('AHAM OFFICE').trigger('change');
-                dealerSelect.disabled = true;
+                setTimeout(() => {
+                    $(dealerSelect).val('AHAM OFFICE').trigger('change');
+                    dealerSelect.disabled = true;
+                }, 200);
             } else if (userAssignment === 'FBC') {
-                $(dealerSelect).val('FBC').trigger('change');
-                dealerSelect.disabled = true;
+                setTimeout(() => {
+                    $(dealerSelect).val('FBC').trigger('change');
+                    dealerSelect.disabled = true;
+                }, 200);
             }
         }
         
@@ -943,28 +950,26 @@
         
         try {
             if (editingId) {
-                // Update existing - check duplicate excluding current
+                // Check duplicate excluding current
                 const isDuplicate = await checkDuplicate(name, outlet, dealer, from, to, editingId);
                 if (isDuplicate) {
                     showMessage('Duplicate Entry', `Employee "${name}" already has a record for this cutoff`, 'error');
                     return;
                 }
                 
-                // For update, we need to delete old images and add new ones
-                // First, delete existing records with this batch_id
+                // Delete old records with this batch_id
                 await fetch(`${SUPABASE_URL}/rest/v1/dtr_records?batch_id=eq.${editingId}`, {
                     method: 'DELETE',
                     headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
                 });
                 
-                // Then insert new ones
-                const batchId = editingId;
+                // Insert new records
                 for (let img of imageFilesList) {
                     const imgData = await readFile(img);
                     await fetch(`${SUPABASE_URL}/rest/v1/dtr_records`, {
                         method: 'POST', 
                         headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ employee_name: name, outlet, dealer, cutoff_from: from, cutoff_to: to, cutoff_range: range, remarks, image_data: imgData, batch_id: batchId })
+                        body: JSON.stringify({ employee_name: name, outlet, dealer, cutoff_from: from, cutoff_to: to, cutoff_range: range, remarks, image_data: imgData, batch_id: editingId })
                     });
                 }
                 await showMessage('Success!', 'Record updated!', 'success');
@@ -1054,7 +1059,7 @@
         const cards = document.querySelectorAll('#submissionGrid .card');
         if (cards.length === 0) { showMessage('No Data', 'Nothing to print', 'warning'); return; }
         const win = window.open('', '_blank');
-        win.document.write(`<html><head><title>DTR Report - ${userAssignment}</title><style>body{font-family:Arial;padding:20px;} table{width:100%;border-collapse:collapse;} th,td{border:1px solid #ddd;padding:8px;text-align:left;} th{background:#4361ee;color:white;}</style></head><body><h1>DTR Submission Report</h1><p>Coordinator: ${userAssignment}</p><p>Generated: ${new Date().toLocaleString()}</p></td><thead><tr><th>Employee</th><th>Outlet</th><th>Dealer</th><th>Cutoff</th><th>Images</th><th>Date</th></tr></thead><tbody>${Array.from(cards).map(c => { const n = c.querySelector('.name')?.innerText.replace('👤 ', '') || ''; const o = c.querySelector('.outlet-text')?.innerText.replace('📍 ', '') || ''; const d = c.querySelector('.dealer-text')?.innerText.replace('🏪 ', '') || ''; const cut = c.querySelector('.date')?.innerText.replace('📅 ', '') || ''; const img = c.querySelector('.batch-badge')?.innerText.replace('📸 ', '').replace(' images', '') || ''; const dt = c.querySelector('.submission-status')?.innerText.replace('✓ Submitted ', '') || ''; return `<tr><td>${n}</td><td>${o}</td><td>${d}</td><td>${cut}</td><td>${img}</td><td>${dt}</td>`; }).join('')}</tbody></table></body></html>`);
+        win.document.write(`<html><head><title>DTR Report - ${userAssignment}</title><style>body{font-family:Arial;padding:20px;} table{width:100%;border-collapse:collapse;} th,td{border:1px solid #ddd;padding:8px;text-align:left;} th{background:#4361ee;color:white;}</style></head><body><h1>DTR Submission Report</h1><p>Coordinator: ${userAssignment}</p><p>Generated: ${new Date().toLocaleString()}</p><table><thead><tr><th>Employee</th><th>Outlet</th><th>Dealer</th><th>Cutoff</th><th>Images</th><th>Date</th></tr></thead><tbody>${Array.from(cards).map(c => { const n = c.querySelector('.name')?.innerText.replace('👤 ', '') || ''; const o = c.querySelector('.outlet-text')?.innerText.replace('📍 ', '') || ''; const d = c.querySelector('.dealer-text')?.innerText.replace('🏪 ', '') || ''; const cut = c.querySelector('.date')?.innerText.replace('📅 ', '') || ''; const img = c.querySelector('.batch-badge')?.innerText.replace('📸 ', '').replace(' images', '') || ''; const dt = c.querySelector('.submission-status')?.innerText.replace('✓ Submitted ', '') || ''; return `<tr><td>${n}</td><td>${o}</td><td>${d}</td><td>${cut}</td><td>${img}</td><td>${dt}</td>`; }).join('')}</tbody></table></body></html>`);
         win.document.close(); win.print();
     }
 
