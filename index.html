@@ -736,6 +736,7 @@
         });
     }
     
+    // FIXED SAVE RECORD FUNCTION
     async function saveRecord() {
         // Get form values
         const name = document.getElementById('empName').value.trim();
@@ -750,25 +751,29 @@
             if (adminDealerType === 'AHAM') {
                 dealer = 'AHAM OFFICE';
                 // Outlet is required for AHAM
-                if (!outlet) {
+                if (!outlet || outlet === '') {
                     showMessage('Error', 'Please select an outlet for AHAM', 'error');
                     return;
                 }
             } else {
                 dealer = 'FBC';
-                // For FBC, outlet is not needed
-                outlet = 'N/A';
+                // For FBC, outlet is NOT required - set to null or 'N/A'
+                outlet = null;
             }
         }
         
         // For staffers, override dealer with their assigned one
         if (userRole === 'staffer') {
-            if (userAssignment === 'AHAM') dealer = 'AHAM OFFICE';
-            else if (userAssignment === 'FBC') dealer = 'FBC';
-            // Staffers must select outlet
-            if (!outlet) {
-                showMessage('Error', 'Please select an outlet', 'error');
-                return;
+            if (userAssignment === 'AHAM') {
+                dealer = 'AHAM OFFICE';
+                if (!outlet || outlet === '') {
+                    showMessage('Error', 'Please select an outlet', 'error');
+                    return;
+                }
+            } else if (userAssignment === 'FBC') {
+                dealer = 'FBC';
+                // For FBC staffers, outlet is NOT required
+                outlet = null;
             }
         }
         
@@ -776,12 +781,6 @@
         if (!name) {
             showMessage('Error', 'Please enter employee name', 'error');
             return;
-        }
-        if (userRole !== 'admin' || adminDealerType === 'AHAM') {
-            if (!outlet || outlet === '') {
-                showMessage('Error', 'Please select an outlet', 'error');
-                return;
-            }
         }
         if (!dealer || dealer === '') {
             showMessage('Error', 'Please select a dealer', 'error');
@@ -813,7 +812,7 @@
                 
                 const recordData = {
                     employee_name: name,
-                    outlet: outlet || 'N/A',
+                    outlet: outlet,
                     dealer: dealer,
                     cutoff_from: fromDate,
                     cutoff_to: toDate,
