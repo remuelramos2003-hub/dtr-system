@@ -3,447 +3,67 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DTR System - Admin & Staffer Portal</title>
+    <title>DTR System - Philman Power Center</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <style>
-        :root {
-            --bg-color: #f0f2f5;
-            --card-bg: white;
-            --text-color: #1a1a2e;
-            --border-color: #eee;
-            --input-bg: white;
-            --form-bg: #f8f9fa;
-            --stat-bg: #f8f9fa;
-            --hover-shadow: rgba(0,0,0,0.1);
-            --success-bg: #d4edda;
-            --info-bg: #d1ecf1;
-        }
-        
-        body.dark-mode {
-            --bg-color: #1a1a2e;
-            --card-bg: #16213e;
-            --text-color: #e2e8f0;
-            --border-color: #2d3748;
-            --input-bg: #0f0f23;
-            --form-bg: #1e293b;
-            --stat-bg: #1e293b;
-            --hover-shadow: rgba(255,255,255,0.1);
-            --success-bg: #0d3b2e;
-            --info-bg: #1e3a5f;
-        }
-        
-        body {
-            background: var(--bg-color);
-            padding: 20px;
-            font-family: 'Segoe UI', sans-serif;
-            transition: all 0.3s ease;
-            color: var(--text-color);
-        }
-        .container{
-            max-width:1400px;
-            margin:0 auto;
-            background:var(--card-bg);
-            border-radius:20px;
-            padding:20px;
-            box-shadow:0 1px 3px rgba(0,0,0,0.1);
-        }
-        h1{
-            text-align:center;
-            color:var(--text-color);
-            margin-bottom:20px;
-        }
-        .login-container {
-            max-width: 450px;
-            margin: 100px auto;
-            background: var(--card-bg);
-            border-radius: 20px;
-            padding: 35px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-            text-align: center;
-        }
-        .login-container h2 {
-            margin-bottom: 10px;
-            color: var(--text-color);
-        }
-        .user-badge {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: linear-gradient(135deg, #4361ee, #3b82f6);
-            color: white;
-            padding: 10px 20px;
-            border-radius: 50px;
-            font-size: 14px;
-            font-weight: 600;
-            z-index: 100;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        .logout-btn {
-            background: rgba(220, 53, 69, 0.9);
-            border: none;
-            padding: 6px 14px;
-            border-radius: 30px;
-            font-size: 12px;
-            color: white;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-        .logout-btn:hover {
-            background: #dc3545;
-            transform: scale(1.02);
-        }
-        .role-badge {
-            background: rgba(255,255,255,0.2);
-            padding: 4px 12px;
-            border-radius: 30px;
-            font-size: 12px;
-        }
-        .status{
-            text-align:center;
-            padding:10px;
-            border-radius:10px;
-            margin-bottom:20px;
-        }
-        .status.success{background:var(--success-bg);color:#155724;}
+        *{margin:0;padding:0;box-sizing:border-box;}
+        body{background:#f0f2f5;font-family:'Segoe UI',sans-serif;padding:20px;}
+        .container{max-width:1400px;margin:0 auto;background:white;border-radius:20px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,0.1);}
+        h1{text-align:center;color:#1a1a2e;margin-bottom:20px;}
+        .login-container{max-width:450px;margin:100px auto;background:white;border-radius:20px;padding:35px;box-shadow:0 10px 40px rgba(0,0,0,0.2);text-align:center;}
+        .user-badge{position:fixed;top:20px;right:20px;background:#4361ee;color:white;padding:10px 20px;border-radius:50px;font-size:14px;display:flex;align-items:center;gap:12px;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,0.2);}
+        .logout-btn{background:#dc3545;border:none;padding:6px 14px;border-radius:30px;color:white;cursor:pointer;}
+        .status{text-align:center;padding:10px;border-radius:10px;margin-bottom:20px;}
+        .status.success{background:#d4edda;color:#155724;}
         .status.error{background:#f8d7da;color:#721c24;}
-        .status.info{background:var(--info-bg);color:#0c5460;}
-        .stats{
-            display:grid;
-            grid-template-columns:repeat(5,1fr);
-            gap:15px;
-            margin-bottom:25px;
-        }
-        .stat-card{
-            background:var(--stat-bg);
-            padding:15px;
-            border-radius:12px;
-            text-align:center;
-            transition: transform 0.2s, box-shadow 0.2s;
-            border: 1px solid var(--border-color);
-        }
-        .stat-card:hover{
-            transform: translateY(-3px);
-            box-shadow: 0 4px 12px var(--hover-shadow);
-        }
+        .status.info{background:#d1ecf1;color:#0c5460;}
+        .stats{display:grid;grid-template-columns:repeat(5,1fr);gap:15px;margin-bottom:25px;}
+        .stat-card{background:#f8f9fa;padding:15px;border-radius:12px;text-align:center;}
         .stat-card h3{font-size:28px;color:#4361ee;margin:0;}
-        .form-area{
-            background:var(--form-bg);
-            padding:20px;
-            border-radius:12px;
-            margin-bottom:20px;
-            border: 1px solid var(--border-color);
-        }
-        .form-area h4{color:var(--text-color);margin-bottom:15px;}
-        input,textarea{
-            width:100%;
-            padding:10px;
-            margin:8px 0;
-            border:1px solid var(--border-color);
-            border-radius:8px;
-            background:var(--input-bg);
-            color:var(--text-color);
-        }
-        input:focus,textarea:focus{
-            outline:none;
-            border-color:#4361ee;
-            box-shadow:0 0 0 2px rgba(67,97,238,0.2);
-        }
-        .select2-container--default .select2-selection--single {
-            background-color: var(--input-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            height: 42px;
-            padding: 5px;
-            color: var(--text-color);
-        }
-        .select2-dropdown {
-            background-color: var(--card-bg);
-            border-color: var(--border-color);
-        }
-        .select2-search__field {
-            background-color: var(--input-bg);
-            color: var(--text-color);
-        }
-        button{
-            background:#4361ee;
-            color:white;
-            padding:10px 20px;
-            border:none;
-            border-radius:8px;
-            cursor:pointer;
-            width:100%;
-            font-weight:600;
-            transition: all 0.2s;
-        }
-        button:hover{
-            background:#304ff2;
-            transform: translateY(-1px);
-            box-shadow: 0 2px 8px rgba(67,97,238,0.3);
-        }
-        .filter-bar{
-            display:flex;
-            gap:10px;
-            margin-bottom:20px;
-            flex-wrap:wrap;
-            align-items:flex-end;
-        }
-        .filter-group{
-            flex:1;
-            min-width:150px;
-        }
-        .filter-group label{
-            display:block;
-            font-size:12px;
-            margin-bottom:4px;
-            color:#666;
-            font-weight:500;
-        }
-        .filter-group input,.filter-group select{
-            width:100%;
-            margin:0;
-            padding:10px;
-            border:1px solid var(--border-color);
-            border-radius:8px;
-            background:var(--input-bg);
-            color:var(--text-color);
-        }
-        .print-bar{
-            display:flex;
-            gap:10px;
-            margin-bottom:20px;
-            flex-wrap:wrap;
-            align-items:center;
-        }
-        .print-bar button{
-            width:auto;
-            padding:8px 16px;
-        }
-        .grid{
-            display:grid;
-            grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
-            gap:20px;
-            margin-top:20px;
-            max-height:550px;
-            overflow-y:auto;
-            padding:5px;
-        }
-        .card{
-            background:var(--card-bg);
-            border:1px solid var(--border-color);
-            border-radius:12px;
-            overflow:hidden;
-            transition: all 0.2s;
-            position:relative;
-        }
-        .card:hover{
-            transform: translateY(-4px);
-            box-shadow: 0 8px 20px var(--hover-shadow);
-            border-color: #4361ee;
-        }
-        .select-checkbox{
-            position:absolute;
-            top:10px;
-            right:10px;
-            width:22px;
-            height:22px;
-            cursor:pointer;
-            z-index:10;
-        }
-        .card-img{
-            width:100%;
-            height:200px;
-            object-fit:cover;
-            cursor:pointer;
-        }
-        .card-body{
-            padding:15px;
-        }
-        .name{
-            font-weight:bold;
-            font-size:1.1em;
-            color:var(--text-color);
-        }
-        .outlet-text{
-            color:#10b981;
-            font-size:0.85em;
-            margin:3px 0;
-        }
-        .dealer-text{
-            color:#f59e0b;
-            font-size:0.85em;
-            margin:3px 0;
-        }
-        .date{
-            color:#666;
-            font-size:0.8em;
-        }
-        .batch-badge{
-            background:#4361ee;
-            color:white;
-            padding:2px 8px;
-            border-radius:20px;
-            font-size:10px;
-            display:inline-block;
-            margin-top:5px;
-        }
-        .delete-btn{
-            background:#dc3545;
-            color:white;
-            border:none;
-            padding:6px;
-            border-radius:6px;
-            margin-top:10px;
-            width:100%;
-            cursor:pointer;
-            transition: all 0.2s;
-        }
-        .edit-btn{
-            background:#f59e0b;
-            color:white;
-            border:none;
-            padding:6px;
-            border-radius:6px;
-            margin-top:10px;
-            width:100%;
-            cursor:pointer;
-            transition: all 0.2s;
-        }
-        .preview-img{
-            max-width:100%;
-            max-height:150px;
-            margin-top:10px;
-            border-radius:8px;
-            display:none;
-        }
-        .guide-box{
-            background: var(--info-bg);
-            border-left: 4px solid #4361ee;
-            padding: 12px 15px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            font-size: 14px;
-        }
-        .mode-toggle{
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: #4361ee;
-            color: white;
-            border: none;
-            font-size: 24px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            z-index: 1000;
-        }
-        .date-label-group{
-            display: flex;
-            gap: 10px;
-            margin-bottom: 5px;
-        }
-        .date-label-group label{
-            flex: 1;
-            font-size: 12px;
-            color: #666;
-            margin-bottom: 0;
-        }
-        .two-columns {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-        }
-        .image-preview-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-            gap: 10px;
-            margin-top: 10px;
-        }
-        .preview-item {
-            position: relative;
-        }
-        .preview-item img {
-            width: 100%;
-            height: 100px;
-            object-fit: cover;
-            border-radius: 8px;
-        }
-        .remove-image {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            background: #dc3545;
-            color: white;
-            border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            cursor: pointer;
-        }
-        .submission-status {
-            font-size: 12px;
-            padding: 4px 8px;
-            border-radius: 20px;
-            display: inline-block;
-            background: #10b981;
-            color: white;
-        }
-        @media(max-width:768px){
-            .stats{grid-template-columns:repeat(3,1fr);}
-            .two-columns{grid-template-columns:1fr;gap:10px;}
-            .filter-group{min-width:100%;}
-            .user-badge{top:10px;right:10px;padding:6px 12px;font-size:11px;}
-        }
-        @media print{
-            .form-area, .filter-bar, .print-bar, .stats, .delete-btn, .edit-btn, .status, .mode-toggle, .guide-box, .user-badge{
-                display:none !important;
-            }
-            .print-page {
-                page-break-after: always;
-                break-after: page;
-                width: 100%;
-                height: 100vh;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-            }
-            .print-img {
-                max-width: 100%;
-                max-height: 100%;
-                object-fit: contain;
-            }
-        }
+        .form-area{background:#f8f9fa;padding:20px;border-radius:12px;margin-bottom:20px;}
+        input,select,textarea{width:100%;padding:10px;margin:8px 0;border:1px solid #ddd;border-radius:8px;}
+        button{background:#4361ee;color:white;padding:10px 20px;border:none;border-radius:8px;cursor:pointer;width:100%;font-weight:600;}
+        button:hover{background:#304ff2;}
+        .filter-bar{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;}
+        .filter-group{flex:1;min-width:150px;}
+        .filter-group label{font-size:12px;color:#666;display:block;margin-bottom:4px;}
+        .filter-group input,.filter-group select{width:100%;padding:8px;}
+        .print-bar{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;}
+        .print-bar button{width:auto;padding:8px 16px;}
+        .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:20px;max-height:550px;overflow-y:auto;}
+        .card{background:white;border:1px solid #eee;border-radius:12px;overflow:hidden;position:relative;}
+        .card-img{width:100%;height:200px;object-fit:cover;cursor:pointer;}
+        .card-body{padding:15px;}
+        .name{font-weight:bold;color:#1a1a2e;}
+        .outlet-text{color:#10b981;font-size:0.85em;margin:3px 0;}
+        .dealer-text{color:#f59e0b;font-size:0.85em;}
+        .date{color:#666;font-size:0.8em;}
+        .batch-badge{background:#4361ee;color:white;padding:2px 8px;border-radius:20px;font-size:10px;display:inline-block;margin-top:5px;}
+        .delete-btn{background:#dc3545;color:white;border:none;padding:6px;border-radius:6px;margin-top:10px;width:100%;cursor:pointer;}
+        .edit-btn{background:#f59e0b;color:white;border:none;padding:6px;border-radius:6px;margin-top:10px;width:100%;cursor:pointer;}
+        .select-checkbox{position:absolute;top:10px;right:10px;width:22px;height:22px;cursor:pointer;z-index:10;}
+        .two-columns{display:grid;grid-template-columns:1fr 1fr;gap:15px;}
+        .preview-container{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px;}
+        .preview-item{position:relative;width:80px;height:80px;}
+        .preview-item img{width:100%;height:100%;object-fit:cover;border-radius:8px;}
+        .remove-img{position:absolute;top:-5px;right:-5px;background:#dc3545;color:white;border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;font-size:12px;cursor:pointer;}
+        .guide-box{background:#d1ecf1;padding:12px 15px;border-radius:10px;margin-bottom:20px;font-size:14px;border-left:4px solid #4361ee;}
+        .mode-toggle{position:fixed;bottom:20px;right:20px;width:50px;height:50px;border-radius:50%;background:#4361ee;color:white;border:none;font-size:24px;cursor:pointer;z-index:1000;}
+        @media(max-width:768px){.stats{grid-template-columns:repeat(3,1fr);}.two-columns{grid-template-columns:1fr;}}
         .loading{text-align:center;padding:40px;color:#666;}
     </style>
 </head>
 <body>
 
-<!-- Login Container -->
 <div id="loginContainer" class="login-container">
     <h2><i class="bi bi-shield-lock"></i> DTR System Login</h2>
     <p>Philman Power Center INC</p>
-    <div class="form-area" style="background:transparent; padding:0;">
-        <select id="roleSelect" style="margin-bottom:15px;">
+    <div style="margin-bottom:15px;">
+        <select id="roleSelect" style="width:100%;padding:10px;margin-bottom:10px;">
             <option value="admin">Admin</option>
             <option value="coordinator_aham">Coordinator - AHAM</option>
             <option value="coordinator_fbc">Coordinator - FBC</option>
@@ -455,63 +75,45 @@
     </div>
 </div>
 
-<!-- Main App Container -->
 <div id="appContainer" style="display:none;">
 <div class="container">
     <div class="user-badge">
-        <div class="user-info">
-            <i class="bi bi-person-circle"></i>
-            <span id="userRoleDisplay">Staffer</span>
-            <span id="assignBadge" class="role-badge"></span>
-        </div>
-        <button id="logoutBtn" class="logout-btn">
-            <i class="bi bi-box-arrow-right"></i> Logout
-        </button>
+        <i class="bi bi-person-circle"></i>
+        <span id="userRoleDisplay"></span>
+        <span id="assignBadge" style="background:rgba(255,255,255,0.2);padding:4px 12px;border-radius:30px;"></span>
+        <button id="logoutBtn" class="logout-btn">Logout</button>
     </div>
     
-    <h1><i class="bi bi-cloud-database"></i> Philman Power Center INC - DTR System</h1>
-    <div id="status" class="status info">🔄 Connecting to database...</div>
+    <h1>Philman Power Center INC - DTR System</h1>
+    <div id="status" class="status info">🔄 Connecting...</div>
 
-    <div id="guideBox" class="guide-box">
+    <div class="guide-box">
         <i class="bi bi-info-circle"></i> <strong>Quick Guide</strong>
         <ul>
-            <li id="addGuideItem"><i class="bi bi-plus-circle"></i> <strong>Add Record:</strong> Fill out the form, select images, then click "Save to Database"</li>
-            <li><i class="bi bi-search"></i> <strong>Search & Filter:</strong> Use the filter bar to search by name, outlet, or cutoff date range</li>
-            <li id="printGuideItem"><i class="bi bi-printer"></i> <strong>Print:</strong> Click "Print Report" to print submission summary</li>
-            <li id="viewGuideItem"><i class="bi bi-eye"></i> <strong>View Submissions:</strong> Coordinators can view who has submitted DTRs</li>
-            <li id="editGuideItem"><i class="bi bi-pencil"></i> <strong>Edit:</strong> Staffers can edit their own records</li>
-            <li><i class="bi bi-moon-stars"></i> <strong>Dark/Light Mode:</strong> Click the circle button at the bottom right</li>
+            <li>📸 Select multiple images - each DTR picture saves as a separate record</li>
+            <li>🔍 Use filters to search by name, outlet, or date range</li>
+            <li>✅ Select checkboxes to print or download multiple DTRs (Admin only)</li>
+            <li>✏️ Staffers can edit their own records</li>
         </ul>
     </div>
 
-    <!-- Coordinator Stats -->
-    <div id="coordinatorStats" class="stats">
-        <div class="stat-card"><i class="bi bi-people"></i><h3 id="totalEmployees">0</h3><p>Total Employees</p></div>
-        <div class="stat-card"><i class="bi bi-check-circle"></i><h3 id="submittedCount">0</h3><p>Submitted</p></div>
-        <div class="stat-card"><i class="bi bi-clock-history"></i><h3 id="pendingCount">0</h3><p>Pending</p></div>
-        <div class="stat-card"><i class="bi bi-percent"></i><h3 id="completionRate">0%</h3><p>Completion Rate</p></div>
-        <div class="stat-card"><i class="bi bi-files"></i><h3 id="totalImages">0</h3><p>Total Images</p></div>
+    <div class="stats">
+        <div class="stat-card"><h3 id="totalCount">0</h3><p>Records</p></div>
+        <div class="stat-card"><h3 id="empCount">0</h3><p>Employees</p></div>
+        <div class="stat-card"><h3 id="monthCount">0</h3><p>This Month</p></div>
+        <div class="stat-card"><h3 id="outletCount">0</h3><p>Outlets</p></div>
+        <div class="stat-card"><h3 id="imageCount">0</h3><p>Images</p></div>
     </div>
 
-    <!-- Regular Stats -->
-    <div id="regularStats" class="stats" style="display:none;">
-        <div class="stat-card"><i class="bi bi-files"></i><h3 id="totalCount">0</h3><p>Records</p></div>
-        <div class="stat-card"><i class="bi bi-people"></i><h3 id="empCount">0</h3><p>Employees</p></div>
-        <div class="stat-card"><i class="bi bi-calendar"></i><h3 id="monthCount">0</h3><p>This Month</p></div>
-        <div class="stat-card"><i class="bi bi-building"></i><h3 id="outletCount">0</h3><p>Outlets</p></div>
-        <div class="stat-card"><i class="bi bi-images"></i><h3 id="imageCount">0</h3><p>Images</p></div>
-    </div>
-
-    <!-- Staffer Form -->
-    <div id="stafferForm" class="form-area">
-        <h4><i class="bi bi-plus-circle"></i> Add DTR Record</h4>
+    <div class="form-area" id="stafferForm">
+        <h4>Add DTR Record</h4>
         <input type="text" id="empName" placeholder="Employee Name *">
         
         <div class="two-columns">
             <div>
-                <label style="font-size:12px; color:#666;">Outlet *</label>
-                <select id="outlet" class="combobox" style="width:100%;">
-                    <option value="">Search or select outlet...</option>
+                <label>Outlet *</label>
+                <select id="outlet">
+                    <option value="">Select Outlet</option>
                     <option>MARILAO,BULACAN</option><option>MORATO AVE.</option><option>GENERAL SANTOS</option>
                     <option>CEBU CITY</option><option>ROSALES,PANGASINAN</option><option>BOHOL</option>
                     <option>STA.ROSA,LAGUNA</option><option>NAIC,CAVITE</option><option>CAMILING</option>
@@ -519,86 +121,57 @@
                 </select>
             </div>
             <div>
-                <label style="font-size:12px; color:#666;">Dealer *</label>
-                <select id="dealer" class="combobox" style="width:100%;">
-                    <option value="">Search or select dealer...</option>
-                    <option>SACI</option><option>AHAM OFFICE</option><option>SVI</option><option>S&R</option>
-                    <option>BOHOL QUALITY</option><option>SSM</option><option>GAISANO GRAND</option>
-                    <option>ANSONS</option><option>GAISANO MALL</option><option>MEGASAVER</option>
-                    <option>ALSONS</option><option>METRO</option><option>CSI</option><option>CONSUMERS</option>
-                    <option>SNR</option><option>SMCO</option><option>DCWC</option><option>SAVEMORE</option>
+                <label>Dealer *</label>
+                <select id="dealer">
+                    <option value="">Select Dealer</option>
+                    <option>AHAM OFFICE</option><option>FBC</option>
+                    <option>SACI</option><option>SVI</option><option>S&R</option>
+                    <option>SSM</option><option>GAISANO GRAND</option><option>SMCO</option>
                 </select>
             </div>
         </div>
         
-        <div class="date-label-group">
-            <label><i class="bi bi-calendar-plus"></i> From Date</label>
-            <label><i class="bi bi-calendar-minus"></i> To Date</label>
-        </div>
-        <div style="display:flex;gap:10px;align-items:center;">
+        <div style="display:flex;gap:10px;align-items:center;margin:10px 0;">
             <input type="date" id="fromDate" style="flex:1">
             <span>→</span>
             <input type="date" id="toDate" style="flex:1">
         </div>
         <textarea id="remarks" rows="2" placeholder="Remarks (optional)"></textarea>
         
-        <label style="font-size:12px; color:#666;">DTR Pictures * (Select multiple)</label>
+        <label>DTR Pictures * (Select multiple images)</label>
         <input type="file" id="imageFiles" accept="image/*" multiple>
-        <div id="imagePreviewContainer" class="image-preview-container"></div>
+        <div id="previewContainer" class="preview-container"></div>
         
-        <button id="saveBtn"><i class="bi bi-save"></i> Save to Database</button>
+        <button id="saveBtn">Save to Database</button>
     </div>
 
-    <!-- Coordinator View -->
-    <div id="coordinatorView" style="display:none;">
-        <div class="filter-bar">
-            <div class="filter-group">
-                <label><i class="bi bi-search"></i> Search Employee</label>
-                <input type="text" id="searchEmployee" placeholder="Enter employee name...">
-            </div>
-            <button id="printReportBtn" style="width:auto; background:#2e7d32;"><i class="bi bi-printer"></i> Print Report</button>
-        </div>
-        <div id="submissionGrid" class="grid"></div>
+    <div class="filter-bar">
+        <div class="filter-group"><label>Search by Name</label><input type="text" id="searchName" placeholder="Enter name..."></div>
+        <div class="filter-group" id="outletFilterGroup"><label>Filter by Outlet</label><select id="filterOutlet"><option value="">All Outlets</option></select></div>
+        <div class="filter-group"><label>From Date</label><input type="date" id="filterDateFrom"></div>
+        <div class="filter-group"><label>To Date</label><input type="date" id="filterDateTo"></div>
     </div>
 
-    <!-- Regular Records View -->
-    <div id="regularView">
-        <div class="filter-bar">
-            <div class="filter-group">
-                <label><i class="bi bi-search"></i> Search by Name</label>
-                <input type="text" id="searchName" placeholder="Enter employee name...">
-            </div>
-            <div class="filter-group" id="outletFilterGroup">
-                <label><i class="bi bi-building"></i> Filter by Outlet</label>
-                <select id="filterOutlet"><option value="">All Outlets</option></select>
-            </div>
-            <div class="filter-group">
-                <label><i class="bi bi-calendar-plus"></i> From Date</label>
-                <input type="date" id="filterDateFrom">
-            </div>
-            <div class="filter-group">
-                <label><i class="bi bi-calendar-minus"></i> To Date</label>
-                <input type="date" id="filterDateTo">
-            </div>
-        </div>
-
-        <div id="adminPrintBar" class="print-bar">
-            <button id="selectAllBtn" style="background:#28a745;">Select All</button>
-            <button id="deselectAllBtn" style="background:#6c757d;">Deselect All</button>
-            <button id="deleteSelectedBtn" style="background:#dc3545;"><i class="bi bi-trash"></i> Delete (<span id="deleteSelectedCount">0</span>)</button>
-            <button id="printSelectedBtn" style="background:#17a2b8;"><i class="bi bi-printer"></i> Print (<span id="selectedCount">0</span>)</button>
-            <button id="downloadSelectedBtn" style="background:#8b5cf6;"><i class="bi bi-download"></i> ZIP (<span id="downloadCount">0</span>)</button>
-        </div>
-
-        <div id="recordsGrid" class="grid"><div class="loading">Loading records...</div></div>
+    <div id="adminPrintBar" class="print-bar">
+        <button id="selectAllBtn" style="background:#28a745;">Select All</button>
+        <button id="deselectAllBtn" style="background:#6c757d;">Deselect All</button>
+        <button id="deleteSelectedBtn" style="background:#dc3545;">Delete Selected (<span id="deleteCount">0</span>)</button>
+        <button id="printSelectedBtn" style="background:#17a2b8;">Print Selected (<span id="printCount">0</span>)</button>
+        <button id="downloadSelectedBtn" style="background:#8b5cf6;">Download ZIP (<span id="downloadCount">0</span>)</button>
     </div>
+
+    <div id="recordsGrid" class="grid"><div class="loading">Loading records...</div></div>
 </div>
-<button class="mode-toggle" id="modeToggle" title="Dark/Light Mode"><i class="bi bi-moon-stars"></i></button>
+<button class="mode-toggle" id="modeToggle"><i class="bi bi-moon-stars"></i></button>
 </div>
 
 <script>
+    const SUPABASE_URL = "https://oioamrxxcgwejaaglvbg.supabase.co";
+    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9pb2Ftcnh4Y2d3ZWphYWdsdmJnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE0NjUxNzYsImV4cCI6MjA5NzA0MTE3Nn0.NrprjEB1cNHCqgYCerhcX3_79UvEBjhmu-ueGl1dlew";
+    
     let currentUser = null, userRole = null, userAssignment = null;
-    let allRecords = [], imageFilesList = [], selectedRecords = new Set(), editingId = null;
+    let allRecords = [], selectedRecords = new Set();
+    let currentImages = [];
     
     const credentials = {
         admin: 'admin123',
@@ -609,294 +182,144 @@
     };
     
     async function showMessage(title, message, type) {
-        await Swal.fire({ title, text: message, icon: type, confirmButtonColor: '#4361ee', confirmButtonText: 'OK' });
-    }
-    
-    function initComboboxes() {
-        setTimeout(() => {
-            if ($('.combobox').length) {
-                $('.combobox').select2({
-                    placeholder: 'Search or select...',
-                    allowClear: true,
-                    width: '100%',
-                    dropdownParent: $('#stafferForm')
-                });
-            }
-        }, 100);
+        await Swal.fire({ title, text: message, icon: type, confirmButtonColor: '#4361ee' });
     }
     
     function login() {
         const role = document.getElementById('roleSelect').value;
-        const password = document.getElementById('passwordInput').value;
-        if (credentials[role] === password) {
+        const pass = document.getElementById('passwordInput').value;
+        if (credentials[role] === pass) {
             currentUser = role;
             localStorage.setItem('dtrUser', currentUser);
-            
-            if (role === 'admin') {
-                userRole = 'admin';
-                userAssignment = null;
-            } else if (role === 'coordinator_aham') {
-                userRole = 'coordinator';
-                userAssignment = 'AHAM';
-            } else if (role === 'coordinator_fbc') {
-                userRole = 'coordinator';
-                userAssignment = 'FBC';
-            } else if (role === 'staffer_aham') {
-                userRole = 'staffer';
-                userAssignment = 'AHAM';
-            } else if (role === 'staffer_fbc') {
-                userRole = 'staffer';
-                userAssignment = 'FBC';
-            }
-            showMainApp();
+            if (role === 'admin') { userRole = 'admin'; userAssignment = null; }
+            else if (role === 'coordinator_aham') { userRole = 'coordinator'; userAssignment = 'AHAM'; }
+            else if (role === 'coordinator_fbc') { userRole = 'coordinator'; userAssignment = 'FBC'; }
+            else if (role === 'staffer_aham') { userRole = 'staffer'; userAssignment = 'AHAM'; }
+            else if (role === 'staffer_fbc') { userRole = 'staffer'; userAssignment = 'FBC'; }
+            showApp();
         } else showMessage('Login Failed', 'Invalid password', 'error');
     }
     
     function logout() {
-        Swal.fire({ title: 'Logout', text: 'Are you sure?', icon: 'question', showCancelButton: true,
-            confirmButtonColor: '#dc3545', cancelButtonColor: '#6c757d', confirmButtonText: 'Yes' })
-        .then(result => {
-            if (result.isConfirmed) {
-                currentUser = null; userRole = null; userAssignment = null; selectedRecords.clear(); imageFilesList = [];
-                localStorage.removeItem('dtrUser');
-                document.getElementById('appContainer').style.display = 'none';
-                document.getElementById('loginContainer').style.display = 'block';
-                document.getElementById('passwordInput').value = '';
-                showMessage('Logged Out', 'Successfully logged out.', 'success');
-            }
-        });
+        Swal.fire({ title: 'Logout', text: 'Are you sure?', icon: 'question', showCancelButton: true, confirmButtonColor: '#dc3545' })
+            .then(r => { if (r.isConfirmed) { localStorage.removeItem('dtrUser'); location.reload(); } });
     }
     
-    function showMainApp() {
+    function showApp() {
         document.getElementById('loginContainer').style.display = 'none';
         document.getElementById('appContainer').style.display = 'block';
-        initComboboxes();
         
         let displayName = '', assignText = '';
-        if (userRole === 'admin') {
-            displayName = 'Admin';
-            assignText = 'Full Access';
-            document.getElementById('stafferForm').style.display = 'block';
-            document.getElementById('coordinatorView').style.display = 'none';
-            document.getElementById('regularView').style.display = 'block';
-            document.getElementById('coordinatorStats').style.display = 'none';
-            document.getElementById('regularStats').style.display = 'flex';
-            document.getElementById('addGuideItem').style.display = 'list-item';
-            document.getElementById('printGuideItem').style.display = 'list-item';
-            document.getElementById('editGuideItem').style.display = 'list-item';
-            document.getElementById('viewGuideItem').style.display = 'none';
-            document.getElementById('adminPrintBar').style.display = 'flex';
-            document.getElementById('outletFilterGroup').style.display = 'block';
-            document.getElementById('outlet').disabled = false;
-            document.getElementById('dealer').disabled = false;
-        } else if (userRole === 'coordinator') {
-            displayName = 'Coordinator';
-            assignText = userAssignment;
-            document.getElementById('stafferForm').style.display = 'none';
-            document.getElementById('coordinatorView').style.display = 'block';
-            document.getElementById('regularView').style.display = 'none';
-            document.getElementById('coordinatorStats').style.display = 'flex';
-            document.getElementById('regularStats').style.display = 'none';
-            document.getElementById('addGuideItem').style.display = 'none';
-            document.getElementById('printGuideItem').style.display = 'list-item';
-            document.getElementById('editGuideItem').style.display = 'none';
-            document.getElementById('viewGuideItem').style.display = 'list-item';
-        } else if (userRole === 'staffer') {
-            displayName = 'Staffer';
-            assignText = userAssignment;
-            document.getElementById('stafferForm').style.display = 'block';
-            document.getElementById('coordinatorView').style.display = 'none';
-            document.getElementById('regularView').style.display = 'block';
-            document.getElementById('coordinatorStats').style.display = 'none';
-            document.getElementById('regularStats').style.display = 'flex';
-            document.getElementById('addGuideItem').style.display = 'list-item';
-            document.getElementById('printGuideItem').style.display = 'none';
-            document.getElementById('editGuideItem').style.display = 'list-item';
-            document.getElementById('viewGuideItem').style.display = 'none';
-            document.getElementById('adminPrintBar').style.display = 'none';
-            document.getElementById('outletFilterGroup').style.display = 'none';
-            // Lock dealer for staffers
-            const dealerSelect = document.getElementById('dealer');
-            if (userAssignment === 'AHAM') {
-                setTimeout(() => {
-                    $(dealerSelect).val('AHAM OFFICE').trigger('change');
-                    dealerSelect.disabled = true;
-                }, 200);
-            } else if (userAssignment === 'FBC') {
-                setTimeout(() => {
-                    $(dealerSelect).val('FBC').trigger('change');
-                    dealerSelect.disabled = true;
-                }, 200);
-            }
-        }
+        if (userRole === 'admin') { displayName = 'Admin'; assignText = 'Full Access'; }
+        else if (userRole === 'coordinator') { displayName = 'Coordinator'; assignText = userAssignment; }
+        else { displayName = 'Staffer'; assignText = userAssignment; }
         
         document.getElementById('userRoleDisplay').innerText = displayName;
-        const badge = document.getElementById('assignBadge');
-        if (assignText) { badge.innerText = assignText; badge.style.display = 'inline-block'; }
-        else badge.style.display = 'none';
+        document.getElementById('assignBadge').innerText = assignText;
         
-        document.getElementById('modeToggle').style.display = 'flex';
+        if (userRole === 'staffer') {
+            const dealerSelect = document.getElementById('dealer');
+            if (userAssignment === 'AHAM') dealerSelect.value = 'AHAM OFFICE';
+            else dealerSelect.value = 'FBC';
+            dealerSelect.disabled = true;
+            document.getElementById('adminPrintBar').style.display = 'none';
+            document.getElementById('outletFilterGroup').style.display = 'none';
+        } else if (userRole === 'coordinator') {
+            document.getElementById('stafferForm').style.display = 'none';
+            document.getElementById('adminPrintBar').style.display = 'none';
+        }
         
-        if (userRole === 'coordinator') loadSubmissionSummary();
-        else loadRecords();
+        loadRecords();
     }
     
     function checkSession() {
         const saved = localStorage.getItem('dtrUser');
         if (saved) {
             currentUser = saved;
-            if (currentUser === 'admin') { userRole = 'admin'; userAssignment = null; }
+            if (currentUser === 'admin') { userRole = 'admin'; }
             else if (currentUser === 'coordinator_aham') { userRole = 'coordinator'; userAssignment = 'AHAM'; }
             else if (currentUser === 'coordinator_fbc') { userRole = 'coordinator'; userAssignment = 'FBC'; }
             else if (currentUser === 'staffer_aham') { userRole = 'staffer'; userAssignment = 'AHAM'; }
             else if (currentUser === 'staffer_fbc') { userRole = 'staffer'; userAssignment = 'FBC'; }
-            showMainApp();
+            showApp();
         }
     }
     
-    const SUPABASE_URL = "https://oioamrxxcgwejaaglvbg.supabase.co";
-    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9pb2Ftcnh4Y2d3ZWphYWdsdmJnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE0NjUxNzYsImV4cCI6MjA5NzA0MTE3Nn0.NrprjEB1cNHCqgYCerhcX3_79UvEBjhmu-ueGl1dlew";
-
-    function initTheme() {
-        const saved = localStorage.getItem('theme');
-        if (saved === 'dark') { document.body.classList.add('dark-mode'); document.getElementById('modeToggle').innerHTML = '<i class="bi bi-sun"></i>'; }
-        else { document.body.classList.remove('dark-mode'); document.getElementById('modeToggle').innerHTML = '<i class="bi bi-moon-stars"></i>'; }
-    }
-    function toggleTheme() {
-        if (document.body.classList.contains('dark-mode')) {
-            document.body.classList.remove('dark-mode'); localStorage.setItem('theme', 'light');
-            document.getElementById('modeToggle').innerHTML = '<i class="bi bi-moon-stars"></i>';
-        } else {
-            document.body.classList.add('dark-mode'); localStorage.setItem('theme', 'dark');
-            document.getElementById('modeToggle').innerHTML = '<i class="bi bi-sun"></i>';
-        }
-    }
-    document.getElementById('modeToggle').addEventListener('click', toggleTheme);
-    initTheme();
-
-    // FIXED: Image preview with correct indexing
+    // Image preview
     document.getElementById('imageFiles').addEventListener('change', function(e) {
-        imageFilesList = Array.from(e.target.files);
-        const container = document.getElementById('imagePreviewContainer');
+        currentImages = Array.from(e.target.files);
+        const container = document.getElementById('previewContainer');
         container.innerHTML = '';
-        imageFilesList.forEach((file, idx) => {
+        currentImages.forEach((file, idx) => {
             const reader = new FileReader();
             reader.onload = ev => {
                 const div = document.createElement('div');
                 div.className = 'preview-item';
-                div.setAttribute('data-idx', idx);
-                div.innerHTML = `<img src="${ev.target.result}"><div class="remove-image" data-index="${idx}">×</div>`;
+                div.innerHTML = `<img src="${ev.target.result}"><div class="remove-img" data-idx="${idx}">×</div>`;
                 container.appendChild(div);
             };
             reader.readAsDataURL(file);
         });
     });
     
-    // FIXED: Remove image handler with proper re-indexing
-    document.getElementById('imagePreviewContainer').addEventListener('click', e => {
-        if (e.target.classList.contains('remove-image')) {
-            const idx = parseInt(e.target.getAttribute('data-index'));
-            imageFilesList.splice(idx, 1);
-            
-            // Rebuild file list
+    document.getElementById('previewContainer').addEventListener('click', (e) => {
+        if (e.target.classList.contains('remove-img')) {
+            const idx = parseInt(e.target.dataset.idx);
+            currentImages.splice(idx, 1);
             const dt = new DataTransfer();
-            imageFilesList.forEach(f => dt.items.add(f));
+            currentImages.forEach(f => dt.items.add(f));
             document.getElementById('imageFiles').files = dt.files;
-            
-            // Refresh preview
-            const container = document.getElementById('imagePreviewContainer');
-            container.innerHTML = '';
-            imageFilesList.forEach((file, newIdx) => {
-                const reader = new FileReader();
-                reader.onload = ev => {
-                    const div = document.createElement('div');
-                    div.className = 'preview-item';
-                    div.setAttribute('data-idx', newIdx);
-                    div.innerHTML = `<img src="${ev.target.result}"><div class="remove-image" data-index="${newIdx}">×</div>`;
-                    container.appendChild(div);
-                };
-                reader.readAsDataURL(file);
-            });
+            document.getElementById('imageFiles').dispatchEvent(new Event('change'));
         }
     });
-
-    async function loadSubmissionSummary() {
-        try {
-            const res = await fetch(`${SUPABASE_URL}/rest/v1/dtr_records?select=*&order=created_at.desc`, {
-                headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
-            });
-            let data = await res.json();
-            if (userAssignment === 'AHAM') data = data.filter(r => r.dealer === 'AHAM OFFICE' || r.dealer?.includes('AHAM'));
-            else if (userAssignment === 'FBC') data = data.filter(r => r.dealer === 'FBC');
-            
-            const subs = {};
-            data.forEach(r => { const key = `${r.employee_name}|${r.cutoff_range}`;
-                if (!subs[key]) subs[key] = { employee_name: r.employee_name, cutoff_range: r.cutoff_range, outlet: r.outlet, dealer: r.dealer, image_count: 1, submitted_at: r.created_at };
-                else subs[key].image_count++;
-            });
-            const list = Object.values(subs);
-            document.getElementById('totalEmployees').textContent = [...new Set(list.map(s => s.employee_name))].length;
-            document.getElementById('submittedCount').textContent = list.length;
-            document.getElementById('totalImages').textContent = data.length;
-            document.getElementById('completionRate').textContent = list.length > 0 ? '100%' : '0%';
-            
-            const grid = document.getElementById('submissionGrid');
-            if (list.length === 0) grid.innerHTML = '<div class="loading">No submissions found.</div>';
-            else grid.innerHTML = list.map(s => `<div class="card"><div class="card-body"><div class="name">👤 ${escapeHtml(s.employee_name)}</div><div class="outlet-text">📍 ${escapeHtml(s.outlet || 'N/A')}</div><div class="dealer-text">🏪 ${escapeHtml(s.dealer)}</div><div class="date">📅 ${s.cutoff_range}</div><div class="batch-badge">📸 ${s.image_count} images</div><div class="submission-status">✓ Submitted ${new Date(s.submitted_at).toLocaleDateString()}</div></div></div>`).join('');
-        } catch(e) { console.error(e); }
-    }
-
+    
     async function loadRecords() {
         try {
-            document.getElementById('status').innerHTML = '🔄 Syncing...';
             const res = await fetch(`${SUPABASE_URL}/rest/v1/dtr_records?select=*&order=created_at.desc`, {
                 headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
             });
             let data = await res.json();
             
-            if (userRole === 'staffer' && userAssignment === 'AHAM') {
-                data = data.filter(r => r.dealer === 'AHAM OFFICE' || r.dealer?.includes('AHAM'));
-            } else if (userRole === 'staffer' && userAssignment === 'FBC') {
-                data = data.filter(r => r.dealer === 'FBC');
-            }
+            if (userRole === 'staffer' && userAssignment === 'AHAM') data = data.filter(r => r.dealer === 'AHAM OFFICE');
+            else if (userRole === 'staffer' && userAssignment === 'FBC') data = data.filter(r => r.dealer === 'FBC');
+            else if (userRole === 'coordinator' && userAssignment === 'AHAM') data = data.filter(r => r.dealer === 'AHAM OFFICE');
+            else if (userRole === 'coordinator' && userAssignment === 'FBC') data = data.filter(r => r.dealer === 'FBC');
             
             allRecords = data || [];
             
             const outlets = [...new Set(allRecords.map(r => r.outlet).filter(Boolean))];
             const filterOutlet = document.getElementById('filterOutlet');
-            if (filterOutlet) { filterOutlet.innerHTML = '<option value="">All Outlets</option>'; outlets.forEach(o => { const opt = document.createElement('option'); opt.value = o; opt.textContent = o; filterOutlet.appendChild(opt); }); }
+            filterOutlet.innerHTML = '<option value="">All Outlets</option>';
+            outlets.forEach(o => { const opt = document.createElement('option'); opt.value = o; opt.textContent = o; filterOutlet.appendChild(opt); });
             
-            applyFiltersAndRender();
-            document.getElementById('status').innerHTML = '✅ Connected - Live Database';
-        } catch(e) { document.getElementById('status').innerHTML = '❌ Connection Error'; console.error(e); }
+            applyFilters();
+            document.getElementById('status').innerHTML = '✅ Connected';
+            document.getElementById('status').className = 'status success';
+        } catch(e) { 
+            document.getElementById('status').innerHTML = '❌ Connection Error';
+            document.getElementById('status').className = 'status error';
+        }
     }
-
-    function applyFiltersAndRender() {
-        const search = document.getElementById('searchName')?.value.toLowerCase() || '';
-        const outlet = document.getElementById('filterOutlet')?.value || '';
-        const from = document.getElementById('filterDateFrom')?.value || '';
-        const to = document.getElementById('filterDateTo')?.value || '';
+    
+    function applyFilters() {
+        const search = document.getElementById('searchName').value.toLowerCase();
+        const outlet = document.getElementById('filterOutlet').value;
+        const from = document.getElementById('filterDateFrom').value;
+        const to = document.getElementById('filterDateTo').value;
+        
         let filtered = allRecords.filter(r => {
-            if (search && !(r.employee_name || '').toLowerCase().includes(search)) return false;
+            if (search && !r.employee_name.toLowerCase().includes(search)) return false;
             if (outlet && r.outlet !== outlet) return false;
             if (from && r.cutoff_from && r.cutoff_from < from) return false;
             if (to && r.cutoff_to && r.cutoff_to > to) return false;
             return true;
         });
+        
         renderGrid(filtered);
         updateStats();
-        updateSelectedInfo();
     }
-
-    async function checkDuplicate(name, outlet, dealer, from, to, excludeId = null) {
-        const range = `${from} to ${to}`;
-        return allRecords.some(r => {
-            if (excludeId && r.id === excludeId) return false;
-            return r.employee_name === name && r.outlet === outlet && r.dealer === dealer && r.cutoff_range === range;
-        });
-    }
-
-    function readFile(file) {
+    
+    function readFileAsBase64(file) {
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
             reader.onload = () => resolve(reader.result);
@@ -904,181 +327,156 @@
             reader.readAsDataURL(file);
         });
     }
-
-    // FIXED: Save record function
+    
     async function saveRecord() {
-        let name = document.getElementById('empName').value;
-        let outlet = document.getElementById('outlet').value;
+        const name = document.getElementById('empName').value;
+        const outlet = document.getElementById('outlet').value;
         let dealer = document.getElementById('dealer').value;
         const from = document.getElementById('fromDate').value;
         const to = document.getElementById('toDate').value;
         const remarks = document.getElementById('remarks').value;
         
-        // For staffers, force their assigned dealer
+        // Override dealer for staffers
         if (userRole === 'staffer' && userAssignment === 'AHAM') dealer = 'AHAM OFFICE';
         else if (userRole === 'staffer' && userAssignment === 'FBC') dealer = 'FBC';
         
-        if (!name || !outlet || !dealer || !from || !to) { 
-            showMessage('Missing Fields', 'Please fill all required fields', 'warning'); 
-            return; 
-        }
-        if (imageFilesList.length === 0 && !editingId) { 
-            showMessage('No Images', 'Please select at least one image', 'warning'); 
-            return; 
-        }
+        // Validation
+        if (!name) { showMessage('Error', 'Please enter employee name', 'error'); return; }
+        if (!outlet) { showMessage('Error', 'Please select outlet', 'error'); return; }
+        if (!dealer) { showMessage('Error', 'Please select dealer', 'error'); return; }
+        if (!from || !to) { showMessage('Error', 'Please select cutoff dates', 'error'); return; }
+        if (currentImages.length === 0) { showMessage('Error', 'Please select at least one image', 'error'); return; }
         
-        const range = `${from} to ${to}`;
+        const cutoffRange = `${from} to ${to}`;
+        const batchId = Date.now().toString();
         
         try {
-            if (editingId) {
-                // Check duplicate excluding current
-                const isDuplicate = await checkDuplicate(name, outlet, dealer, from, to, editingId);
-                if (isDuplicate) {
-                    showMessage('Duplicate Entry', `Employee "${name}" already has a record for this cutoff`, 'error');
-                    return;
-                }
-                
-                // Delete old records with this batch_id
-                await fetch(`${SUPABASE_URL}/rest/v1/dtr_records?batch_id=eq.${editingId}`, {
-                    method: 'DELETE',
-                    headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+            let successCount = 0;
+            
+            for (let img of currentImages) {
+                const imgData = await readFileAsBase64(img);
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/dtr_records`, {
+                    method: 'POST',
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        employee_name: name,
+                        outlet: outlet,
+                        dealer: dealer,
+                        cutoff_from: from,
+                        cutoff_to: to,
+                        cutoff_range: cutoffRange,
+                        remarks: remarks || '',
+                        image_data: imgData,
+                        batch_id: batchId,
+                        created_at: new Date().toISOString()
+                    })
                 });
                 
-                // Insert new records
-                for (let img of imageFilesList) {
-                    const imgData = await readFile(img);
-                    const response = await fetch(`${SUPABASE_URL}/rest/v1/dtr_records`, {
-                        method: 'POST', 
-                        headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ 
-                            employee_name: name, 
-                            outlet: outlet, 
-                            dealer: dealer, 
-                            cutoff_from: from, 
-                            cutoff_to: to, 
-                            cutoff_range: range, 
-                            remarks: remarks || '', 
-                            image_data: imgData, 
-                            batch_id: editingId,
-                            created_at: new Date().toISOString()
-                        })
-                    });
-                    if (!response.ok) throw new Error(await response.text());
+                if (response.ok) {
+                    successCount++;
+                } else {
+                    const errorText = await response.text();
+                    console.error('Save error:', errorText);
                 }
-                await showMessage('Success!', 'Record updated!', 'success');
-                editingId = null;
-            } else {
-                // Check for duplicate on new record
-                const isDuplicate = await checkDuplicate(name, outlet, dealer, from, to);
-                if (isDuplicate) {
-                    showMessage('Duplicate Entry', `Employee "${name}" already submitted for ${from} to ${to}`, 'error');
-                    return;
-                }
+            }
+            
+            if (successCount > 0) {
+                await showMessage('Success!', `${successCount} image(s) saved successfully!`, 'success');
                 
-                const batchId = Date.now().toString();
-                for (let img of imageFilesList) {
-                    const imgData = await readFile(img);
-                    const response = await fetch(`${SUPABASE_URL}/rest/v1/dtr_records`, {
-                        method: 'POST', 
-                        headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ 
-                            employee_name: name, 
-                            outlet: outlet, 
-                            dealer: dealer, 
-                            cutoff_from: from, 
-                            cutoff_to: to, 
-                            cutoff_range: range, 
-                            remarks: remarks || '', 
-                            image_data: imgData, 
-                            batch_id: batchId,
-                            created_at: new Date().toISOString()
-                        })
-                    });
-                    if (!response.ok) throw new Error(await response.text());
-                }
-                await showMessage('Success!', `${imageFilesList.length} image(s) saved!`, 'success');
+                // Reset form
+                document.getElementById('empName').value = '';
+                document.getElementById('remarks').value = '';
+                document.getElementById('imageFiles').value = '';
+                document.getElementById('previewContainer').innerHTML = '';
+                document.getElementById('outlet').value = '';
+                if (userRole !== 'staffer') document.getElementById('dealer').value = '';
+                currentImages = [];
+                
+                // Reset dates to current month
+                const today = new Date();
+                document.getElementById('fromDate').value = new Date(today.getFullYear(), today.getMonth(), 1).toISOString().split('T')[0];
+                document.getElementById('toDate').value = new Date(today.getFullYear(), today.getMonth() + 1, 0).toISOString().split('T')[0];
+                
+                await loadRecords();
+            } else {
+                showMessage('Error', 'Failed to save images', 'error');
             }
-            
-            // Reset form
-            document.getElementById('empName').value = ''; 
-            document.getElementById('remarks').value = ''; 
-            document.getElementById('imageFiles').value = '';
-            document.getElementById('imagePreviewContainer').innerHTML = ''; 
-            imageFilesList = [];
-            document.getElementById('outlet').value = '';
-            if (userRole === 'admin') document.getElementById('dealer').value = '';
-            
-            // Reset Select2 if used
-            if ($('#outlet').hasClass('select2-hidden-accessible')) {
-                $('#outlet').val(null).trigger('change');
-            }
-            if ($('#dealer').hasClass('select2-hidden-accessible') && userRole === 'admin') {
-                $('#dealer').val(null).trigger('change');
-            }
-            
-            if (userRole === 'coordinator') loadSubmissionSummary();
-            else await loadRecords();
-        } catch(e) { 
-            console.error(e);
-            showMessage('Error', e.message, 'error'); 
+        } catch(e) {
+            console.error('Save error:', e);
+            showMessage('Error', e.message, 'error');
         }
     }
-
-    function editRecord(record) {
-        if ((userRole === 'staffer' && userAssignment === 'AHAM' && record.dealer !== 'AHAM OFFICE') ||
-            (userRole === 'staffer' && userAssignment === 'FBC' && record.dealer !== 'FBC')) {
-            showMessage('Access Denied', 'You can only edit your assigned dealer records', 'error');
-            return;
-        }
-        editingId = record.batch_id || record.id;
-        document.getElementById('empName').value = record.employee_name;
-        $('#outlet').val(record.outlet).trigger('change');
-        $('#dealer').val(record.dealer).trigger('change');
-        document.getElementById('fromDate').value = record.cutoff_from || '';
-        document.getElementById('toDate').value = record.cutoff_to || '';
-        document.getElementById('remarks').value = record.remarks || '';
-        document.getElementById('saveBtn').innerHTML = '<i class="bi bi-pencil"></i> Update Record';
-        document.getElementById('saveBtn').style.background = '#f59e0b';
-        // Clear existing image preview and allow new uploads
-        imageFilesList = [];
-        document.getElementById('imagePreviewContainer').innerHTML = '';
-        document.getElementById('imageFiles').value = '';
-        showMessage('Edit Mode', `Editing "${record.employee_name}". Select new images to replace old ones.`, 'info');
-    }
-
-    async function deleteRecord(id) {
+    
+    async function deleteRecord(batchId) {
         if (userRole !== 'admin') { showMessage('Access Denied', 'Only Admin can delete', 'error'); return; }
-        const result = await Swal.fire({ title: 'Delete?', text: 'Cannot be undone!', icon: 'warning', showCancelButton: true, confirmButtonColor: '#dc3545', confirmButtonText: 'Yes' });
+        const result = await Swal.fire({ title: 'Delete?', text: 'Cannot be undone!', icon: 'warning', showCancelButton: true, confirmButtonColor: '#dc3545' });
         if (result.isConfirmed) {
-            await fetch(`${SUPABASE_URL}/rest/v1/dtr_records?id=eq.${id}`, { method: 'DELETE', headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` } });
-            selectedRecords.delete(id);
+            await fetch(`${SUPABASE_URL}/rest/v1/dtr_records?batch_id=eq.${batchId}`, {
+                method: 'DELETE', headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+            });
             await loadRecords();
         }
     }
-
-    async function deleteSelectedRecords() {
+    
+    async function deleteSelected() {
         if (userRole !== 'admin') return;
-        const toDelete = allRecords.filter(r => selectedRecords.has(r.id));
+        const toDelete = [...selectedRecords];
         if (toDelete.length === 0) return;
-        const result = await Swal.fire({ title: `Delete ${toDelete.length} records?`, text: 'Cannot be undone!', icon: 'warning', showCancelButton: true, confirmButtonColor: '#dc3545' });
+        const result = await Swal.fire({ title: `Delete ${toDelete.length} batches?`, text: 'Cannot be undone!', icon: 'warning', showCancelButton: true });
         if (result.isConfirmed) {
-            for (let r of toDelete) await fetch(`${SUPABASE_URL}/rest/v1/dtr_records?id=eq.${r.id}`, { method: 'DELETE', headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` } });
+            for (let id of toDelete) {
+                await fetch(`${SUPABASE_URL}/rest/v1/dtr_records?batch_id=eq.${id}`, {
+                    method: 'DELETE', headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+                });
+            }
             selectedRecords.clear();
             await loadRecords();
         }
     }
-
-    function printCoordinatorReport() {
-        const cards = document.querySelectorAll('#submissionGrid .card');
-        if (cards.length === 0) { showMessage('No Data', 'Nothing to print', 'warning'); return; }
+    
+    async function printSelected() {
+        const toPrint = allRecords.filter(r => selectedRecords.has(r.batch_id || r.id));
+        if (toPrint.length === 0) { showMessage('No Selection', 'Select records to print', 'warning'); return; }
+        
         const win = window.open('', '_blank');
-        win.document.write(`<html><head><title>DTR Report - ${userAssignment}</title><style>body{font-family:Arial;padding:20px;} table{width:100%;border-collapse:collapse;} th,td{border:1px solid #ddd;padding:8px;text-align:left;} th{background:#4361ee;color:white;}</style></head><body><h1>DTR Submission Report</h1><p>Coordinator: ${userAssignment}</p><p>Generated: ${new Date().toLocaleString()}</p><table><thead><tr><th>Employee</th><th>Outlet</th><th>Dealer</th><th>Cutoff</th><th>Images</th><th>Date</th></tr></thead><tbody>${Array.from(cards).map(c => { const n = c.querySelector('.name')?.innerText.replace('👤 ', '') || ''; const o = c.querySelector('.outlet-text')?.innerText.replace('📍 ', '') || ''; const d = c.querySelector('.dealer-text')?.innerText.replace('🏪 ', '') || ''; const cut = c.querySelector('.date')?.innerText.replace('📅 ', '') || ''; const img = c.querySelector('.batch-badge')?.innerText.replace('📸 ', '').replace(' images', '') || ''; const dt = c.querySelector('.submission-status')?.innerText.replace('✓ Submitted ', '') || ''; return `<tr><td>${n}</td><td>${o}</td><td>${d}</td><td>${cut}</td><td>${img}</td><td>${dt}</td>`; }).join('')}</tbody></table></body></html>`);
+        win.document.write(`<html><head><title>DTR Print</title><style>.page{page-break-after:always;height:100vh;display:flex;justify-content:center;align-items:center;} img{max-width:100%;max-height:100%;object-fit:contain;}</style></head><body>${toPrint.map(r => `<div class="page"><img src="${r.image_data}"></div>`).join('')}</body></html>`);
         win.document.close(); win.print();
     }
-
+    
+    async function downloadSelected() {
+        const toDownload = allRecords.filter(r => selectedRecords.has(r.batch_id || r.id));
+        if (toDownload.length === 0) { showMessage('No Selection', 'Select records to download', 'warning'); return; }
+        
+        const btn = document.getElementById('downloadSelectedBtn');
+        const orig = btn.innerHTML;
+        btn.innerHTML = 'Creating ZIP...';
+        btn.disabled = true;
+        
+        try {
+            const zip = new JSZip();
+            const folder = zip.folder('DTR_Records');
+            for (let i = 0; i < toDownload.length; i++) {
+                const r = toDownload[i];
+                const fileName = `${r.employee_name.replace(/[^a-z0-9]/gi, '_')}_${i}.png`;
+                const b64 = r.image_data.split(',')[1];
+                const bin = atob(b64);
+                const arr = new Uint8Array(bin.length);
+                for (let j = 0; j < bin.length; j++) arr[j] = bin.charCodeAt(j);
+                folder.file(fileName, arr);
+            }
+            const content = await zip.generateAsync({ type: 'blob' });
+            saveAs(content, `DTR_Records_${Date.now()}.zip`);
+            showMessage('Complete', `${toDownload.length} images downloaded`, 'success');
+        } catch(e) { showMessage('Error', e.message, 'error'); }
+        finally { btn.innerHTML = orig; btn.disabled = false; }
+    }
+    
     function renderGrid(records) {
         const grid = document.getElementById('recordsGrid');
-        if (!grid) return;
         if (records.length === 0) { grid.innerHTML = '<div class="loading">No records found.</div>'; return; }
         
         const grouped = {};
@@ -1086,48 +484,95 @@
         const list = Object.values(grouped);
         const isAdmin = userRole === 'admin';
         
-        grid.innerHTML = list.map(g => `<div class="card">${isAdmin ? `<input type="checkbox" class="select-checkbox" ${selectedRecords.has(g.id) ? 'checked' : ''} onchange="toggleSelectRecord(${g.id})">` : ''}<img src="${g.images[0]}" class="card-img" onclick="window.open(this.src)"><div class="card-body"><div class="name">👤 ${escapeHtml(g.employee_name)}</div><div class="outlet-text">📍 ${escapeHtml(g.outlet)}</div><div class="dealer-text">🏪 ${escapeHtml(g.dealer)}</div><div class="date">📅 ${g.cutoff_range}</div>${g.remarks ? `<div class="date">💬 ${escapeHtml(g.remarks)}</div>` : ''}<div class="batch-badge">📸 ${g.images.length} images</div>${isAdmin ? `<button class="delete-btn" onclick="deleteRecord(${g.id})">Delete Batch</button>` : ''}${userRole === 'staffer' ? `<button class="edit-btn" onclick='editRecord(${JSON.stringify(g).replace(/'/g, "&#39;")})'>Edit</button>` : ''}</div></div>`).join('');
+        grid.innerHTML = list.map(g => `
+            <div class="card">
+                ${isAdmin ? `<input type="checkbox" class="select-checkbox" data-id="${g.batch_id || g.id}" ${selectedRecords.has(g.batch_id || g.id) ? 'checked' : ''}>` : ''}
+                <img src="${g.images[0]}" class="card-img" onclick="window.open(this.src)">
+                <div class="card-body">
+                    <div class="name">👤 ${escapeHtml(g.employee_name)}</div>
+                    <div class="outlet-text">📍 ${escapeHtml(g.outlet)}</div>
+                    <div class="dealer-text">🏪 ${escapeHtml(g.dealer)}</div>
+                    <div class="date">📅 ${g.cutoff_range}</div>
+                    ${g.remarks ? `<div class="date">💬 ${escapeHtml(g.remarks)}</div>` : ''}
+                    <div class="batch-badge">📸 ${g.images.length} images</div>
+                    ${isAdmin ? `<button class="delete-btn" onclick="deleteRecord('${g.batch_id || g.id}')">Delete</button>` : ''}
+                </div>
+            </div>
+        `).join('');
+        
+        document.querySelectorAll('.select-checkbox').forEach(cb => {
+            cb.addEventListener('change', (e) => {
+                const id = e.target.dataset.id;
+                if (e.target.checked) selectedRecords.add(id);
+                else selectedRecords.delete(id);
+                document.getElementById('deleteCount').innerText = selectedRecords.size;
+                document.getElementById('printCount').innerText = selectedRecords.size;
+                document.getElementById('downloadCount').innerText = selectedRecords.size;
+            });
+        });
     }
-
+    
     function updateStats() {
-        if (document.getElementById('totalCount')) document.getElementById('totalCount').textContent = allRecords.length;
+        document.getElementById('totalCount').innerText = allRecords.length;
         const uniqueEmps = new Set(allRecords.map(r => r.employee_name));
-        if (document.getElementById('empCount')) document.getElementById('empCount').textContent = uniqueEmps.size;
+        document.getElementById('empCount').innerText = uniqueEmps.size;
         const uniqueOutlets = new Set(allRecords.map(r => r.outlet));
-        if (document.getElementById('outletCount')) document.getElementById('outletCount').textContent = uniqueOutlets.size;
-        if (document.getElementById('imageCount')) document.getElementById('imageCount').textContent = allRecords.length;
+        document.getElementById('outletCount').innerText = uniqueOutlets.size;
+        document.getElementById('imageCount').innerText = allRecords.length;
         const now = new Date();
         const thisMonth = allRecords.filter(r => r.created_at && new Date(r.created_at).getMonth() === now.getMonth());
-        if (document.getElementById('monthCount')) document.getElementById('monthCount').textContent = thisMonth.length;
+        document.getElementById('monthCount').innerText = thisMonth.length;
     }
-
-    function toggleSelectRecord(id) { if (selectedRecords.has(id)) selectedRecords.delete(id); else selectedRecords.add(id); applyFiltersAndRender(); }
-    function selectAllFiltered() { const filtered = getFilteredRecords(); filtered.forEach(r => selectedRecords.add(r.id)); applyFiltersAndRender(); }
-    function deselectAll() { selectedRecords.clear(); applyFiltersAndRender(); }
-    function getFilteredRecords() { const s = document.getElementById('searchName')?.value.toLowerCase() || '', o = document.getElementById('filterOutlet')?.value || '', f = document.getElementById('filterDateFrom')?.value || '', t = document.getElementById('filterDateTo')?.value || ''; return allRecords.filter(r => { if (s && !(r.employee_name || '').toLowerCase().includes(s)) return false; if (o && r.outlet !== o) return false; if (f && r.cutoff_from && r.cutoff_from < f) return false; if (t && r.cutoff_to && r.cutoff_to > t) return false; return true; }); }
-    async function printSelectedRecords() { const toPrint = allRecords.filter(r => selectedRecords.has(r.id)); if (toPrint.length === 0) return; const win = window.open('', '_blank'); win.document.write(`<html><head><title>DTR Print</title><style>.print-page{page-break-after:always;height:100vh;display:flex;justify-content:center;align-items:center;} img{max-width:100%;max-height:100%;object-fit:contain;}</style></head><body>${toPrint.map(r => `<div class="print-page"><img src="${r.image_data}"></div>`).join('')}</body></html>`); win.document.close(); win.print(); }
-    async function downloadSelectedAsZip() { const toDownload = allRecords.filter(r => selectedRecords.has(r.id)); if (toDownload.length === 0) return; const btn = document.getElementById('downloadSelectedBtn'); const orig = btn.innerHTML; btn.innerHTML = 'Creating ZIP...'; btn.disabled = true; try { const zip = new JSZip(); const folder = zip.folder('DTR_Records'); for (let i = 0; i < toDownload.length; i++) { const r = toDownload[i]; const fileName = `${r.employee_name.replace(/[^a-z0-9]/gi, '_')}_${r.outlet}_${i}.png`; const b64 = r.image_data.split(',')[1]; const bin = atob(b64); const arr = new Uint8Array(bin.length); for (let j = 0; j < bin.length; j++) arr[j] = bin.charCodeAt(j); folder.file(fileName, arr); } const content = await zip.generateAsync({ type: 'blob' }); saveAs(content, `DTR_Records_${Date.now()}.zip`); await showMessage('Complete', `${toDownload.length} images downloaded`, 'success'); } catch(e) { showMessage('Error', e.message, 'error'); } finally { btn.innerHTML = orig; btn.disabled = false; } }
-    function updateSelectedInfo() { const c = selectedRecords.size; if (document.getElementById('selectedCount')) document.getElementById('selectedCount').innerText = c; if (document.getElementById('deleteSelectedCount')) document.getElementById('deleteSelectedCount').innerText = c; if (document.getElementById('downloadCount')) document.getElementById('downloadCount').innerText = c; }
+    
+    function selectAllFiltered() {
+        const filtered = getFilteredRecords();
+        filtered.forEach(r => selectedRecords.add(r.batch_id || r.id));
+        applyFilters();
+    }
+    
+    function deselectAll() { selectedRecords.clear(); applyFilters(); }
+    
+    function getFilteredRecords() {
+        const search = document.getElementById('searchName').value.toLowerCase();
+        const outlet = document.getElementById('filterOutlet').value;
+        const from = document.getElementById('filterDateFrom').value;
+        const to = document.getElementById('filterDateTo').value;
+        return allRecords.filter(r => {
+            if (search && !r.employee_name.toLowerCase().includes(search)) return false;
+            if (outlet && r.outlet !== outlet) return false;
+            if (from && r.cutoff_from && r.cutoff_from < from) return false;
+            if (to && r.cutoff_to && r.cutoff_to > to) return false;
+            return true;
+        });
+    }
+    
     function escapeHtml(t) { if (!t) return ''; const d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
-
-    document.getElementById('searchName')?.addEventListener('input', applyFiltersAndRender);
-    document.getElementById('filterOutlet')?.addEventListener('change', applyFiltersAndRender);
-    document.getElementById('filterDateFrom')?.addEventListener('change', applyFiltersAndRender);
-    document.getElementById('filterDateTo')?.addEventListener('change', applyFiltersAndRender);
-    document.getElementById('searchEmployee')?.addEventListener('input', () => loadSubmissionSummary());
-    document.getElementById('selectAllBtn')?.addEventListener('click', selectAllFiltered);
-    document.getElementById('deselectAllBtn')?.addEventListener('click', deselectAll);
-    document.getElementById('printSelectedBtn')?.addEventListener('click', printSelectedRecords);
-    document.getElementById('deleteSelectedBtn')?.addEventListener('click', deleteSelectedRecords);
-    document.getElementById('downloadSelectedBtn')?.addEventListener('click', downloadSelectedAsZip);
-    document.getElementById('printReportBtn')?.addEventListener('click', printCoordinatorReport);
-    document.getElementById('saveBtn')?.addEventListener('click', saveRecord);
+    
+    document.getElementById('searchName').addEventListener('input', applyFilters);
+    document.getElementById('filterOutlet').addEventListener('change', applyFilters);
+    document.getElementById('filterDateFrom').addEventListener('change', applyFilters);
+    document.getElementById('filterDateTo').addEventListener('change', applyFilters);
+    document.getElementById('selectAllBtn').addEventListener('click', selectAllFiltered);
+    document.getElementById('deselectAllBtn').addEventListener('click', deselectAll);
+    document.getElementById('deleteSelectedBtn').addEventListener('click', deleteSelected);
+    document.getElementById('printSelectedBtn').addEventListener('click', printSelected);
+    document.getElementById('downloadSelectedBtn').addEventListener('click', downloadSelected);
+    document.getElementById('saveBtn').addEventListener('click', saveRecord);
+    
+    document.getElementById('modeToggle').addEventListener('click', () => {
+        document.body.classList.toggle('dark-mode');
+        const btn = document.getElementById('modeToggle');
+        if (document.body.classList.contains('dark-mode')) btn.innerHTML = '<i class="bi bi-sun"></i>';
+        else btn.innerHTML = '<i class="bi bi-moon-stars"></i>';
+    });
     
     const today = new Date();
     document.getElementById('fromDate').value = new Date(today.getFullYear(), today.getMonth(), 1).toISOString().split('T')[0];
     document.getElementById('toDate').value = new Date(today.getFullYear(), today.getMonth() + 1, 0).toISOString().split('T')[0];
+    
     document.getElementById('loginBtn').addEventListener('click', login);
-    document.getElementById('logoutBtn')?.addEventListener('click', logout);
+    document.getElementById('logoutBtn').addEventListener('click', logout);
+    
     checkSession();
 </script>
 </body>
