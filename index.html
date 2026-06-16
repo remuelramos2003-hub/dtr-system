@@ -6,7 +6,6 @@
     <title>DTR System - Admin & Staffer Portal</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-    <!-- SweetAlert -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
@@ -21,7 +20,6 @@
             --stat-bg: #f8f9fa;
             --hover-shadow: rgba(0,0,0,0.1);
             --success-bg: #d4edda;
-            --warning-bg: #fff3cd;
             --info-bg: #d1ecf1;
         }
         
@@ -35,7 +33,6 @@
             --stat-bg: #1e293b;
             --hover-shadow: rgba(255,255,255,0.1);
             --success-bg: #0d3b2e;
-            --warning-bg: #3d2e1e;
             --info-bg: #1e3a5f;
         }
         
@@ -227,11 +224,21 @@
             border-radius:12px;
             overflow:hidden;
             transition: all 0.2s;
+            position:relative;
         }
         .card:hover{
             transform: translateY(-4px);
             box-shadow: 0 8px 20px var(--hover-shadow);
             border-color: #4361ee;
+        }
+        .select-checkbox{
+            position:absolute;
+            top:10px;
+            right:10px;
+            width:22px;
+            height:22px;
+            cursor:pointer;
+            z-index:10;
         }
         .card-img{
             width:100%;
@@ -405,8 +412,6 @@
             }
         }
         .loading{text-align:center;padding:40px;color:#666;}
-        select[size="1"] { height: auto; }
-        option { padding: 8px; }
     </style>
 </head>
 <body>
@@ -420,9 +425,8 @@
             <option value="admin">Admin</option>
             <option value="coordinator_aham">Coordinator - AHAM</option>
             <option value="coordinator_fbc">Coordinator - FBC</option>
-            <option value="staffer_marilao">Staffer - MARILAO</option>
-            <option value="staffer_morato">Staffer - MORATO AVE</option>
-            <option value="staffer_gensan">Staffer - GENERAL SANTOS</option>
+            <option value="staffer_aham">Staffer - AHAM</option>
+            <option value="staffer_fbc">Staffer - FBC</option>
         </select>
         <input type="password" id="passwordInput" placeholder="Enter Password">
         <button id="loginBtn">Login</button>
@@ -521,41 +525,6 @@
                     <option>Mamandil Talavera Nueva Ecija</option><option>SOUTHMALL,LAS PINAS</option>
                     <option>PACO,MANILA</option><option>VELEZ,CAGAYAN DE ORO CITY</option>
                     <option>COMMONWEALTH Q.C</option><option>SAN FERNANDO</option><option>MARQUEE</option>
-                    <option>BULAN,SORSOGON</option><option>BATANGAS CITY</option><option>ILIGAN,LANAO DEL NORTE</option>
-                    <option>LAS PINAS</option><option>VICTORIA CITY</option><option>PANTUKAN</option>
-                    <option>TALAVERA</option><option>CARMEN</option><option>PIODURAN</option>
-                    <option>CHERRY SHAW/ MEGA A</option><option>KALIBO</option><option>LA UNION</option>
-                    <option>LEMERY,BATANGAS</option><option>BACOOR,CAVITE</option><option>LOPEZ,QUEZON</option>
-                    <option>GENERAL TRIAS</option><option>TACLOBAN</option><option>SORSOGON</option>
-                    <option>COTABATO</option><option>FTI,TAGUIG</option><option>GUMACA QUEZON</option>
-                    <option>POLOMOLOK</option><option>NORTH RECLAMATION AREA</option><option>ANTIQUE</option>
-                    <option>BORONGAN</option><option>CATAINGAN</option><option>CALOOCAN</option>
-                    <option>LIGAO</option><option>MACTAN,CEBU</option><option>TABACO CITY,ALBAY</option>
-                    <option>BACACAY</option><option>MOA,PASAY</option><option>LIMKETKAI,CAGAYAN DE ORO</option>
-                    <option>GUAGUA</option><option>LA FLUERZA,ALABANG- THE VILLAGE SUARE</option>
-                    <option>ILAGAN</option><option>LAOAG</option><option>PASIG</option>
-                    <option>TAGUM</option><option>FTI TAGUIG,METRO MNL</option><option>VIRAC</option>
-                    <option>TOLEDO</option><option>STO.TOMAS,BATANGAS</option><option>ARGAO CEBU</option>
-                    <option>PARAÑAQUE</option><option>CAGAYAN DE ORO</option><option>PAETE/STA.CRUZ</option>
-                    <option>TARA,MASBATE</option><option>R.A FUENTE CEBU</option><option>KADIWA</option>
-                    <option>POLANGUI 2</option><option>DELGADO</option><option>BUTUAN,AGUSAN DEL NORTE</option>
-                    <option>DINALUPIHAN</option><option>BAGO,NEGROS OCCIDENTAL</option><option>LEGASPI</option>
-                    <option>AMPARO</option><option>ILIGAN,ISABELA</option><option>PROJECT 8/LAONG-LAAN</option>
-                    <option>SAN PEDRO 2</option><option>N.EDSA,QC (THE BLOCK)</option><option>ANABU/ BUHAY NA TUBIG</option>
-                    <option>NASUGBO</option><option>JMALL</option><option>ANTIPOLO</option>
-                    <option>QUEZON AVE</option><option>LIBERTAD</option><option>CUBAO, QUEZON CITY</option>
-                    <option>ALLEN, NORTHERN SAMAR</option><option>SILAY/TALISAY</option><option>HINOBA-AN,N. OCCIDENTAL</option>
-                    <option>CANDON</option><option>CIRCUIT MAKATI</option><option>VIRAC,CATANDUANES</option>
-                    <option>ALABANG,MUNTINLUPA</option><option>JARO 2 / GTMALL</option><option>BUHANGIN,DAVAO</option>
-                    <option>GENSAN</option><option>LABO,CAMARINES NORTE</option><option>MOLINO</option>
-                    <option>NACARLAN</option><option>JUBAN,SORSOGON</option><option>LIMBMANAN,CAMARINES SUR</option>
-                    <option>TAYUMAN,TONDO,MNL</option><option>NAIC/ROSARIO,CAVITE</option><option>MAKATI JAZZ</option>
-                    <option>CABADBARAN</option><option>CAUAYAN,ISABELA</option><option>BAYOMBONG,NUEVA ECIJA</option>
-                    <option>VISAYAS AVE., Q.C</option><option>PUERTO PRINSESA,PALAWAN</option><option>CLARK PAMPANGGA</option>
-                    <option>KABANKALAN,BACOLOD</option><option>BINAN, LAGUNA/LOS BANOS</option><option>LEGAZPI,ALBAY</option>
-                    <option>DANAO</option><option>VALENZUELA</option><option>PANABO</option>
-                    <option>LILOAN</option><option>CADIZ,NEGROS OCCIDENTAL</option><option>MANDAUE, CEBU CITY</option>
-                    <option>OTIS</option>
                 </select>
             </div>
             <div>
@@ -650,13 +619,15 @@
 
 <script>
     let currentUser = null, userRole = null, userAssignment = null;
+    let allRecords = [], imageFilesList = [], selectedRecords = new Set(), editingId = null;
+    
+    // CORRECT CREDENTIALS
     const credentials = {
         admin: 'admin123',
         coordinator_aham: 'coordaham123',
         coordinator_fbc: 'coordfbc123',
-        staffer_marilao: 'marilao123',
-        staffer_morato: 'morato123',
-        staffer_gensan: 'gensan123'
+        staffer_aham: 'aham123',
+        staffer_fbc: 'fbc123'
     };
     
     async function showMessage(title, message, type) {
@@ -669,13 +640,23 @@
         if (credentials[role] === password) {
             currentUser = role;
             localStorage.setItem('dtrUser', currentUser);
-            if (role === 'admin') userRole = 'admin';
-            else if (role === 'coordinator_aham') { userRole = 'coordinator'; userAssignment = 'AHAM'; }
-            else if (role === 'coordinator_fbc') { userRole = 'coordinator'; userAssignment = 'FBC'; }
-            else { userRole = 'staffer';
-                if (role === 'staffer_marilao') userAssignment = 'MARILAO,BULACAN';
-                else if (role === 'staffer_morato') userAssignment = 'MORATO AVE.';
-                else if (role === 'staffer_gensan') userAssignment = 'GENERAL SANTOS';
+            
+            // CORRECT ROLE ASSIGNMENT
+            if (role === 'admin') {
+                userRole = 'admin';
+                userAssignment = null;
+            } else if (role === 'coordinator_aham') {
+                userRole = 'coordinator';
+                userAssignment = 'AHAM';
+            } else if (role === 'coordinator_fbc') {
+                userRole = 'coordinator';
+                userAssignment = 'FBC';
+            } else if (role === 'staffer_aham') {
+                userRole = 'staffer';
+                userAssignment = 'AHAM';
+            } else if (role === 'staffer_fbc') {
+                userRole = 'staffer';
+                userAssignment = 'FBC';
             }
             showMainApp();
         } else showMessage('Login Failed', 'Invalid password', 'error');
@@ -699,6 +680,7 @@
     function showMainApp() {
         document.getElementById('loginContainer').style.display = 'none';
         document.getElementById('appContainer').style.display = 'block';
+        
         let displayName = '', assignText = '';
         if (userRole === 'admin') {
             displayName = 'Admin'; assignText = 'Full Access';
@@ -711,6 +693,9 @@
             document.getElementById('printGuideItem').style.display = 'list-item';
             document.getElementById('editGuideItem').style.display = 'list-item';
             document.getElementById('viewGuideItem').style.display = 'none';
+            document.getElementById('adminPrintBar').style.display = 'flex';
+            document.getElementById('outletFilterGroup').style.display = 'block';
+            document.getElementById('outlet').disabled = false;
         } else if (userRole === 'coordinator') {
             displayName = 'Coordinator'; assignText = userAssignment;
             document.getElementById('stafferForm').style.display = 'none';
@@ -722,7 +707,7 @@
             document.getElementById('printGuideItem').style.display = 'list-item';
             document.getElementById('editGuideItem').style.display = 'none';
             document.getElementById('viewGuideItem').style.display = 'list-item';
-        } else {
+        } else if (userRole === 'staffer') {
             displayName = 'Staffer'; assignText = userAssignment;
             document.getElementById('stafferForm').style.display = 'block';
             document.getElementById('coordinatorView').style.display = 'none';
@@ -735,14 +720,24 @@
             document.getElementById('viewGuideItem').style.display = 'none';
             document.getElementById('adminPrintBar').style.display = 'none';
             document.getElementById('outletFilterGroup').style.display = 'none';
-            const outletSelect = document.getElementById('outlet');
-            if (userAssignment) { outletSelect.value = userAssignment; outletSelect.disabled = true; }
+            // For staffers, lock the dealer to their assigned value (AHAM or FBC)
+            const dealerSelect = document.getElementById('dealer');
+            if (userAssignment === 'AHAM') {
+                dealerSelect.value = 'AHAM OFFICE';
+                dealerSelect.disabled = true;
+            } else if (userAssignment === 'FBC') {
+                dealerSelect.value = 'FBC';
+                dealerSelect.disabled = true;
+            }
         }
+        
         document.getElementById('userRoleDisplay').innerText = displayName;
         const badge = document.getElementById('assignBadge');
         if (assignText) { badge.innerText = assignText; badge.style.display = 'inline-block'; }
         else badge.style.display = 'none';
+        
         document.getElementById('modeToggle').style.display = 'flex';
+        
         if (userRole === 'coordinator') loadSubmissionSummary();
         else loadRecords();
     }
@@ -751,23 +746,18 @@
         const saved = localStorage.getItem('dtrUser');
         if (saved) {
             currentUser = saved;
-            if (currentUser === 'admin') userRole = 'admin';
+            if (currentUser === 'admin') { userRole = 'admin'; userAssignment = null; }
             else if (currentUser === 'coordinator_aham') { userRole = 'coordinator'; userAssignment = 'AHAM'; }
             else if (currentUser === 'coordinator_fbc') { userRole = 'coordinator'; userAssignment = 'FBC'; }
-            else { userRole = 'staffer';
-                if (currentUser === 'staffer_marilao') userAssignment = 'MARILAO,BULACAN';
-                else if (currentUser === 'staffer_morato') userAssignment = 'MORATO AVE.';
-                else if (currentUser === 'staffer_gensan') userAssignment = 'GENERAL SANTOS';
-            }
+            else if (currentUser === 'staffer_aham') { userRole = 'staffer'; userAssignment = 'AHAM'; }
+            else if (currentUser === 'staffer_fbc') { userRole = 'staffer'; userAssignment = 'FBC'; }
             showMainApp();
         }
     }
     
     const SUPABASE_URL = "https://oioamrxxcgwejaaglvbg.supabase.co";
     const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9pb2Ftcnh4Y2d3ZWphYWdsdmJnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE0NjUxNzYsImV4cCI6MjA5NzA0MTE3Nn0.NrprjEB1cNHCqgYCerhcX3_79UvEBjhmu-ueGl1dlew";
-    
-    let allRecords = [], imageFilesList = [], selectedRecords = new Set(), editingId = null;
-    
+
     function initTheme() {
         const saved = localStorage.getItem('theme');
         if (saved === 'dark') { document.body.classList.add('dark-mode'); document.getElementById('modeToggle').innerHTML = '<i class="bi bi-sun"></i>'; }
@@ -800,6 +790,7 @@
             reader.readAsDataURL(file);
         });
     });
+    
     document.getElementById('imagePreviewContainer').addEventListener('click', e => {
         if (e.target.classList.contains('remove-image')) {
             const idx = parseInt(e.target.dataset.index);
@@ -819,6 +810,7 @@
             let data = await res.json();
             if (userAssignment === 'AHAM') data = data.filter(r => r.dealer === 'AHAM OFFICE' || r.dealer?.includes('AHAM'));
             else if (userAssignment === 'FBC') data = data.filter(r => r.dealer === 'FBC');
+            
             const subs = {};
             data.forEach(r => { const key = `${r.employee_name}|${r.cutoff_range}`;
                 if (!subs[key]) subs[key] = { employee_name: r.employee_name, cutoff_range: r.cutoff_range, outlet: r.outlet, dealer: r.dealer, image_count: 1, submitted_at: r.created_at };
@@ -828,7 +820,8 @@
             document.getElementById('totalEmployees').textContent = [...new Set(list.map(s => s.employee_name))].length;
             document.getElementById('submittedCount').textContent = list.length;
             document.getElementById('totalImages').textContent = data.length;
-            document.getElementById('completionRate').textContent = Math.round((list.length / Math.max(list.length, 1)) * 100) + '%';
+            document.getElementById('completionRate').textContent = list.length > 0 ? '100%' : '0%';
+            
             const grid = document.getElementById('submissionGrid');
             if (list.length === 0) grid.innerHTML = '<div class="loading">No submissions found.</div>';
             else grid.innerHTML = list.map(s => `<div class="card"><div class="card-body"><div class="name">👤 ${escapeHtml(s.employee_name)}</div><div class="outlet-text">📍 ${escapeHtml(s.outlet || 'N/A')}</div><div class="dealer-text">🏪 ${escapeHtml(s.dealer)}</div><div class="date">📅 ${s.cutoff_range}</div><div class="batch-badge">📸 ${s.image_count} images</div><div class="submission-status">✓ Submitted ${new Date(s.submitted_at).toLocaleDateString()}</div></div></div>`).join('');
@@ -842,11 +835,18 @@
                 headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
             });
             let data = await res.json();
-            if (userRole === 'staffer' && userAssignment) data = data.filter(r => r.outlet === userAssignment);
+            // Filter by dealer for staffers
+            if (userRole === 'staffer' && userAssignment === 'AHAM') {
+                data = data.filter(r => r.dealer === 'AHAM OFFICE' || r.dealer?.includes('AHAM'));
+            } else if (userRole === 'staffer' && userAssignment === 'FBC') {
+                data = data.filter(r => r.dealer === 'FBC');
+            }
             allRecords = data || [];
+            
             const outlets = [...new Set(allRecords.map(r => r.outlet).filter(Boolean))];
             const filterOutlet = document.getElementById('filterOutlet');
             if (filterOutlet) { filterOutlet.innerHTML = '<option value="">All Outlets</option>'; outlets.forEach(o => { const opt = document.createElement('option'); opt.value = o; opt.textContent = o; filterOutlet.appendChild(opt); }); }
+            
             applyFiltersAndRender();
             document.getElementById('status').innerHTML = '✅ Connected - Live Database';
         } catch(e) { document.getElementById('status').innerHTML = '❌ Connection Error'; }
@@ -874,6 +874,15 @@
         return allRecords.some(r => r.employee_name === name && r.outlet === outlet && r.dealer === dealer && r.cutoff_range === range);
     }
 
+    function readFile(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+        });
+    }
+
     async function saveRecord() {
         let name = document.getElementById('empName').value;
         let outlet = document.getElementById('outlet').value;
@@ -881,10 +890,14 @@
         const from = document.getElementById('fromDate').value;
         const to = document.getElementById('toDate').value;
         const remarks = document.getElementById('remarks').value;
-        if (userRole === 'staffer' && userAssignment) outlet = userAssignment;
+        
+        if (userRole === 'staffer' && userAssignment === 'AHAM') dealer = 'AHAM OFFICE';
+        else if (userRole === 'staffer' && userAssignment === 'FBC') dealer = 'FBC';
+        
         if (!name || !outlet || !dealer || !from || !to) { showMessage('Missing Fields', 'Please fill all required fields', 'warning'); return; }
         if (imageFilesList.length === 0 && !editingId) { showMessage('No Images', 'Please select at least one image', 'warning'); return; }
         if (!editingId && await checkDuplicate(name, outlet, dealer, from, to)) { showMessage('Duplicate Entry', `Employee "${name}" already submitted for ${from} to ${to}`, 'error'); return; }
+        
         const range = `${from} to ${to}`;
         try {
             if (editingId) {
@@ -910,15 +923,18 @@
             }
             document.getElementById('empName').value = ''; document.getElementById('remarks').value = ''; document.getElementById('imageFiles').value = '';
             document.getElementById('imagePreviewContainer').innerHTML = ''; imageFilesList = [];
+            
             if (userRole === 'coordinator') loadSubmissionSummary();
             else loadRecords();
         } catch(e) { showMessage('Error', e.message, 'error'); }
     }
-    
-    function readFile(file) { return new Promise((resolve, reject) => { const reader = new FileReader(); reader.onload = () => resolve(reader.result); reader.onerror = reject; reader.readAsDataURL(file); }); }
 
     function editRecord(record) {
-        if ((userRole === 'staffer' && userAssignment && record.outlet !== userAssignment)) { showMessage('Access Denied', 'You can only edit your outlet records', 'error'); return; }
+        if ((userRole === 'staffer' && userAssignment === 'AHAM' && record.dealer !== 'AHAM OFFICE') ||
+            (userRole === 'staffer' && userAssignment === 'FBC' && record.dealer !== 'FBC')) {
+            showMessage('Access Denied', 'You can only edit your assigned dealer records', 'error');
+            return;
+        }
         editingId = record.id;
         document.getElementById('empName').value = record.employee_name;
         document.getElementById('outlet').value = record.outlet;
@@ -957,7 +973,7 @@
         const cards = document.querySelectorAll('#submissionGrid .card');
         if (cards.length === 0) { showMessage('No Data', 'Nothing to print', 'warning'); return; }
         const win = window.open('', '_blank');
-        win.document.write(`<html><head><title>DTR Report - ${userAssignment}</title><style>body{font-family:Arial;padding:20px;} table{width:100%;border-collapse:collapse;} th,td{border:1px solid #ddd;padding:8px;text-align:left;} th{background:#4361ee;color:white;}</style></head><body><h1>DTR Submission Report</h1><p>Coordinator: ${userAssignment}</p><p>Generated: ${new Date().toLocaleString()}</p><table><thead><tr><th>Employee</th><th>Outlet</th><th>Dealer</th><th>Cutoff</th><th>Images</th><th>Date</th></tr></thead><tbody>${Array.from(cards).map(c => { const n = c.querySelector('.name')?.innerText.replace('👤 ', '') || ''; const o = c.querySelector('.outlet-text')?.innerText.replace('📍 ', '') || ''; const d = c.querySelector('.dealer-text')?.innerText.replace('🏪 ', '') || ''; const cut = c.querySelector('.date')?.innerText.replace('📅 ', '') || ''; const img = c.querySelector('.batch-badge')?.innerText.replace('📸 ', '').replace(' images', '') || ''; const dt = c.querySelector('.submission-status')?.innerText.replace('✓ Submitted ', '') || ''; return `<tr><td>${n}</td><td>${o}</td><td>${d}</td><td>${cut}</td><td>${img}</td><td>${dt}</td></tr>`; }).join('')}</tbody></table></body></html>`);
+        win.document.write(`<html><head><title>DTR Report - ${userAssignment}</title><style>body{font-family:Arial;padding:20px;} table{width:100%;border-collapse:collapse;} th,td{border:1px solid #ddd;padding:8px;text-align:left;} th{background:#4361ee;color:white;}</style></head><body><h1>DTR Submission Report</h1><p>Coordinator: ${userAssignment}</p><p>Generated: ${new Date().toLocaleString()}</p><table><thead><tr><th>Employee</th><th>Outlet</th><th>Dealer</th><th>Cutoff</th><th>Images</th><th>Date</th></tr></thead><tbody>${Array.from(cards).map(c => { const n = c.querySelector('.name')?.innerText.replace('👤 ', '') || ''; const o = c.querySelector('.outlet-text')?.innerText.replace('📍 ', '') || ''; const d = c.querySelector('.dealer-text')?.innerText.replace('🏪 ', '') || ''; const cut = c.querySelector('.date')?.innerText.replace('📅 ', '') || ''; const img = c.querySelector('.batch-badge')?.innerText.replace('📸 ', '').replace(' images', '') || ''; const dt = c.querySelector('.submission-status')?.innerText.replace('✓ Submitted ', '') || ''; return `<tr><td>${n}</td><td>${o}</td><td>${d}</td><td>${cut}</td><td>${img}</td><td>${dt}</td>`; }).join('')}</tbody></table></body></html>`);
         win.document.close(); win.print();
     }
 
@@ -968,7 +984,8 @@
         const grouped = {};
         records.forEach(r => { const key = r.batch_id || r.id; if (!grouped[key]) grouped[key] = { ...r, images: [r.image_data] }; else grouped[key].images.push(r.image_data); });
         const list = Object.values(grouped);
-        grid.innerHTML = list.map(g => `<div class="card">${userRole === 'admin' ? `<input type="checkbox" class="select-checkbox" style="position:absolute;top:10px;right:10px;width:22px;height:22px;" ${selectedRecords.has(g.id) ? 'checked' : ''} onchange="toggleSelectRecord(${g.id})">` : ''}<img src="${g.images[0]}" class="card-img" onclick="window.open(this.src)"><div class="card-body"><div class="name">👤 ${escapeHtml(g.employee_name)}</div><div class="outlet-text">📍 ${escapeHtml(g.outlet)}</div><div class="dealer-text">🏪 ${escapeHtml(g.dealer)}</div><div class="date">📅 ${g.cutoff_range}</div>${g.remarks ? `<div class="date">💬 ${escapeHtml(g.remarks)}</div>` : ''}<div class="batch-badge">📸 ${g.images.length} images</div>${userRole === 'admin' ? `<button class="delete-btn" onclick="deleteRecord(${g.id})">Delete Batch</button>` : ''}${userRole === 'staffer' ? `<button class="edit-btn" onclick='editRecord({id:${g.id}, employee_name:"${g.employee_name}", outlet:"${g.outlet}", dealer:"${g.dealer}", cutoff_from:"${g.cutoff_from}", cutoff_to:"${g.cutoff_to}", remarks:"${g.remarks || ''}"})'>Edit</button>` : ''}</div></div>`).join('');
+        const isAdmin = userRole === 'admin';
+        grid.innerHTML = list.map(g => `<div class="card">${isAdmin ? `<input type="checkbox" class="select-checkbox" ${selectedRecords.has(g.id) ? 'checked' : ''} onchange="toggleSelectRecord(${g.id})">` : ''}<img src="${g.images[0]}" class="card-img" onclick="window.open(this.src)"><div class="card-body"><div class="name">👤 ${escapeHtml(g.employee_name)}</div><div class="outlet-text">📍 ${escapeHtml(g.outlet)}</div><div class="dealer-text">🏪 ${escapeHtml(g.dealer)}</div><div class="date">📅 ${g.cutoff_range}</div>${g.remarks ? `<div class="date">💬 ${escapeHtml(g.remarks)}</div>` : ''}<div class="batch-badge">📸 ${g.images.length} images</div>${isAdmin ? `<button class="delete-btn" onclick="deleteRecord(${g.id})">Delete Batch</button>` : ''}${userRole === 'staffer' ? `<button class="edit-btn" onclick='editRecord({id:${g.id}, employee_name:"${g.employee_name}", outlet:"${g.outlet}", dealer:"${g.dealer}", cutoff_from:"${g.cutoff_from}", cutoff_to:"${g.cutoff_to}", remarks:"${g.remarks || ''}"})'>Edit</button>` : ''}</div></div>`).join('');
     }
 
     function updateStats() {
@@ -978,9 +995,6 @@
         const uniqueOutlets = new Set(allRecords.map(r => r.outlet));
         if (document.getElementById('outletCount')) document.getElementById('outletCount').textContent = uniqueOutlets.size;
         if (document.getElementById('imageCount')) document.getElementById('imageCount').textContent = allRecords.length;
-        const now = new Date();
-        const thisMonth = allRecords.filter(r => r.created_at && new Date(r.created_at).getMonth() === now.getMonth());
-        if (document.getElementById('monthCount')) document.getElementById('monthCount').textContent = thisMonth.length;
     }
 
     function toggleSelectRecord(id) { if (selectedRecords.has(id)) selectedRecords.delete(id); else selectedRecords.add(id); applyFiltersAndRender(); }
