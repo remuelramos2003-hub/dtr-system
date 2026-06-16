@@ -10,68 +10,326 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     <style>
+        /* LIGHT MODE (Default) */
+        :root {
+            --bg-color: #f0f2f5;
+            --card-bg: #ffffff;
+            --text-color: #1a1a2e;
+            --border-color: #ddd;
+            --input-bg: #ffffff;
+            --form-bg: #f8f9fa;
+            --stat-bg: #f8f9fa;
+            --hover-shadow: rgba(0,0,0,0.1);
+            --guide-bg: #d1ecf1;
+            --guide-border: #4361ee;
+            --card-shadow: rgba(0,0,0,0.05);
+            --stat-text: #1a1a2e;
+            --label-color: #666;
+            --select-bg: #ffffff;
+        }
+        
+        /* DARK MODE */
+        body.dark-mode {
+            --bg-color: #1a1a2e;
+            --card-bg: #16213e;
+            --text-color: #e2e8f0;
+            --border-color: #2d3748;
+            --input-bg: #0f0f23;
+            --form-bg: #1e293b;
+            --stat-bg: #1e293b;
+            --hover-shadow: rgba(255,255,255,0.1);
+            --guide-bg: #1e293b;
+            --guide-border: #4361ee;
+            --card-shadow: rgba(255,255,255,0.05);
+            --stat-text: #e2e8f0;
+            --label-color: #94a3b8;
+            --select-bg: #0f0f23;
+        }
+        
         *{margin:0;padding:0;box-sizing:border-box;}
-        body{background:#f0f2f5;font-family:'Segoe UI',sans-serif;padding:20px;}
-        .container{max-width:1400px;margin:0 auto;background:white;border-radius:20px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,0.1);}
-        h1{text-align:center;color:#1a1a2e;margin-bottom:20px;}
-        .login-container{max-width:450px;margin:100px auto;background:white;border-radius:20px;padding:35px;box-shadow:0 10px 40px rgba(0,0,0,0.2);text-align:center;}
-        .user-badge{position:fixed;top:20px;right:20px;background:#4361ee;color:white;padding:10px 20px;border-radius:50px;font-size:14px;display:flex;align-items:center;gap:12px;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,0.2);}
-        .logout-btn{background:#dc3545;border:none;padding:6px 14px;border-radius:30px;color:white;cursor:pointer;}
-        .status{text-align:center;padding:10px;border-radius:10px;margin-bottom:20px;}
+        body {
+            background: var(--bg-color);
+            padding: 20px;
+            font-family: 'Segoe UI', sans-serif;
+            transition: background 0.3s ease, color 0.3s ease;
+            color: var(--text-color);
+            min-height: 100vh;
+        }
+        .container{
+            max-width:1400px;
+            margin:0 auto;
+            background:var(--card-bg);
+            border-radius:20px;
+            padding:20px;
+            box-shadow:0 1px 3px var(--card-shadow);
+            transition: background 0.3s ease;
+        }
+        h1{
+            text-align:center;
+            color:var(--text-color);
+            margin-bottom:20px;
+        }
+        .login-container{
+            max-width:450px;
+            margin:100px auto;
+            background:var(--card-bg);
+            border-radius:20px;
+            padding:35px;
+            box-shadow:0 10px 40px rgba(0,0,0,0.2);
+            text-align:center;
+        }
+        .login-container h2{color:var(--text-color);}
+        .user-badge{
+            position:fixed;
+            top:20px;
+            right:20px;
+            background:linear-gradient(135deg, #4361ee, #3b82f6);
+            color:white;
+            padding:10px 20px;
+            border-radius:50px;
+            font-size:14px;
+            display:flex;
+            align-items:center;
+            gap:12px;
+            z-index:100;
+            box-shadow:0 2px 8px rgba(0,0,0,0.2);
+        }
+        .logout-btn{
+            background:#dc3545;
+            border:none;
+            padding:6px 14px;
+            border-radius:30px;
+            color:white;
+            cursor:pointer;
+        }
+        .logout-btn:hover{background:#c82333;}
+        .status{
+            text-align:center;
+            padding:10px;
+            border-radius:10px;
+            margin-bottom:20px;
+        }
         .status.success{background:#d4edda;color:#155724;}
         .status.error{background:#f8d7da;color:#721c24;}
-        .status.info{background:#d1ecf1;color:#0c5460;}
-        .stats{display:grid;grid-template-columns:repeat(5,1fr);gap:15px;margin-bottom:25px;}
-        .stat-card{background:#f8f9fa;padding:15px;border-radius:12px;text-align:center;}
+        .status.info{background:var(--guide-bg);color:#0c5460;}
+        .stats{
+            display:grid;
+            grid-template-columns:repeat(5,1fr);
+            gap:15px;
+            margin-bottom:25px;
+        }
+        .stat-card{
+            background:var(--stat-bg);
+            padding:15px;
+            border-radius:12px;
+            text-align:center;
+            border:1px solid var(--border-color);
+            transition: background 0.3s ease;
+        }
         .stat-card h3{font-size:28px;color:#4361ee;margin:0;}
-        .form-area{background:#f8f9fa;padding:20px;border-radius:12px;margin-bottom:20px;}
-        input,select,textarea{width:100%;padding:10px;margin:8px 0;border:1px solid #ddd;border-radius:8px;}
-        button{background:#4361ee;color:white;padding:10px 20px;border:none;border-radius:8px;cursor:pointer;width:100%;font-weight:600;}
+        .stat-card p{color:var(--label-color);margin:0;}
+        .form-area{
+            background:var(--form-bg);
+            padding:20px;
+            border-radius:12px;
+            margin-bottom:20px;
+            border:1px solid var(--border-color);
+        }
+        .form-area h4{color:var(--text-color);margin-bottom:15px;}
+        input,select,textarea{
+            width:100%;
+            padding:10px;
+            margin:8px 0;
+            border:1px solid var(--border-color);
+            border-radius:8px;
+            background:var(--input-bg);
+            color:var(--text-color);
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+        input:focus,select:focus,textarea:focus{
+            outline:none;
+            border-color:#4361ee;
+            box-shadow:0 0 0 2px rgba(67,97,238,0.2);
+        }
+        select option{background:var(--select-bg);color:var(--text-color);}
+        button{
+            background:#4361ee;
+            color:white;
+            padding:10px 20px;
+            border:none;
+            border-radius:8px;
+            cursor:pointer;
+            width:100%;
+            font-weight:600;
+            transition:all 0.2s;
+        }
         button:hover{background:#304ff2;}
-        .filter-bar{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;}
+        .filter-bar{
+            display:flex;
+            gap:10px;
+            margin-bottom:20px;
+            flex-wrap:wrap;
+        }
         .filter-group{flex:1;min-width:150px;}
-        .filter-group label{font-size:12px;color:#666;display:block;margin-bottom:4px;}
-        .filter-group input,.filter-group select{width:100%;padding:8px;}
-        .print-bar{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;}
+        .filter-group label{
+            font-size:12px;
+            color:var(--label-color);
+            display:block;
+            margin-bottom:4px;
+        }
+        .filter-group input,.filter-group select{
+            width:100%;
+            padding:8px;
+        }
+        .print-bar{
+            display:flex;
+            gap:10px;
+            margin-bottom:20px;
+            flex-wrap:wrap;
+        }
         .print-bar button{width:auto;padding:8px 16px;}
-        .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:20px;max-height:550px;overflow-y:auto;}
-        .card{background:white;border:1px solid #eee;border-radius:12px;overflow:hidden;position:relative;}
+        .grid{
+            display:grid;
+            grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
+            gap:20px;
+            max-height:550px;
+            overflow-y:auto;
+        }
+        .card{
+            background:var(--card-bg);
+            border:1px solid var(--border-color);
+            border-radius:12px;
+            overflow:hidden;
+            position:relative;
+            transition: all 0.3s ease;
+        }
+        .card:hover{
+            transform:translateY(-4px);
+            box-shadow:0 8px 20px var(--hover-shadow);
+            border-color:#4361ee;
+        }
         .card-img{width:100%;height:200px;object-fit:cover;cursor:pointer;}
         .card-body{padding:15px;}
-        .name{font-weight:bold;color:#1a1a2e;}
+        .name{font-weight:bold;color:var(--text-color);}
         .outlet-text{color:#10b981;font-size:0.85em;margin:3px 0;}
         .dealer-text{color:#f59e0b;font-size:0.85em;}
-        .date{color:#666;font-size:0.8em;}
-        .batch-badge{background:#4361ee;color:white;padding:2px 8px;border-radius:20px;font-size:10px;display:inline-block;margin-top:5px;}
-        .delete-btn{background:#dc3545;color:white;border:none;padding:6px;border-radius:6px;margin-top:10px;width:100%;cursor:pointer;}
-        .select-checkbox{position:absolute;top:10px;right:10px;width:22px;height:22px;cursor:pointer;z-index:10;}
+        .date{color:var(--label-color);font-size:0.8em;}
+        .batch-badge{
+            background:#4361ee;
+            color:white;
+            padding:2px 8px;
+            border-radius:20px;
+            font-size:10px;
+            display:inline-block;
+            margin-top:5px;
+        }
+        .delete-btn{
+            background:#dc3545;
+            color:white;
+            border:none;
+            padding:6px;
+            border-radius:6px;
+            margin-top:10px;
+            width:100%;
+            cursor:pointer;
+        }
+        .select-checkbox{
+            position:absolute;
+            top:10px;
+            right:10px;
+            width:22px;
+            height:22px;
+            cursor:pointer;
+            z-index:10;
+        }
         .two-columns{display:grid;grid-template-columns:1fr 1fr;gap:15px;}
-        .preview-container{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px;}
-        .preview-item{position:relative;width:80px;height:80px;}
-        .preview-item img{width:100%;height:100%;object-fit:cover;border-radius:8px;}
-        .remove-img{position:absolute;top:-5px;right:-5px;background:#dc3545;color:white;border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;font-size:12px;cursor:pointer;}
-        .guide-box{background:#d1ecf1;padding:12px 15px;border-radius:10px;margin-bottom:20px;font-size:14px;border-left:4px solid #4361ee;}
-        .mode-toggle{position:fixed;bottom:20px;right:20px;width:50px;height:50px;border-radius:50%;background:#4361ee;color:white;border:none;font-size:24px;cursor:pointer;z-index:1000;}
-        @media(max-width:768px){.stats{grid-template-columns:repeat(3,1fr);}.two-columns{grid-template-columns:1fr;}}
-        .loading{text-align:center;padding:40px;color:#666;}
-        select:disabled { background-color: #e9ecef; cursor: not-allowed; }
+        .preview-container{
+            display:flex;
+            flex-wrap:wrap;
+            gap:10px;
+            margin-top:10px;
+        }
+        .preview-item{
+            position:relative;
+            width:80px;
+            height:80px;
+        }
+        .preview-item img{
+            width:100%;
+            height:100%;
+            object-fit:cover;
+            border-radius:8px;
+        }
+        .remove-img{
+            position:absolute;
+            top:-5px;
+            right:-5px;
+            background:#dc3545;
+            color:white;
+            border-radius:50%;
+            width:20px;
+            height:20px;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            font-size:12px;
+            cursor:pointer;
+        }
+        .guide-box{
+            background:var(--guide-bg);
+            padding:12px 15px;
+            border-radius:10px;
+            margin-bottom:20px;
+            font-size:14px;
+            border-left:4px solid var(--guide-border);
+            transition: background 0.3s ease;
+            color:var(--text-color);
+        }
+        .mode-toggle{
+            position:fixed;
+            bottom:20px;
+            right:20px;
+            width:50px;
+            height:50px;
+            border-radius:50%;
+            background:#4361ee;
+            color:white;
+            border:none;
+            font-size:24px;
+            cursor:pointer;
+            z-index:1000;
+            box-shadow:0 4px 12px rgba(0,0,0,0.15);
+            transition:all 0.3s;
+        }
+        .mode-toggle:hover{transform:scale(1.05);}
+        @media(max-width:768px){
+            .stats{grid-template-columns:repeat(3,1fr);}
+            .two-columns{grid-template-columns:1fr;}
+        }
+        .loading{text-align:center;padding:40px;color:var(--label-color);}
+        select:disabled{background-color:#e9ecef;cursor:not-allowed;}
+        body.dark-mode select:disabled{background-color:#2d3748;}
+        .admin-selector{display:flex;gap:10px;margin-bottom:15px;}
+        .admin-selector button{width:auto;padding:8px 20px;}
+        .admin-selector button.active{background:#304ff2;border:2px solid #4361ee;}
+        .hidden{display:none !important;}
     </style>
 </head>
 <body>
 
 <div id="loginContainer" class="login-container">
     <h2><i class="bi bi-shield-lock"></i> DTR System Login</h2>
-    <p>Philman Power Center INC</p>
+    <p style="color:var(--label-color);">Philman Power Center INC</p>
     <div style="margin-bottom:15px;">
-        <select id="roleSelect" style="width:100%;padding:10px;margin-bottom:10px;">
+        <select id="roleSelect" style="width:100%;padding:10px;margin-bottom:10px;background:var(--input-bg);color:var(--text-color);border:1px solid var(--border-color);border-radius:8px;">
             <option value="admin">Admin</option>
             <option value="coordinator_aham">Coordinator - AHAM</option>
             <option value="coordinator_fbc">Coordinator - FBC</option>
             <option value="staffer_aham">Staffer - AHAM</option>
             <option value="staffer_fbc">Staffer - FBC</option>
         </select>
-        <input type="password" id="passwordInput" placeholder="Enter Password">
-        <button id="loginBtn">Login</button>
+        <input type="password" id="passwordInput" placeholder="Enter Password" style="width:100%;padding:10px;border:1px solid var(--border-color);border-radius:8px;background:var(--input-bg);color:var(--text-color);">
+        <button id="loginBtn" style="width:100%;padding:10px;">Login</button>
     </div>
 </div>
 
@@ -107,11 +365,18 @@
 
     <div class="form-area" id="stafferForm">
         <h4>Add DTR Record</h4>
+        
+        <!-- Admin Selector: Choose AHAM or FBC -->
+        <div id="adminSelector" class="admin-selector hidden">
+            <button id="btnAham" class="active" onclick="selectDealerType('AHAM')">AHAM</button>
+            <button id="btnFbc" onclick="selectDealerType('FBC')">FBC</button>
+        </div>
+        
         <input type="text" id="empName" placeholder="Employee Name *">
         
         <div class="two-columns">
-            <div>
-                <label>Outlet *</label>
+            <div id="outletContainer">
+                <label style="font-size:12px;color:var(--label-color);">Outlet *</label>
                 <select id="outlet">
                     <option value="">-- Select Outlet --</option>
                     <option>MARILAO,BULACAN</option><option>MORATO AVE.</option><option>GENERAL SANTOS</option>
@@ -186,8 +451,8 @@
                     <option>OTIS</option>
                 </select>
             </div>
-            <div>
-                <label>Dealer *</label>
+            <div id="dealerContainer">
+                <label style="font-size:12px;color:var(--label-color);">Dealer *</label>
                 <select id="dealer">
                     <option value="">-- Select Dealer --</option>
                     <option>SACI</option><option>AHAM OFFICE</option><option>SVI</option><option>S&R</option>
@@ -209,12 +474,12 @@
         
         <div style="display:flex;gap:10px;align-items:center;margin:10px 0;">
             <input type="date" id="fromDate" style="flex:1">
-            <span>→</span>
+            <span style="color:var(--text-color);">→</span>
             <input type="date" id="toDate" style="flex:1">
         </div>
         <textarea id="remarks" rows="2" placeholder="Remarks (optional)"></textarea>
         
-        <label>DTR Pictures * (Select multiple images)</label>
+        <label style="font-size:12px;color:var(--label-color);">DTR Pictures * (Select multiple images)</label>
         <input type="file" id="imageFiles" accept="image/*" multiple>
         <div id="previewContainer" class="preview-container"></div>
         
@@ -248,6 +513,7 @@
     let currentUser = null, userRole = null, userAssignment = null;
     let allRecords = [], selectedRecords = new Set();
     let currentImages = [];
+    let adminDealerType = 'AHAM';
     
     const credentials = {
         admin: 'admin123',
@@ -259,6 +525,48 @@
     
     async function showMessage(title, message, type) {
         await Swal.fire({ title, text: message, icon: type, confirmButtonColor: '#4361ee' });
+    }
+    
+    // DARK MODE TOGGLE - FIXED
+    function toggleDarkMode() {
+        document.body.classList.toggle('dark-mode');
+        const btn = document.getElementById('modeToggle');
+        if (document.body.classList.contains('dark-mode')) {
+            btn.innerHTML = '<i class="bi bi-sun"></i>';
+            localStorage.setItem('darkMode', 'enabled');
+        } else {
+            btn.innerHTML = '<i class="bi bi-moon-stars"></i>';
+            localStorage.setItem('darkMode', 'disabled');
+        }
+    }
+    
+    // CHECK SAVED DARK MODE PREFERENCE
+    function checkDarkMode() {
+        const darkMode = localStorage.getItem('darkMode');
+        if (darkMode === 'enabled') {
+            document.body.classList.add('dark-mode');
+            document.getElementById('modeToggle').innerHTML = '<i class="bi bi-sun"></i>';
+        } else {
+            document.body.classList.remove('dark-mode');
+            document.getElementById('modeToggle').innerHTML = '<i class="bi bi-moon-stars"></i>';
+        }
+    }
+    
+    // Admin selector for AHAM/FBC
+    function selectDealerType(type) {
+        adminDealerType = type;
+        document.getElementById('btnAham').classList.remove('active');
+        document.getElementById('btnFbc').classList.remove('active');
+        if (type === 'AHAM') {
+            document.getElementById('btnAham').classList.add('active');
+            document.getElementById('outletContainer').style.display = 'block';
+            document.getElementById('dealerContainer').style.display = 'block';
+        } else {
+            document.getElementById('btnFbc').classList.add('active');
+            // For FBC, hide outlet and dealer (FBC has no outlet/dealer)
+            document.getElementById('outletContainer').style.display = 'none';
+            document.getElementById('dealerContainer').style.display = 'none';
+        }
     }
     
     function login() {
@@ -295,27 +603,39 @@
         
         const dealerSelect = document.getElementById('dealer');
         const outletSelect = document.getElementById('outlet');
+        const adminSelector = document.getElementById('adminSelector');
         
-        if (userRole === 'staffer') {
-            // Lock dealer for staffers - THIS IS CORRECT BEHAVIOR
+        if (userRole === 'admin') {
+            // Admin: Show AHAM/FBC selector
+            adminSelector.classList.remove('hidden');
+            // Default to AHAM
+            selectDealerType('AHAM');
+            dealerSelect.disabled = false;
+            outletSelect.disabled = false;
+            document.getElementById('adminPrintBar').style.display = 'flex';
+            document.getElementById('outletFilterGroup').style.display = 'block';
+        } else if (userRole === 'staffer') {
+            adminSelector.classList.add('hidden');
+            document.getElementById('outletContainer').style.display = 'block';
+            document.getElementById('dealerContainer').style.display = 'block';
             if (userAssignment === 'AHAM') {
                 dealerSelect.value = 'AHAM OFFICE';
                 dealerSelect.disabled = true;
+                outletSelect.disabled = false;
             } else if (userAssignment === 'FBC') {
                 dealerSelect.value = 'FBC';
                 dealerSelect.disabled = true;
+                outletSelect.disabled = false;
             }
-            outletSelect.disabled = false;
             document.getElementById('adminPrintBar').style.display = 'none';
             document.getElementById('outletFilterGroup').style.display = 'none';
         } else if (userRole === 'coordinator') {
+            adminSelector.classList.add('hidden');
             document.getElementById('stafferForm').style.display = 'none';
             document.getElementById('adminPrintBar').style.display = 'none';
-        } else if (userRole === 'admin') {
-            dealerSelect.disabled = false;
-            outletSelect.disabled = false;
         }
         
+        checkDarkMode();
         loadRecords();
     }
     
@@ -331,6 +651,8 @@
             showApp();
         }
     }
+    
+    document.getElementById('modeToggle').addEventListener('click', toggleDarkMode);
     
     document.getElementById('imageFiles').addEventListener('change', function(e) {
         currentImages = Array.from(e.target.files);
@@ -417,16 +739,37 @@
     async function saveRecord() {
         // Get form values
         const name = document.getElementById('empName').value.trim();
-        const outlet = document.getElementById('outlet').value;
+        let outlet = document.getElementById('outlet').value;
         let dealer = document.getElementById('dealer').value;
         const fromDate = document.getElementById('fromDate').value;
         const toDate = document.getElementById('toDate').value;
         const remarks = document.getElementById('remarks').value;
         
-        // Override dealer for staffers
+        // For Admin: use the selected dealer type (AHAM or FBC)
+        if (userRole === 'admin') {
+            if (adminDealerType === 'AHAM') {
+                dealer = 'AHAM OFFICE';
+                // Outlet is required for AHAM
+                if (!outlet) {
+                    showMessage('Error', 'Please select an outlet for AHAM', 'error');
+                    return;
+                }
+            } else {
+                dealer = 'FBC';
+                // For FBC, outlet is not needed
+                outlet = 'N/A';
+            }
+        }
+        
+        // For staffers, override dealer with their assigned one
         if (userRole === 'staffer') {
             if (userAssignment === 'AHAM') dealer = 'AHAM OFFICE';
             else if (userAssignment === 'FBC') dealer = 'FBC';
+            // Staffers must select outlet
+            if (!outlet) {
+                showMessage('Error', 'Please select an outlet', 'error');
+                return;
+            }
         }
         
         // Validation
@@ -434,9 +777,11 @@
             showMessage('Error', 'Please enter employee name', 'error');
             return;
         }
-        if (!outlet || outlet === '') {
-            showMessage('Error', 'Please select an outlet', 'error');
-            return;
+        if (userRole !== 'admin' || adminDealerType === 'AHAM') {
+            if (!outlet || outlet === '') {
+                showMessage('Error', 'Please select an outlet', 'error');
+                return;
+            }
         }
         if (!dealer || dealer === '') {
             showMessage('Error', 'Please select a dealer', 'error');
@@ -468,7 +813,7 @@
                 
                 const recordData = {
                     employee_name: name,
-                    outlet: outlet,
+                    outlet: outlet || 'N/A',
                     dealer: dealer,
                     cutoff_from: fromDate,
                     cutoff_to: toDate,
@@ -493,8 +838,6 @@
                 
                 if (response.ok) {
                     successCount++;
-                    const result = await response.json();
-                    console.log('Save success:', result);
                 } else {
                     const errorText = await response.text();
                     console.error('Server error:', errorText);
@@ -679,13 +1022,6 @@
     document.getElementById('printSelectedBtn').addEventListener('click', printSelected);
     document.getElementById('downloadSelectedBtn').addEventListener('click', downloadSelected);
     document.getElementById('saveBtn').addEventListener('click', saveRecord);
-    
-    document.getElementById('modeToggle').addEventListener('click', () => {
-        document.body.classList.toggle('dark-mode');
-        const btn = document.getElementById('modeToggle');
-        if (document.body.classList.contains('dark-mode')) btn.innerHTML = '<i class="bi bi-sun"></i>';
-        else btn.innerHTML = '<i class="bi bi-moon-stars"></i>';
-    });
     
     const today = new Date();
     document.getElementById('fromDate').value = new Date(today.getFullYear(), today.getMonth(), 1).toISOString().split('T')[0];
