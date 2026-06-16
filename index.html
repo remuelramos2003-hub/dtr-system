@@ -161,13 +161,6 @@
             width:100%;
             padding:8px;
         }
-        .print-bar{
-            display:flex;
-            gap:10px;
-            margin-bottom:20px;
-            flex-wrap:wrap;
-        }
-        .print-bar button{width:auto;padding:8px 16px;}
         .grid{
             display:grid;
             grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
@@ -217,15 +210,6 @@
             margin-top:10px;
             width:100%;
             cursor:pointer;
-        }
-        .select-checkbox{
-            position:absolute;
-            top:10px;
-            right:10px;
-            width:22px;
-            height:22px;
-            cursor:pointer;
-            z-index:10;
         }
         .two-columns{display:grid;grid-template-columns:1fr 1fr;gap:15px;}
         .preview-container{
@@ -582,7 +566,7 @@
     </div>
 
     <!-- Submission View (Admin & Coordinator) -->
-    <div id="submissionView" style="display:none;">
+    <div id="submissionView">
         <!-- Admin Dealer Tabs -->
         <div id="adminDealerTabs" class="admin-dealer-tabs hidden">
             <button id="tabAham" class="active" onclick="switchAdminTab('AHAM')">AHAM</button>
@@ -627,7 +611,7 @@
     const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9pb2Ftcnh4Y2d3ZWphYWdsdmJnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE0NjUxNzYsImV4cCI6MjA5NzA0MTE3Nn0.NrprjEB1cNHCqgYCerhcX3_79UvEBjhmu-ueGl1dlew";
     
     let currentUser = null, userRole = null, userAssignment = null;
-    let allRecords = [], selectedRecords = new Set();
+    let allRecords = [];
     let currentImages = [];
     let adminDealerType = 'AHAM';
     let allEmployees = [];
@@ -772,21 +756,16 @@
         const outletSelect = document.getElementById('outlet');
         const adminSelector = document.getElementById('adminSelector');
         const adminTabs = document.getElementById('adminDealerTabs');
-        const submissionView = document.getElementById('submissionView');
         const stafferForm = document.getElementById('stafferForm');
         
         if (userRole === 'admin') {
-            // Admin: Show submission view with tabs + staffer form
             adminSelector.classList.remove('hidden');
             selectDealerType('AHAM');
             dealerSelect.disabled = false;
             outletSelect.disabled = false;
             stafferForm.style.display = 'block';
-            submissionView.style.display = 'block';
             adminTabs.classList.remove('hidden');
-            document.getElementById('regularView').style.display = 'none';
         } else if (userRole === 'staffer') {
-            // Staffer: Only show form and their records
             adminSelector.classList.add('hidden');
             adminTabs.classList.add('hidden');
             document.getElementById('outletContainer').style.display = 'block';
@@ -800,26 +779,16 @@
                 outletSelect.disabled = false;
             }
             stafferForm.style.display = 'block';
-            submissionView.style.display = 'none';
-            document.getElementById('regularView').style.display = 'none';
         } else if (userRole === 'coordinator') {
-            // Coordinator: Only show submission view (no form)
             adminSelector.classList.add('hidden');
             adminTabs.classList.add('hidden');
             stafferForm.style.display = 'none';
-            submissionView.style.display = 'block';
-            document.getElementById('regularView').style.display = 'none';
         }
         
         checkDarkMode();
-        document.getElementById('status').innerHTML = '✅ Connected';
-        document.getElementById('status').className = 'status success';
         
-        if (userRole === 'admin' || userRole === 'coordinator') {
-            loadSubmissionSummary();
-        } else {
-            loadRecords();
-        }
+        // Load submissions for Admin and Coordinator
+        loadSubmissionSummary();
     }
     
     function checkSession() {
@@ -863,24 +832,6 @@
             document.getElementById('imageFiles').dispatchEvent(new Event('change'));
         }
     });
-    
-    async function loadRecords() {
-        try {
-            const res = await fetch(`${SUPABASE_URL}/rest/v1/dtr_records?select=*&order=created_at.desc`, {
-                headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
-            });
-            let data = await res.json();
-            
-            if (userRole === 'staffer' && userAssignment === 'AHAM') data = data.filter(r => r.dealer !== 'FBC');
-            else if (userRole === 'staffer' && userAssignment === 'FBC') data = data.filter(r => r.dealer === 'FBC');
-            
-            allRecords = data || [];
-            // Staffers don't need to show grid now - they only submit
-        } catch(e) { 
-            document.getElementById('status').innerHTML = '❌ Connection Error';
-            document.getElementById('status').className = 'status error';
-        }
-    }
     
     function readFileAsBase64(file) {
         return new Promise((resolve, reject) => {
@@ -1006,9 +957,7 @@
                 document.getElementById('fromDate').value = new Date(today.getFullYear(), today.getMonth(), 1).toISOString().split('T')[0];
                 document.getElementById('toDate').value = new Date(today.getFullYear(), today.getMonth() + 1, 0).toISOString().split('T')[0];
                 
-                if (userRole === 'admin' || userRole === 'coordinator') {
-                    loadSubmissionSummary();
-                }
+                loadSubmissionSummary();
             }
         } catch(e) {
             console.error('Save error:', e);
@@ -1035,15 +984,12 @@
             
             // Filter based on user role
             if (userRole === 'admin') {
-                // Admin: Show based on selected tab
                 if (adminTab === 'AHAM') {
                     data = data.filter(r => r.dealer === 'AHAM OFFICE' || r.dealer?.includes('AHAM'));
                 } else if (adminTab === 'FBC') {
                     data = data.filter(r => r.dealer === 'FBC');
                 }
-                // 'ALL' shows everything
             } else if (userRole === 'coordinator') {
-                // Coordinator: Show only their assigned dealer
                 if (userAssignment === 'AHAM') {
                     data = data.filter(r => r.dealer === 'AHAM OFFICE' || r.dealer?.includes('AHAM'));
                 } else if (userAssignment === 'FBC') {
@@ -1143,6 +1089,12 @@
                     <div class="dealer-text">🏪 ${escapeHtml(emp.dealer)}</div>
                     <div class="date">📅 ${emp.cutoff}</div>
                     <div class="batch-badge">📸 ${emp.image_count} images</div>
+                    ${emp.images.length > 0 ? `
+                        <div class="thumbnail-gallery" style="margin-top:8px;">
+                            ${emp.images.slice(0, 4).map(img => `<img src="${img}" style="width:50px;height:50px;object-fit:cover;border-radius:4px;cursor:pointer;" onclick="openImageViewer(${JSON.stringify(emp.images)}, '${emp.batch_id}')">`).join('')}
+                            ${emp.images.length > 4 ? `<span style="font-size:12px;color:#4361ee;">+${emp.images.length - 4} more</span>` : ''}
+                        </div>
+                    ` : ''}
                     <div class="submission-status" style="background:#10b981;color:white;padding:4px 8px;border-radius:20px;font-size:12px;display:inline-block;margin-top:8px;">✓ Submitted on ${new Date(emp.submitted_at).toLocaleDateString()}</div>
                 </div>
             </div>
