@@ -386,6 +386,19 @@
             color: var(--label-color);
             margin: 0;
         }
+        .admin-dealer-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .admin-dealer-tabs button {
+            width: auto;
+            padding: 8px 20px;
+        }
+        .admin-dealer-tabs button.active {
+            background: #304ff2;
+            border: 2px solid #4361ee;
+        }
         @media(max-width:768px){
             .submission-summary {
                 grid-template-columns: 1fr 1fr;
@@ -570,8 +583,15 @@
         <button id="saveBtn">Save to Database</button>
     </div>
 
-    <!-- Coordinator View -->
-    <div id="coordinatorView" style="display:none;">
+    <!-- Submission View (Admin & Coordinator) -->
+    <div id="submissionView" style="display:none;">
+        <!-- Admin Dealer Tabs -->
+        <div id="adminDealerTabs" class="admin-dealer-tabs hidden">
+            <button id="tabAham" class="active" onclick="switchAdminTab('AHAM')">AHAM</button>
+            <button id="tabFbc" onclick="switchAdminTab('FBC')">FBC</button>
+            <button id="tabAll" onclick="switchAdminTab('ALL')">All</button>
+        </div>
+        
         <div class="submission-summary">
             <div class="summary-item">
                 <h3 id="totalEmployees">0</h3>
@@ -601,7 +621,7 @@
         <div id="submissionGrid" class="grid"><div class="loading">Loading submissions...</div></div>
     </div>
 
-    <!-- Regular Records View -->
+    <!-- Regular Records View (Staffer only) -->
     <div id="regularView">
         <div class="filter-bar">
             <div class="filter-group"><label>Search by Name</label><input type="text" id="searchName" placeholder="Enter name..."></div>
@@ -633,6 +653,7 @@
     let currentImages = [];
     let adminDealerType = 'AHAM';
     let allEmployees = [];
+    let adminTab = 'ALL';
     
     let viewerImages = [];
     let viewerIndex = 0;
@@ -726,6 +747,17 @@
         }
     }
     
+    function switchAdminTab(tab) {
+        adminTab = tab;
+        document.getElementById('tabAham').classList.remove('active');
+        document.getElementById('tabFbc').classList.remove('active');
+        document.getElementById('tabAll').classList.remove('active');
+        if (tab === 'AHAM') document.getElementById('tabAham').classList.add('active');
+        else if (tab === 'FBC') document.getElementById('tabFbc').classList.add('active');
+        else document.getElementById('tabAll').classList.add('active');
+        loadSubmissionSummary();
+    }
+    
     function login() {
         const role = document.getElementById('roleSelect').value;
         const pass = document.getElementById('passwordInput').value;
@@ -761,6 +793,7 @@
         const dealerSelect = document.getElementById('dealer');
         const outletSelect = document.getElementById('outlet');
         const adminSelector = document.getElementById('adminSelector');
+        const adminTabs = document.getElementById('adminDealerTabs');
         
         if (userRole === 'admin') {
             adminSelector.classList.remove('hidden');
@@ -769,11 +802,14 @@
             outletSelect.disabled = false;
             document.getElementById('adminPrintBar').style.display = 'flex';
             document.getElementById('outletFilterGroup').style.display = 'block';
-            document.getElementById('coordinatorView').style.display = 'none';
-            document.getElementById('regularView').style.display = 'block';
             document.getElementById('stafferForm').style.display = 'block';
+            document.getElementById('regularView').style.display = 'block';
+            document.getElementById('submissionView').style.display = 'block';
+            adminTabs.classList.remove('hidden');
+            document.getElementById('coordinatorView').style.display = 'none';
         } else if (userRole === 'staffer') {
             adminSelector.classList.add('hidden');
+            adminTabs.classList.add('hidden');
             document.getElementById('outletContainer').style.display = 'block';
             document.getElementById('dealerContainer').style.display = 'block';
             if (userAssignment === 'AHAM') {
@@ -786,25 +822,24 @@
             }
             document.getElementById('adminPrintBar').style.display = 'none';
             document.getElementById('outletFilterGroup').style.display = 'none';
-            document.getElementById('coordinatorView').style.display = 'none';
+            document.getElementById('submissionView').style.display = 'none';
             document.getElementById('regularView').style.display = 'block';
             document.getElementById('stafferForm').style.display = 'block';
         } else if (userRole === 'coordinator') {
             adminSelector.classList.add('hidden');
+            adminTabs.classList.add('hidden');
             document.getElementById('stafferForm').style.display = 'none';
             document.getElementById('adminPrintBar').style.display = 'none';
             document.getElementById('outletFilterGroup').style.display = 'none';
-            document.getElementById('coordinatorView').style.display = 'block';
             document.getElementById('regularView').style.display = 'none';
+            document.getElementById('submissionView').style.display = 'block';
         }
         
         checkDarkMode();
-        
-        // Set status to connected after app loads
         document.getElementById('status').innerHTML = '✅ Connected';
         document.getElementById('status').className = 'status success';
         
-        if (userRole === 'coordinator') {
+        if (userRole === 'admin' || userRole === 'coordinator') {
             loadSubmissionSummary();
         } else {
             loadRecords();
@@ -1018,7 +1053,7 @@
                 document.getElementById('fromDate').value = new Date(today.getFullYear(), today.getMonth(), 1).toISOString().split('T')[0];
                 document.getElementById('toDate').value = new Date(today.getFullYear(), today.getMonth() + 1, 0).toISOString().split('T')[0];
                 
-                if (userRole === 'coordinator') {
+                if (userRole === 'admin' || userRole === 'coordinator') {
                     loadSubmissionSummary();
                 } else {
                     await loadRecords();
@@ -1033,7 +1068,7 @@
         }
     }
     
-    // COORDINATOR FUNCTIONS
+    // SUBMISSION SUMMARY (Admin & Coordinator)
     async function loadSubmissionSummary() {
         try {
             document.getElementById('status').innerHTML = '🔄 Loading submissions...';
@@ -1047,14 +1082,25 @@
             
             let data = await res.json();
             
-            // Filter by coordinator's assigned dealer
-            if (userAssignment === 'AHAM') {
-                data = data.filter(r => r.dealer !== 'FBC');
-            } else if (userAssignment === 'FBC') {
-                data = data.filter(r => r.dealer === 'FBC');
+            // Filter based on user role
+            if (userRole === 'admin') {
+                // Admin: Show based on selected tab
+                if (adminTab === 'AHAM') {
+                    data = data.filter(r => r.dealer === 'AHAM OFFICE' || r.dealer?.includes('AHAM'));
+                } else if (adminTab === 'FBC') {
+                    data = data.filter(r => r.dealer === 'FBC');
+                }
+                // 'ALL' shows everything
+            } else if (userRole === 'coordinator') {
+                // Coordinator: Show only their assigned dealer
+                if (userAssignment === 'AHAM') {
+                    data = data.filter(r => r.dealer === 'AHAM OFFICE' || r.dealer?.includes('AHAM'));
+                } else if (userAssignment === 'FBC') {
+                    data = data.filter(r => r.dealer === 'FBC');
+                }
             }
             
-            // Get unique employees with their submissions
+            // Group by employee name
             const employeeMap = {};
             const cutoffSet = new Set();
             
@@ -1101,7 +1147,7 @@
             document.getElementById('submittedCount').textContent = employeeList.length;
             
             // Apply filters and render
-            applyCoordinatorFilters();
+            applySubmissionFilters();
             
             document.getElementById('status').innerHTML = '✅ Connected';
             document.getElementById('status').className = 'status success';
@@ -1114,7 +1160,7 @@
         }
     }
     
-    function applyCoordinatorFilters() {
+    function applySubmissionFilters() {
         const searchTerm = document.getElementById('searchEmployee')?.value.toLowerCase() || '';
         const cutoffFilter = document.getElementById('filterCutoff')?.value || 'all';
         
@@ -1152,15 +1198,17 @@
         `).join('');
     }
     
-    function printCoordinatorReport() {
+    function printSubmissionReport() {
         const cards = document.querySelectorAll('#submissionGrid .card');
         if (cards.length === 0) { showMessage('No Data', 'No submissions to print', 'warning'); return; }
+        
+        const title = userRole === 'admin' ? 'Admin - All Submissions' : `Coordinator - ${userAssignment}`;
         
         const win = window.open('', '_blank');
         win.document.write(`
             <html>
             <head>
-                <title>DTR Submission Report - ${userAssignment}</title>
+                <title>DTR Submission Report</title>
                 <style>
                     body{font-family:Arial;padding:20px;}
                     h1{text-align:center;color:#1a1a2e;}
@@ -1174,9 +1222,9 @@
             <body>
                 <div class="header">
                     <h1>DTR Submission Report</h1>
-                    <p>Coordinator: ${userAssignment}</p>
+                    <p>${title}</p>
                     <p>Generated: ${new Date().toLocaleString()}</p>
-                    <p>Total Employees Submitted: ${cards.length}</p>
+                    <p>Total Employees: ${cards.length}</p>
                 </div>
                 <table>
                     <thead>
@@ -1355,9 +1403,9 @@
     
     function escapeHtml(t) { if (!t) return ''; const d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
     
-    // Event listeners for coordinator filters
-    document.getElementById('searchEmployee')?.addEventListener('input', applyCoordinatorFilters);
-    document.getElementById('filterCutoff')?.addEventListener('change', applyCoordinatorFilters);
+    // Event listeners for submission filters
+    document.getElementById('searchEmployee')?.addEventListener('input', applySubmissionFilters);
+    document.getElementById('filterCutoff')?.addEventListener('change', applySubmissionFilters);
     
     // Regular view filters
     document.getElementById('searchName').addEventListener('input', applyFilters);
@@ -1371,7 +1419,7 @@
     document.getElementById('deleteSelectedBtn').addEventListener('click', deleteSelected);
     document.getElementById('printSelectedBtn').addEventListener('click', printSelected);
     document.getElementById('downloadSelectedBtn').addEventListener('click', downloadSelected);
-    document.getElementById('printReportBtn').addEventListener('click', printCoordinatorReport);
+    document.getElementById('printReportBtn').addEventListener('click', printSubmissionReport);
     document.getElementById('saveBtn').addEventListener('click', saveRecord);
     
     const today = new Date();
