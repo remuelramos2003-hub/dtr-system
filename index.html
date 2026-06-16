@@ -10,7 +10,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     <style>
-        /* LIGHT MODE (Default) */
         :root {
             --bg-color: #f0f2f5;
             --card-bg: #ffffff;
@@ -23,12 +22,10 @@
             --guide-bg: #d1ecf1;
             --guide-border: #4361ee;
             --card-shadow: rgba(0,0,0,0.05);
-            --stat-text: #1a1a2e;
             --label-color: #666;
             --select-bg: #ffffff;
         }
         
-        /* DARK MODE */
         body.dark-mode {
             --bg-color: #1a1a2e;
             --card-bg: #16213e;
@@ -41,7 +38,6 @@
             --guide-bg: #1e293b;
             --guide-border: #4361ee;
             --card-shadow: rgba(255,255,255,0.05);
-            --stat-text: #e2e8f0;
             --label-color: #94a3b8;
             --select-bg: #0f0f23;
         }
@@ -320,8 +316,60 @@
             border-radius:4px;
             cursor:pointer;
             border:1px solid var(--border-color);
+            transition: transform 0.2s;
         }
-        .thumbnail-gallery img:hover{transform:scale(1.1);}
+        .thumbnail-gallery img:hover{
+            transform:scale(1.1);
+            border-color:#4361ee;
+        }
+        .image-viewer {
+            display:none;
+            position:fixed;
+            top:0;
+            left:0;
+            width:100%;
+            height:100%;
+            background:rgba(0,0,0,0.95);
+            z-index:2000;
+            justify-content:center;
+            align-items:center;
+            flex-direction:column;
+        }
+        .image-viewer.active {display:flex;}
+        .image-viewer img {max-width:90%;max-height:85vh;object-fit:contain;border-radius:8px;}
+        .image-viewer .viewer-close-btn {
+            position:absolute;
+            top:20px;
+            right:30px;
+            background:#dc3545;
+            color:white;
+            border:none;
+            padding:8px 16px;
+            border-radius:8px;
+            cursor:pointer;
+            font-size:16px;
+            width:auto;
+        }
+        .image-viewer .viewer-close-btn:hover {background:#c82333;}
+        .image-viewer .nav-controls {
+            display:flex;
+            gap:20px;
+            margin-top:20px;
+            align-items:center;
+        }
+        .image-viewer .nav-controls button {
+            background:rgba(255,255,255,0.2);
+            color:white;
+            border:1px solid rgba(255,255,255,0.3);
+            padding:10px 20px;
+            border-radius:8px;
+            cursor:pointer;
+            font-size:16px;
+            width:auto;
+            transition:all 0.3s;
+        }
+        .image-viewer .nav-controls button:hover {background:rgba(255,255,255,0.4);}
+        .image-viewer .image-counter {color:white;font-size:16px;}
         @media(max-width:768px){
             .stats{grid-template-columns:repeat(3,1fr);}
             .two-columns{grid-template-columns:1fr;}
@@ -336,6 +384,17 @@
     </style>
 </head>
 <body>
+
+<!-- Image Viewer Modal -->
+<div id="imageViewer" class="image-viewer">
+    <button class="viewer-close-btn" onclick="closeImageViewer()">✕ Close</button>
+    <img id="viewerImage" src="" alt="DTR Image">
+    <div class="nav-controls">
+        <button id="prevImageBtn" onclick="navigateImage(-1)">◀ Previous</button>
+        <span class="image-counter" id="imageCounter">1 / 1</span>
+        <button id="nextImageBtn" onclick="navigateImage(1)">Next ▶</button>
+    </div>
+</div>
 
 <div id="loginContainer" class="login-container">
     <h2><i class="bi bi-shield-lock"></i> DTR System Login</h2>
@@ -371,7 +430,8 @@
             <li>📸 Select multiple images - each DTR picture saves as a separate record</li>
             <li>🔍 Use filters to search by name, outlet, or date range</li>
             <li>✅ Select checkboxes to print or download multiple DTRs (Admin only)</li>
-            <li>✏️ Staffers can only edit their assigned dealer's records</li>
+            <li>✏️ Staffers can edit their own records</li>
+            <li>🖼️ Click on any image or thumbnail to view in fullscreen with navigation</li>
         </ul>
     </div>
 
@@ -535,6 +595,10 @@
     let currentImages = [];
     let adminDealerType = 'AHAM';
     
+    let viewerImages = [];
+    let viewerIndex = 0;
+    let viewerBatchId = null;
+    
     const credentials = {
         admin: 'admin123',
         coordinator_aham: 'coordaham123',
@@ -547,7 +611,44 @@
         await Swal.fire({ title, text: message, icon: type, confirmButtonColor: '#4361ee' });
     }
     
-    // DARK MODE TOGGLE
+    function openImageViewer(images, batchId) {
+        if (!images || images.length === 0) return;
+        viewerImages = images;
+        viewerIndex = 0;
+        viewerBatchId = batchId;
+        const viewer = document.getElementById('imageViewer');
+        const img = document.getElementById('viewerImage');
+        const counter = document.getElementById('imageCounter');
+        viewer.classList.add('active');
+        img.src = images[0];
+        counter.textContent = `1 / ${images.length}`;
+        document.body.style.overflow = 'hidden';
+        document.getElementById('prevImageBtn').style.display = images.length > 1 ? 'inline-block' : 'none';
+        document.getElementById('nextImageBtn').style.display = images.length > 1 ? 'inline-block' : 'none';
+    }
+    
+    function closeImageViewer() {
+        document.getElementById('imageViewer').classList.remove('active');
+        document.body.style.overflow = '';
+    }
+    
+    function navigateImage(direction) {
+        if (!viewerImages || viewerImages.length === 0) return;
+        viewerIndex = (viewerIndex + direction + viewerImages.length) % viewerImages.length;
+        document.getElementById('viewerImage').src = viewerImages[viewerIndex];
+        document.getElementById('imageCounter').textContent = `${viewerIndex + 1} / ${viewerImages.length}`;
+    }
+    
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') closeImageViewer();
+        if (e.key === 'ArrowLeft' && document.getElementById('imageViewer').classList.contains('active')) navigateImage(-1);
+        if (e.key === 'ArrowRight' && document.getElementById('imageViewer').classList.contains('active')) navigateImage(1);
+    });
+    
+    document.getElementById('imageViewer').addEventListener('click', function(e) {
+        if (e.target === this) closeImageViewer();
+    });
+    
     function toggleDarkMode() {
         document.body.classList.toggle('dark-mode');
         const btn = document.getElementById('modeToggle');
@@ -633,11 +734,15 @@
             adminSelector.classList.add('hidden');
             document.getElementById('outletContainer').style.display = 'block';
             document.getElementById('dealerContainer').style.display = 'block';
+            
+            // Staffer AHAM: Dealer ENABLED with full list
+            // Staffer FBC: Dealer DISABLED (locked to FBC)
             if (userAssignment === 'AHAM') {
-                dealerSelect.value = 'AHAM OFFICE';
-                dealerSelect.disabled = true;
+                // AHAM Staffer - Dealer is ENABLED
+                dealerSelect.disabled = false;
                 outletSelect.disabled = false;
             } else if (userAssignment === 'FBC') {
+                // FBC Staffer - Dealer is DISABLED and locked to FBC
                 dealerSelect.value = 'FBC';
                 dealerSelect.disabled = true;
                 outletSelect.disabled = false;
@@ -703,9 +808,9 @@
             });
             let data = await res.json();
             
-            if (userRole === 'staffer' && userAssignment === 'AHAM') data = data.filter(r => r.dealer === 'AHAM OFFICE');
+            if (userRole === 'staffer' && userAssignment === 'AHAM') data = data.filter(r => r.dealer !== 'FBC');
             else if (userRole === 'staffer' && userAssignment === 'FBC') data = data.filter(r => r.dealer === 'FBC');
-            else if (userRole === 'coordinator' && userAssignment === 'AHAM') data = data.filter(r => r.dealer === 'AHAM OFFICE');
+            else if (userRole === 'coordinator' && userAssignment === 'AHAM') data = data.filter(r => r.dealer !== 'FBC');
             else if (userRole === 'coordinator' && userAssignment === 'FBC') data = data.filter(r => r.dealer === 'FBC');
             
             allRecords = data || [];
@@ -759,9 +864,10 @@
         const toDate = document.getElementById('toDate').value;
         const remarks = document.getElementById('remarks').value;
         
+        // Handle different user roles
         if (userRole === 'admin') {
             if (adminDealerType === 'AHAM') {
-                dealer = 'AHAM OFFICE';
+                if (!dealer || dealer === '') dealer = 'AHAM OFFICE';
                 if (!outlet || outlet === '') {
                     showMessage('Error', 'Please select an outlet for AHAM', 'error');
                     return;
@@ -770,21 +876,25 @@
                 dealer = 'FBC';
                 outlet = null;
             }
-        }
-        
-        if (userRole === 'staffer') {
+        } else if (userRole === 'staffer') {
             if (userAssignment === 'AHAM') {
-                dealer = 'AHAM OFFICE';
+                // AHAM Staffer - dealer is selectable, outlet required
+                if (!dealer || dealer === '') {
+                    showMessage('Error', 'Please select a dealer', 'error');
+                    return;
+                }
                 if (!outlet || outlet === '') {
                     showMessage('Error', 'Please select an outlet', 'error');
                     return;
                 }
             } else if (userAssignment === 'FBC') {
+                // FBC Staffer - dealer is locked to FBC
                 dealer = 'FBC';
                 outlet = null;
             }
         }
         
+        // Validation
         if (!name) {
             showMessage('Error', 'Please enter employee name', 'error');
             return;
@@ -829,8 +939,6 @@
                     created_at: new Date().toISOString()
                 };
                 
-                console.log('Sending data:', recordData);
-                
                 const response = await fetch(`${SUPABASE_URL}/rest/v1/dtr_records`, {
                     method: 'POST',
                     headers: {
@@ -858,7 +966,7 @@
                 document.getElementById('imageFiles').value = '';
                 document.getElementById('previewContainer').innerHTML = '';
                 document.getElementById('outlet').value = '';
-                if (userRole !== 'staffer') {
+                if (userRole !== 'staffer' || userAssignment !== 'FBC') {
                     document.getElementById('dealer').value = '';
                 }
                 currentImages = [];
@@ -878,7 +986,6 @@
         }
     }
     
-    // FIXED: Render grid with all images in a gallery
     function renderGrid(records) {
         const grid = document.getElementById('recordsGrid');
         if (records.length === 0) { 
@@ -886,15 +993,11 @@
             return; 
         }
         
-        // Group by batch_id
         const grouped = {};
         records.forEach(r => { 
             const key = r.batch_id || r.id; 
             if (!grouped[key]) {
-                grouped[key] = { 
-                    ...r, 
-                    images: [] 
-                };
+                grouped[key] = { ...r, images: [] };
             }
             grouped[key].images.push(r.image_data);
         });
@@ -903,32 +1006,32 @@
         const isAdmin = userRole === 'admin';
         
         grid.innerHTML = list.map(g => {
-            // Show first image as main, and thumbnails for others
             const mainImage = g.images[0] || '';
             const thumbnails = g.images.slice(1);
+            const batchId = g.batch_id || g.id;
+            const allImages = g.images;
             
             return `
             <div class="card">
-                ${isAdmin ? `<input type="checkbox" class="select-checkbox" data-id="${g.batch_id || g.id}" ${selectedRecords.has(g.batch_id || g.id) ? 'checked' : ''}>` : ''}
-                <img src="${mainImage}" class="card-img" onclick="window.open(this.src)">
+                ${isAdmin ? `<input type="checkbox" class="select-checkbox" data-id="${batchId}" ${selectedRecords.has(batchId) ? 'checked' : ''}>` : ''}
+                <img src="${mainImage}" class="card-img" onclick="openImageViewer(${JSON.stringify(allImages)}, '${batchId}')">
                 <div class="card-body">
                     <div class="name">👤 ${escapeHtml(g.employee_name)}</div>
                     <div class="outlet-text">📍 ${escapeHtml(g.outlet || 'N/A')}</div>
                     <div class="dealer-text">🏪 ${escapeHtml(g.dealer)}</div>
                     <div class="date">📅 ${g.cutoff_range}</div>
                     ${g.remarks ? `<div class="date">💬 ${escapeHtml(g.remarks)}</div>` : ''}
-                    <div class="batch-badge">📸 ${g.images.length} images</div>
+                    <div class="batch-badge">📸 ${g.images.length} images <span style="font-size:10px;cursor:pointer;color:#4361ee;" onclick="openImageViewer(${JSON.stringify(allImages)}, '${batchId}')">(View All)</span></div>
                     ${thumbnails.length > 0 ? `
                         <div class="thumbnail-gallery">
-                            ${thumbnails.map(img => `<img src="${img}" onclick="event.stopPropagation(); window.open(this.src)">`).join('')}
+                            ${thumbnails.map((img, idx) => `<img src="${img}" onclick="event.stopPropagation(); openImageViewer(${JSON.stringify(allImages)}, '${batchId}')" title="Image ${idx+2}">`).join('')}
                         </div>
                     ` : ''}
-                    ${isAdmin ? `<button class="delete-btn" onclick="deleteRecord('${g.batch_id || g.id}')">Delete Batch</button>` : ''}
+                    ${isAdmin ? `<button class="delete-btn" onclick="deleteRecord('${batchId}')">Delete Batch</button>` : ''}
                 </div>
             </div>
         `}).join('');
         
-        // Attach checkbox events
         document.querySelectorAll('.select-checkbox').forEach(cb => {
             cb.addEventListener('change', (e) => {
                 const id = e.target.dataset.id;
@@ -975,16 +1078,10 @@
                 toPrint.push(r.image_data);
             }
         });
-        
-        if (toPrint.length === 0) { 
-            showMessage('No Selection', 'Select records to print', 'warning'); 
-            return; 
-        }
-        
+        if (toPrint.length === 0) { showMessage('No Selection', 'Select records to print', 'warning'); return; }
         const win = window.open('', '_blank');
         win.document.write(`<html><head><title>DTR Print</title><style>.page{page-break-after:always;height:100vh;display:flex;justify-content:center;align-items:center;} img{max-width:100%;max-height:100%;object-fit:contain;}</style></head><body>${toPrint.map(img => `<div class="page"><img src="${img}"></div>`).join('')}</body></html>`);
-        win.document.close(); 
-        win.print();
+        win.document.close(); win.print();
     }
     
     async function downloadSelected() {
@@ -994,17 +1091,11 @@
                 toDownload.push(r.image_data);
             }
         });
-        
-        if (toDownload.length === 0) { 
-            showMessage('No Selection', 'Select records to download', 'warning'); 
-            return; 
-        }
-        
+        if (toDownload.length === 0) { showMessage('No Selection', 'Select records to download', 'warning'); return; }
         const btn = document.getElementById('downloadSelectedBtn');
         const orig = btn.innerHTML;
         btn.innerHTML = 'Creating ZIP...';
         btn.disabled = true;
-        
         try {
             const zip = new JSZip();
             const folder = zip.folder('DTR_Records');
