@@ -598,7 +598,7 @@
             </div>
             <button id="printReportBtn" style="width:auto; background:#2e7d32;"><i class="bi bi-printer"></i> Print Report</button>
         </div>
-        <div id="submissionGrid" class="grid"></div>
+        <div id="submissionGrid" class="grid"><div class="loading">Loading submissions...</div></div>
     </div>
 
     <!-- Regular Records View -->
@@ -632,6 +632,7 @@
     let allRecords = [], selectedRecords = new Set();
     let currentImages = [];
     let adminDealerType = 'AHAM';
+    let allEmployees = [];
     
     let viewerImages = [];
     let viewerIndex = 0;
@@ -792,12 +793,17 @@
             adminSelector.classList.add('hidden');
             document.getElementById('stafferForm').style.display = 'none';
             document.getElementById('adminPrintBar').style.display = 'none';
-            document.getElementById('outletFilterGroup').style.display = 'block';
+            document.getElementById('outletFilterGroup').style.display = 'none';
             document.getElementById('coordinatorView').style.display = 'block';
             document.getElementById('regularView').style.display = 'none';
         }
         
         checkDarkMode();
+        
+        // Set status to connected after app loads
+        document.getElementById('status').innerHTML = '✅ Connected';
+        document.getElementById('status').className = 'status success';
+        
         if (userRole === 'coordinator') {
             loadSubmissionSummary();
         } else {
@@ -856,8 +862,6 @@
             
             if (userRole === 'staffer' && userAssignment === 'AHAM') data = data.filter(r => r.dealer !== 'FBC');
             else if (userRole === 'staffer' && userAssignment === 'FBC') data = data.filter(r => r.dealer === 'FBC');
-            else if (userRole === 'coordinator' && userAssignment === 'AHAM') data = data.filter(r => r.dealer !== 'FBC');
-            else if (userRole === 'coordinator' && userAssignment === 'FBC') data = data.filter(r => r.dealer === 'FBC');
             
             allRecords = data || [];
             
@@ -867,8 +871,6 @@
             outlets.forEach(o => { const opt = document.createElement('option'); opt.value = o; opt.textContent = o; filterOutlet.appendChild(opt); });
             
             applyFilters();
-            document.getElementById('status').innerHTML = '✅ Connected';
-            document.getElementById('status').className = 'status success';
         } catch(e) { 
             document.getElementById('status').innerHTML = '❌ Connection Error';
             document.getElementById('status').className = 'status error';
@@ -1034,64 +1036,90 @@
     // COORDINATOR FUNCTIONS
     async function loadSubmissionSummary() {
         try {
+            document.getElementById('status').innerHTML = '🔄 Loading submissions...';
+            document.getElementById('status').className = 'status info';
+            
             const res = await fetch(`${SUPABASE_URL}/rest/v1/dtr_records?select=*&order=created_at.desc`, {
                 headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
             });
+            
+            if (!res.ok) throw new Error('Failed to fetch data');
+            
             let data = await res.json();
             
-            if (userAssignment === 'AHAM') data = data.filter(r => r.dealer !== 'FBC');
-            else if (userAssignment === 'FBC') data = data.filter(r => r.dealer === 'FBC');
+            // Filter by coordinator's assigned dealer
+            if (userAssignment === 'AHAM') {
+                data = data.filter(r => r.dealer !== 'FBC');
+            } else if (userAssignment === 'FBC') {
+                data = data.filter(r => r.dealer === 'FBC');
+            }
             
-            // Get unique employees and their submission status
+            // Get unique employees with their submissions
             const employeeMap = {};
-            const cutoffMap = {};
+            const cutoffSet = new Set();
             
             data.forEach(r => {
                 const empKey = r.employee_name;
                 const cutoffKey = r.cutoff_range;
                 
+                if (cutoffKey) cutoffSet.add(cutoffKey);
+                
                 if (!employeeMap[empKey]) {
                     employeeMap[empKey] = {
                         name: r.employee_name,
-                        cutoff: cutoffKey,
-                        outlet: r.outlet,
-                        dealer: r.dealer,
+                        cutoff: cutoffKey || 'N/A',
+                        outlet: r.outlet || 'N/A',
+                        dealer: r.dealer || 'N/A',
                         image_count: 0,
                         submitted_at: r.created_at,
-                        batch_id: r.batch_id
+                        batch_id: r.batch_id,
+                        images: []
                     };
                 }
                 employeeMap[empKey].image_count++;
+                employeeMap[empKey].images.push(r.image_data);
             });
             
             const employeeList = Object.values(employeeMap);
+            allEmployees = employeeList;
             
             // Populate cutoff filter
             const cutoffSelect = document.getElementById('filterCutoff');
-            const cutoffs = [...new Set(data.map(r => r.cutoff_range).filter(Boolean))];
-            cutoffSelect.innerHTML = '<option value="all">All Cutoffs</option>';
-            cutoffs.forEach(c => {
-                const opt = document.createElement('option');
-                opt.value = c;
-                opt.textContent = c;
-                cutoffSelect.appendChild(opt);
-            });
+            if (cutoffSelect) {
+                cutoffSelect.innerHTML = '<option value="all">All Cutoffs</option>';
+                const sortedCutoffs = Array.from(cutoffSet).sort();
+                sortedCutoffs.forEach(c => {
+                    const opt = document.createElement('option');
+                    opt.value = c;
+                    opt.textContent = c;
+                    cutoffSelect.appendChild(opt);
+                });
+            }
             
             // Update stats
             document.getElementById('totalEmployees').textContent = employeeList.length;
             document.getElementById('submittedCount').textContent = employeeList.length;
             
-            renderSubmissionGrid(employeeList);
+            // Apply filters and render
+            applyCoordinatorFilters();
             
-        } catch(e) { console.error(e); }
+            document.getElementById('status').innerHTML = '✅ Connected';
+            document.getElementById('status').className = 'status success';
+            
+        } catch(e) {
+            console.error('Error loading submissions:', e);
+            document.getElementById('status').innerHTML = '❌ Error loading data';
+            document.getElementById('status').className = 'status error';
+            document.getElementById('submissionGrid').innerHTML = '<div class="loading">Error loading submissions. Please refresh.</div>';
+        }
     }
     
-    function renderSubmissionGrid(employees) {
-        const grid = document.getElementById('submissionGrid');
+    function applyCoordinatorFilters() {
         const searchTerm = document.getElementById('searchEmployee')?.value.toLowerCase() || '';
         const cutoffFilter = document.getElementById('filterCutoff')?.value || 'all';
         
-        let filtered = employees;
+        let filtered = allEmployees;
+        
         if (searchTerm) {
             filtered = filtered.filter(e => e.name.toLowerCase().includes(searchTerm));
         }
@@ -1099,16 +1127,22 @@
             filtered = filtered.filter(e => e.cutoff === cutoffFilter);
         }
         
-        if (filtered.length === 0) {
+        renderSubmissionGrid(filtered);
+    }
+    
+    function renderSubmissionGrid(employees) {
+        const grid = document.getElementById('submissionGrid');
+        
+        if (employees.length === 0) {
             grid.innerHTML = '<div class="loading">No employees have submitted DTRs for this cutoff.</div>';
             return;
         }
         
-        grid.innerHTML = filtered.map(emp => `
+        grid.innerHTML = employees.map(emp => `
             <div class="card">
                 <div class="card-body">
                     <div class="name">👤 ${escapeHtml(emp.name)}</div>
-                    <div class="outlet-text">📍 ${escapeHtml(emp.outlet || 'N/A')}</div>
+                    <div class="outlet-text">📍 ${escapeHtml(emp.outlet)}</div>
                     <div class="dealer-text">🏪 ${escapeHtml(emp.dealer)}</div>
                     <div class="date">📅 ${emp.cutoff}</div>
                     <div class="batch-badge">📸 ${emp.image_count} images</div>
@@ -1321,12 +1355,17 @@
     
     function escapeHtml(t) { if (!t) return ''; const d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
     
+    // Event listeners for coordinator filters
+    document.getElementById('searchEmployee')?.addEventListener('input', applyCoordinatorFilters);
+    document.getElementById('filterCutoff')?.addEventListener('change', applyCoordinatorFilters);
+    
+    // Regular view filters
     document.getElementById('searchName').addEventListener('input', applyFilters);
     document.getElementById('filterOutlet').addEventListener('change', applyFilters);
     document.getElementById('filterDateFrom').addEventListener('change', applyFilters);
     document.getElementById('filterDateTo').addEventListener('change', applyFilters);
-    document.getElementById('searchEmployee').addEventListener('input', () => loadSubmissionSummary());
-    document.getElementById('filterCutoff').addEventListener('change', () => loadSubmissionSummary());
+    
+    // Print and action buttons
     document.getElementById('selectAllBtn').addEventListener('click', selectAllFiltered);
     document.getElementById('deselectAllBtn').addEventListener('click', deselectAll);
     document.getElementById('deleteSelectedBtn').addEventListener('click', deleteSelected);
