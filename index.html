@@ -44,7 +44,6 @@
         .date{color:#666;font-size:0.8em;}
         .batch-badge{background:#4361ee;color:white;padding:2px 8px;border-radius:20px;font-size:10px;display:inline-block;margin-top:5px;}
         .delete-btn{background:#dc3545;color:white;border:none;padding:6px;border-radius:6px;margin-top:10px;width:100%;cursor:pointer;}
-        .edit-btn{background:#f59e0b;color:white;border:none;padding:6px;border-radius:6px;margin-top:10px;width:100%;cursor:pointer;}
         .select-checkbox{position:absolute;top:10px;right:10px;width:22px;height:22px;cursor:pointer;z-index:10;}
         .two-columns{display:grid;grid-template-columns:1fr 1fr;gap:15px;}
         .preview-container{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px;}
@@ -94,7 +93,7 @@
             <li>📸 Select multiple images - each DTR picture saves as a separate record</li>
             <li>🔍 Use filters to search by name, outlet, or date range</li>
             <li>✅ Select checkboxes to print or download multiple DTRs (Admin only)</li>
-            <li>✏️ Staffers can edit their own records</li>
+            <li>✏️ Staffers can only edit their assigned dealer's records</li>
         </ul>
     </div>
 
@@ -235,7 +234,7 @@
         const outletSelect = document.getElementById('outlet');
         
         if (userRole === 'staffer') {
-            // Lock dealer for staffers
+            // Lock dealer for staffers - THIS IS CORRECT BEHAVIOR
             if (userAssignment === 'AHAM') {
                 dealerSelect.value = 'AHAM OFFICE';
                 dealerSelect.disabled = true;
@@ -243,7 +242,6 @@
                 dealerSelect.value = 'FBC';
                 dealerSelect.disabled = true;
             }
-            // Staffers can select any outlet
             outletSelect.disabled = false;
             document.getElementById('adminPrintBar').style.display = 'none';
             document.getElementById('outletFilterGroup').style.display = 'none';
@@ -354,7 +352,7 @@
     }
     
     async function saveRecord() {
-        // Get form values - use .value directly from select elements
+        // Get form values
         const name = document.getElementById('empName').value.trim();
         const outlet = document.getElementById('outlet').value;
         let dealer = document.getElementById('dealer').value;
@@ -368,7 +366,7 @@
             else if (userAssignment === 'FBC') dealer = 'FBC';
         }
         
-        // Validation - show specific error messages
+        // Validation
         if (!name) {
             showMessage('Error', 'Please enter employee name', 'error');
             return;
@@ -393,7 +391,6 @@
         const cutoffRange = `${fromDate} to ${toDate}`;
         const batchId = Date.now().toString();
         let successCount = 0;
-        let errorCount = 0;
         
         // Show loading
         const saveBtn = document.getElementById('saveBtn');
@@ -419,7 +416,7 @@
                     created_at: new Date().toISOString()
                 };
                 
-                console.log('Saving record:', recordData);
+                console.log('Sending data:', recordData);
                 
                 const response = await fetch(`${SUPABASE_URL}/rest/v1/dtr_records`, {
                     method: 'POST',
@@ -433,10 +430,12 @@
                 
                 if (response.ok) {
                     successCount++;
+                    const result = await response.json();
+                    console.log('Save success:', result);
                 } else {
-                    errorCount++;
                     const errorText = await response.text();
-                    console.error(`Error saving image ${i+1}:`, errorText);
+                    console.error('Server error:', errorText);
+                    throw new Error(`HTTP ${response.status}: ${errorText}`);
                 }
             }
             
@@ -460,8 +459,6 @@
                 document.getElementById('toDate').value = new Date(today.getFullYear(), today.getMonth() + 1, 0).toISOString().split('T')[0];
                 
                 await loadRecords();
-            } else {
-                showMessage('Error', 'Failed to save images. Please check console for details.', 'error');
             }
         } catch(e) {
             console.error('Save error:', e);
