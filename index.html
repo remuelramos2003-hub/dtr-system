@@ -111,7 +111,7 @@
             border-radius: 30px;
             font-size: 12px;
         }
-        .outlet-badge {
+        .client-badge {
             background: #10b981;
             color: white;
             padding: 4px 12px;
@@ -286,15 +286,10 @@
             font-size:1.1em;
             color:var(--text-color);
         }
-        .outlet{
-            color:#10b981;
+        .client{
+            color:#4361ee;
             font-size:0.85em;
-            margin:3px 0;
-        }
-        .dealer{
-            color:#f59e0b;
-            font-size:0.85em;
-            margin:3px 0;
+            margin:5px 0;
         }
         .date{
             color:#666;
@@ -424,11 +419,6 @@
         .hidden{
             display: none;
         }
-        .two-columns {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-        }
         @media(max-width:768px){
             .stats{grid-template-columns:repeat(2,1fr);}
             .mode-toggle{
@@ -450,10 +440,6 @@
             .logout-btn {
                 padding: 4px 10px;
                 font-size: 10px;
-            }
-            .two-columns {
-                grid-template-columns: 1fr;
-                gap: 10px;
             }
         }
         @media print{
@@ -501,24 +487,29 @@
     <div class="form-area" style="background:transparent; padding:0;">
         <select id="roleSelect" style="margin-bottom:15px;">
             <option value="admin">Admin</option>
-            <option value="staffer_marilao">Staffers - MARILAO</option>
-            <option value="staffer_morato">Staffers - MORATO AVE</option>
-            <option value="staffer_gen_santos">Staffers - GENERAL SANTOS</option>
+            <option value="staffer_aham">Staffers - AHAM</option>
+            <option value="staffer_fbc">Staffers - FBC</option>
         </select>
         <input type="password" id="passwordInput" placeholder="Enter Password">
         <button id="loginBtn">Login</button>
+    </div>
+    <div class="guide-box" style="margin-top:20px;">
+        <i class="bi bi-info-circle"></i> <strong>Demo Credentials:</strong><br>
+        <strong>Admin:</strong> Password: <code>admin123</code><br>
+        <strong>Staffer AHAM:</strong> Password: <code>aham123</code><br>
+        <strong>Staffer FBC:</strong> Password: <code>fbc123</code>
     </div>
 </div>
 
 <!-- Main App Container -->
 <div id="appContainer" style="display:none;">
 <div class="container">
-    <!-- User Badge -->
+    <!-- Improved User Badge -->
     <div class="user-badge">
         <div class="user-info">
             <i class="bi bi-person-circle"></i>
             <span id="userRoleDisplay">Staffer</span>
-            <span id="outletBadge" class="outlet-badge"></span>
+            <span id="clientBadge" class="client-badge"></span>
         </div>
         <button id="logoutBtn" class="logout-btn">
             <i class="bi bi-box-arrow-right"></i> Logout
@@ -533,7 +524,7 @@
         <i class="bi bi-info-circle"></i> <strong>Quick Guide</strong>
         <ul>
             <li><i class="bi bi-plus-circle"></i> <strong>Add Record:</strong> Fill out the form below, select an image, then click "Save to Database"</li>
-            <li><i class="bi bi-search"></i> <strong>Search & Filter:</strong> Use the filter bar to search by name, outlet, or cutoff date range</li>
+            <li><i class="bi bi-search"></i> <strong>Search & Filter:</strong> Use the filter bar to search by name, client, or cutoff date range</li>
             <li><i class="bi bi-check-square"></i> <strong>Select Records:</strong> Check the boxes on cards to select them (Admin only)</li>
             <li id="printGuideItem"><i class="bi bi-printer"></i> <strong>Print:</strong> Select records, then click "Print Selected" (Admin only)</li>
             <li id="downloadGuideItem"><i class="bi bi-download"></i> <strong>Batch Download:</strong> Select records, then click "Download ZIP" (Admin only)</li>
@@ -547,114 +538,15 @@
         <div class="stat-card"><i class="bi bi-files"></i><h3 id="totalCount">0</h3><p>Records</p></div>
         <div class="stat-card"><i class="bi bi-people"></i><h3 id="empCount">0</h3><p>Employees</p></div>
         <div class="stat-card"><i class="bi bi-calendar"></i><h3 id="monthCount">0</h3><p>This Month</p></div>
-        <div class="stat-card"><i class="bi bi-building"></i><h3 id="outletCount">0</h3><p>Outlets</p></div>
+        <div class="stat-card"><i class="bi bi-building"></i><h3 id="clientCount">0</h3><p>Clients</p></div>
     </div>
 
     <div class="form-area">
         <h4><i class="bi bi-plus-circle"></i> Add DTR Record</h4>
         <input type="text" id="empName" placeholder="Employee Name *">
-        
-        <div class="two-columns">
-            <div>
-                <label style="font-size:12px; color:#666;">Outlet *</label>
-                <select id="outlet" required>
-                    <option value="">Select Outlet</option>
-                    <option>MARILAO,BULACAN</option><option>MORATO AVE.</option><option>GENERAL SANTOS</option>
-                    <option>CEBU CITY</option><option>ROSALES,PANGASINAN</option><option>BOHOL</option>
-                    <option>STA.ROSA,LAGUNA</option><option>NAIC,CAVITE</option><option>BANKAL/BAJADA</option>
-                    <option>ILLUSTRE</option><option>ETON QC,</option><option>EMPORIUM,MAKATI CITY</option>
-                    <option>ROXAS</option><option>CLARK,PAMPANGA</option><option>CAMILING</option>
-                    <option>warehouse</option><option>SAN PABLO,LAGUNA</option><option>NOVALICHES,QC</option>
-                    <option>MORATO AVE.QUEZON AVE</option><option>CARCAR CITY,CEBU</option><option>LUCENA</option>
-                    <option>CDO 2</option><option>MANAOAG</option><option>IRIGA CITY</option>
-                    <option>KAWIT</option><option>MARIKINA</option><option>MASBATE</option>
-                    <option>LA TRINIDAD,BENGUET</option><option>DCWC AGDAO</option><option>NAGA CITY,CAMARINES SUR</option>
-                    <option>MANGALDAN</option><option>MUZON/STA.MARIA</option><option>TARLAC</option>
-                    <option>DAVAO</option><option>CONSOLACION CEBU</option><option>SAVEMORE NUÑEZ</option>
-                    <option>DASMA., CAVITE</option><option>TRECE MARTIRES</option><option>DAVAO /GMALL -BAJADA</option>
-                    <option>SEASIDE,CEBU CITY</option><option>NEW MANILA</option><option>TABUNOK,CEBU</option>
-                    <option>BACOLOD</option><option>AYALA CEBU</option><option>IMUS/DASMA/BACOOR</option>
-                    <option>IROSIN</option><option>SQUARE,PANGASINAN</option><option>PLARIDEL</option>
-                    <option>CHEF'S MAGIC/AHAM</option><option>ABRA</option><option>UGAC</option>
-                    <option>CENTRO,NAGA</option><option>PAMPANGA</option><option>CAINTA,RIZAL</option>
-                    <option>BALIWAG</option><option>GOA,CAMARINES SUR</option><option>AHAM OFFICE</option>
-                    <option>STA.ANA,PAMPANGA</option><option>DAU</option><option>LIPA,BATANGAS</option>
-                    <option>BICUTAN</option><option>NOVALICHES 1</option><option>LAGUNA</option>
-                    <option>TANZA,CAVITE</option><option>DAET,CAMARINES SUR</option><option>ROSARIO,LA UNION</option>
-                    <option>PILI</option><option>CALBAYOG</option><option>NAGA POLANGUI 2</option>
-                    <option>ARCOVIA,PASIG</option><option>CATANAUAN</option><option>RIVERBANK</option>
-                    <option>DUMAGUETE CITY</option><option>IBA,ZAMBALES</option><option>SIPOCOT,CAMARINES SUR</option>
-                    <option>EXHIBITORS MANILA</option><option>NUVALI,LAGUNA</option><option>DAGUPAN,PANGASINAN</option>
-                    <option>MOALBOAL</option><option>CABANATUAN,NUEVA ECIJA</option><option>SUNSTAR/PAGSANJAN</option>
-                    <option>NORTH CALOOCAN</option><option>CALAMBA,LAGUNA</option><option>FAIRVIEW MAIN</option>
-                    <option>ILOILO</option><option>DAVAO DEL SUR , DIGOS CITY</option><option>TANZA,KAWIT</option>
-                    <option>ZAMBOANGA</option><option>ILOILO CITY, ILOILO</option><option>CONDONI</option>
-                    <option>GUIMBA</option><option>DAU,PAMPANGA</option><option>MINGLANILLA,CEBU</option>
-                    <option>CALBANGA</option><option>CATARMAN</option><option>ALABANG/ TAGUIG</option>
-                    <option>DARAGA,ALBAY</option><option>LAOG CITY, ILOCOS NORTE</option>
-                    <option>Mamandil Talavera Nueva Ecija</option><option>SOUTHMALL,LAS PINAS</option>
-                    <option>PACO,MANILA</option><option>VELEZ,CAGAYAN DE ORO CITY</option>
-                    <option>COMMONWEALTH Q.C</option><option>SAN FERNANDO</option><option>MARQUEE</option>
-                    <option>BULAN,SORSOGON</option><option>BATANGAS CITY</option><option>ILIGAN,LANAO DEL NORTE</option>
-                    <option>LAS PINAS</option><option>VICTORIA CITY</option><option>PANTUKAN</option>
-                    <option>TALAVERA</option><option>CARMEN</option><option>PIODURAN</option>
-                    <option>CHERRY SHAW/ MEGA A</option><option>KALIBO</option><option>LA UNION</option>
-                    <option>LEMERY,BATANGAS</option><option>BACOOR,CAVITE</option><option>LOPEZ,QUEZON</option>
-                    <option>GENERAL TRIAS</option><option>TACLOBAN</option><option>SORSOGON</option>
-                    <option>COTABATO</option><option>FTI,TAGUIG</option><option>GUMACA QUEZON</option>
-                    <option>POLOMOLOK</option><option>NORTH RECLAMATION AREA</option><option>ANTIQUE</option>
-                    <option>BORONGAN</option><option>CATAINGAN</option><option>CALOOCAN</option>
-                    <option>LIGAO</option><option>MACTAN,CEBU</option><option>TABACO CITY,ALBAY</option>
-                    <option>BACACAY</option><option>MOA,PASAY</option><option>LIMKETKAI,CAGAYAN DE ORO</option>
-                    <option>GUAGUA</option><option>MANILA</option><option>LA FLUERZA,ALABANG- THE VILLAGE SUARE</option>
-                    <option>ILAGAN</option><option>LAOAG</option><option>PASIG</option>
-                    <option>TAGUM</option><option>FTI TAGUIG,METRO MNL</option><option>VIRAC</option>
-                    <option>TOLEDO</option><option>STO.TOMAS,BATANGAS</option><option>ARGAO CEBU</option>
-                    <option>STO.BATANGAS</option><option>PARAÑAQUE</option><option>CAGAYAN DE ORO</option>
-                    <option>LAOG</option><option>PAETE/STA.CRUZ</option><option>TARA,MASBATE</option>
-                    <option>TRECE MARTINEZ</option><option>R.A FUENTE CEBU</option><option>KADIWA</option>
-                    <option>POLANGUI 2</option><option>DELGADO</option><option>BUTUAN,AGUSAN DEL NORTE</option>
-                    <option>DINALUPIHAN</option><option>BAGO,NEGROS OCCIDENTAL</option><option>LEGASPI</option>
-                    <option>AMPARO</option><option>ILIGAN,ISABELA</option><option>PROJECT 8/LAONG-LAAN</option>
-                    <option>SAN PEDRO 2</option><option>N.EDSA,QC (THE BLOCK)</option><option>ANABU/ BUHAY NA TUBIG</option>
-                    <option>NASUGBO</option><option>JMALL</option><option>ANTIPOLO</option>
-                    <option>QUEZON AVE</option><option>LIBERTAD</option><option>CUBAO, QUEZON CITY</option>
-                    <option>TRECE CAVITE</option><option>ALLEN, NORTHERN SAMAR</option><option>CDO,MISAMIS ORIENTAL</option>
-                    <option>SILAY/TALISAY</option><option>HINOBA-AN,N. OCCIDENTAL</option><option>CANDON</option>
-                    <option>CIRCUIT MAKATI</option><option>TAGUIG</option><option>TANAY</option>
-                    <option>ALABANG,MUNTINLUPA</option><option>JARO 2 / GTMALL</option><option>BUHANGIN,DAVAO</option>
-                    <option>GENSAN</option><option>LABO,CAMARINES NORTE</option><option>MOLINO</option>
-                    <option>NACARLAN</option><option>IMUS,CAVITE</option><option>JUBAN,SORSOGON</option>
-                    <option>LIMBMANAN,CAMARINES SUR</option><option>TAYUMAN,TONDO,MNL</option><option>NAIC/ROSARIO,CAVITE</option>
-                    <option>MAKATI JAZZ</option><option>CABADBARAN</option><option>CAUAYAN,ISABELA</option>
-                    <option>BAYOMBONG,NUEVA ECIJA</option><option>VISAYAS AVE., Q.C</option><option>PUERTO PRINSESA,PALAWAN</option>
-                    <option>CLARK PAMPANGGA</option><option>KABANKALAN,BACOLOD</option><option>BINAN, LAGUNA/LOS BANOS</option>
-                    <option>LEGAZPI,ALBAY</option><option>DANAO</option><option>VALENZUELA</option>
-                    <option>PANABO</option><option>LILOAN</option><option>CADIZ,NEGROS OCCIDENTAL</option>
-                    <option>MANDAUE, CEBU CITY</option><option>OTIS</option><option>CARCAR</option>
-                </select>
-            </div>
-            <div>
-                <label style="font-size:12px; color:#666;">Dealer *</label>
-                <select id="dealer" required>
-                    <option value="">Select Dealer</option>
-                    <option>SACI</option><option>AHAM OFFICE</option><option>SVI</option><option>S&R</option>
-                    <option>BOHOL QUALITY</option><option>SSM</option><option>GAISANO GRAND</option>
-                    <option>ANSONS</option><option>GAISANO MALL</option><option>MEGASAVER</option>
-                    <option>ALSONS</option><option>METRO</option><option>CSI</option><option>CONSUMERS</option>
-                    <option>SNR</option><option>SMCO</option><option>DCWC</option><option>SAVEMORE</option>
-                    <option>ROYAL STAR</option><option>AMERICAN HOME</option><option>LCC</option>
-                    <option>MIKE'S</option><option>BODEGA HOMEPLUS</option><option>WILLY & SONS</option>
-                    <option>TARGET MALL</option><option>TIONGSAN</option><option>LANDERS</option>
-                    <option>ROBINSON</option><option>RRS</option><option>PUREGOLD</option><option>KCC</option>
-                    <option>NIG MKTG</option><option>SM HEROES HALL</option><option>R/A</option><option>CTC</option>
-                    <option>REIN AND RAINY</option><option>ASIAN HOME</option><option>FC HOME</option>
-                    <option>WAREHOUSE</option><option>HOMEWORLD</option><option>WESTERN</option>
-                    <option>ROYALSTAR</option><option>METRO</option><option>GAISANO</option>
-                </select>
-            </div>
-        </div>
-        
+        <select id="client">
+            <option>AHAM</option><option>FBC</option>
+        </select>
         <div class="date-label-group">
             <label><i class="bi bi-calendar-plus"></i> From Date</label>
             <label><i class="bi bi-calendar-minus"></i> To Date</label>
@@ -676,10 +568,11 @@
             <label><i class="bi bi-search"></i> Search by Name</label>
             <input type="text" id="searchName" placeholder="Enter employee name...">
         </div>
-        <div class="filter-group" id="outletFilterGroup">
-            <label><i class="bi bi-building"></i> Filter by Outlet</label>
-            <select id="filterOutlet">
-                <option value="">All Outlets</option>
+        <div class="filter-group" id="clientFilterGroup">
+            <label><i class="bi bi-building"></i> Filter by Client</label>
+            <select id="filterClient">
+                <option value="">All Clients</option>
+                <option>AHAM</option><option>FBC</option>
             </select>
         </div>
         <div class="filter-group">
@@ -714,13 +607,12 @@
 <script>
     // ============ USER AUTHENTICATION ============
     let currentUser = null;
-    let stafferOutlet = null;
+    let stafferClient = null;
     
     const credentials = {
         admin: 'admin123',
-        staffer_marilao: 'marilao123',
-        staffer_morato: 'morato123',
-        staffer_gen_santos: 'gensantos123'
+        staffer_aham: 'aham123',
+        staffer_fbc: 'fbc123'
     };
     
     async function showMessage(title, message, type = 'success') {
@@ -748,19 +640,17 @@
             localStorage.setItem('dtrUser', currentUser);
             localStorage.setItem('dtrUserRole', role);
             
-            if (currentUser === 'staffer_marilao') {
-                stafferOutlet = 'MARILAO,BULACAN';
-            } else if (currentUser === 'staffer_morato') {
-                stafferOutlet = 'MORATO AVE.';
-            } else if (currentUser === 'staffer_gen_santos') {
-                stafferOutlet = 'GENERAL SANTOS';
+            if (currentUser === 'staffer_aham') {
+                stafferClient = 'AHAM';
+            } else if (currentUser === 'staffer_fbc') {
+                stafferClient = 'FBC';
             } else {
-                stafferOutlet = null;
+                stafferClient = null;
             }
             
             showMainApp();
         } else {
-            showMessage('Login Failed', 'Invalid password', 'error');
+            showMessage('Login Failed', 'Invalid password for ' + role.toUpperCase(), 'error');
         }
     }
     
@@ -777,7 +667,7 @@
         }).then((result) => {
             if (result.isConfirmed) {
                 currentUser = null;
-                stafferOutlet = null;
+                stafferClient = null;
                 selectedRecords.clear();
                 localStorage.removeItem('dtrUser');
                 localStorage.removeItem('dtrUserRole');
@@ -794,29 +684,26 @@
         document.getElementById('appContainer').style.display = 'block';
         
         let displayName = '';
-        let outletBadgeText = '';
+        let clientBadgeText = '';
         
         if (currentUser === 'admin') {
             displayName = 'Admin';
-            outletBadgeText = '';
-        } else if (currentUser === 'staffer_marilao') {
+            clientBadgeText = '';
+        } else if (currentUser === 'staffer_aham') {
             displayName = 'Staffer';
-            outletBadgeText = 'MARILAO';
-        } else if (currentUser === 'staffer_morato') {
+            clientBadgeText = 'AHAM';
+        } else if (currentUser === 'staffer_fbc') {
             displayName = 'Staffer';
-            outletBadgeText = 'MORATO AVE';
-        } else if (currentUser === 'staffer_gen_santos') {
-            displayName = 'Staffer';
-            outletBadgeText = 'GEN SANTOS';
+            clientBadgeText = 'FBC';
         }
         
         document.getElementById('userRoleDisplay').innerText = displayName;
-        const outletBadge = document.getElementById('outletBadge');
-        if (outletBadgeText) {
-            outletBadge.innerText = outletBadgeText;
-            outletBadge.style.display = 'inline-block';
+        const clientBadge = document.getElementById('clientBadge');
+        if (clientBadgeText) {
+            clientBadge.innerText = clientBadgeText;
+            clientBadge.style.display = 'inline-block';
         } else {
-            outletBadge.style.display = 'none';
+            clientBadge.style.display = 'none';
         }
         
         const isAdmin = (currentUser === 'admin');
@@ -832,14 +719,17 @@
             const downloadGuideItem = document.getElementById('downloadGuideItem');
             if (downloadGuideItem) downloadGuideItem.style.display = 'none';
             
-            const outletSelect = document.getElementById('outlet');
-            if (stafferOutlet) {
-                outletSelect.value = stafferOutlet;
-                outletSelect.disabled = true;
+            const clientSelect = document.getElementById('client');
+            if (stafferClient === 'AHAM') {
+                clientSelect.value = 'AHAM';
+                clientSelect.disabled = true;
+            } else if (stafferClient === 'FBC') {
+                clientSelect.value = 'FBC';
+                clientSelect.disabled = true;
             }
             
-            const outletFilterGroup = document.getElementById('outletFilterGroup');
-            if (outletFilterGroup) outletFilterGroup.style.display = 'none';
+            const clientFilterGroup = document.getElementById('clientFilterGroup');
+            if (clientFilterGroup) clientFilterGroup.style.display = 'none';
             
         } else {
             const adminPrintBar = document.getElementById('adminPrintBar');
@@ -852,11 +742,11 @@
             const downloadGuideItem = document.getElementById('downloadGuideItem');
             if (downloadGuideItem) downloadGuideItem.style.display = 'list-item';
             
-            const outletSelect = document.getElementById('outlet');
-            outletSelect.disabled = false;
+            const clientSelect = document.getElementById('client');
+            clientSelect.disabled = false;
             
-            const outletFilterGroup = document.getElementById('outletFilterGroup');
-            if (outletFilterGroup) outletFilterGroup.style.display = 'block';
+            const clientFilterGroup = document.getElementById('clientFilterGroup');
+            if (clientFilterGroup) clientFilterGroup.style.display = 'block';
         }
         
         document.getElementById('modeToggle').style.display = 'flex';
@@ -866,14 +756,12 @@
     function checkSession() {
         const savedUser = localStorage.getItem('dtrUser');
         const savedRole = localStorage.getItem('dtrUserRole');
-        if (savedUser && savedRole) {
+        if (savedUser && savedRole && (savedUser === 'admin' || savedUser === 'staffer_aham' || savedUser === 'staffer_fbc')) {
             currentUser = savedUser;
-            if (currentUser === 'staffer_marilao') {
-                stafferOutlet = 'MARILAO,BULACAN';
-            } else if (currentUser === 'staffer_morato') {
-                stafferOutlet = 'MORATO AVE.';
-            } else if (currentUser === 'staffer_gen_santos') {
-                stafferOutlet = 'GENERAL SANTOS';
+            if (currentUser === 'staffer_aham') {
+                stafferClient = 'AHAM';
+            } else if (currentUser === 'staffer_fbc') {
+                stafferClient = 'FBC';
             }
             showMainApp();
         }
@@ -916,21 +804,6 @@
     }
     initTheme();
 
-    // Populate filter dropdowns
-    function populateFilters() {
-        const outlets = [...new Set(allRecords.map(r => r.outlet).filter(Boolean))];
-        const filterOutlet = document.getElementById('filterOutlet');
-        if (filterOutlet) {
-            filterOutlet.innerHTML = '<option value="">All Outlets</option>';
-            outlets.forEach(outlet => {
-                const option = document.createElement('option');
-                option.value = outlet;
-                option.textContent = outlet;
-                filterOutlet.appendChild(option);
-            });
-        }
-    }
-
     async function loadRecords() {
         try {
             const statusDiv = document.getElementById('status');
@@ -952,12 +825,12 @@
             
             let data = await response.json();
             
-            if (stafferOutlet) {
-                data = data.filter(record => record.outlet === stafferOutlet);
+            if (stafferClient) {
+                data = data.filter(record => record.department === stafferClient);
             }
             
             allRecords = data || [];
-            populateFilters();
+            
             applyFiltersAndRender();
             
             if(statusDiv) {
@@ -977,13 +850,13 @@
 
     function applyFiltersAndRender() {
         const searchTerm = document.getElementById('searchName') ? document.getElementById('searchName').value.toLowerCase() : '';
-        const filterOutlet = document.getElementById('filterOutlet') ? document.getElementById('filterOutlet').value : '';
+        const filterClient = document.getElementById('filterClient') ? document.getElementById('filterClient').value : '';
         const filterDateFrom = document.getElementById('filterDateFrom') ? document.getElementById('filterDateFrom').value : '';
         const filterDateTo = document.getElementById('filterDateTo') ? document.getElementById('filterDateTo').value : '';
         
         let filtered = allRecords.filter(r => {
             if (searchTerm && !(r.employee_name || '').toLowerCase().includes(searchTerm)) return false;
-            if (filterOutlet && r.outlet !== filterOutlet) return false;
+            if (filterClient && r.department !== filterClient) return false;
             if (filterDateFrom && r.cutoff_from && r.cutoff_from < filterDateFrom) return false;
             if (filterDateTo && r.cutoff_to && r.cutoff_to > filterDateTo) return false;
             return true;
@@ -994,30 +867,29 @@
         updateSelectedInfo();
     }
 
-    async function checkDuplicateSubmission(name, outlet, dealer, fromDate, toDate, excludeId = null) {
+    async function checkDuplicateSubmission(name, client, fromDate, toDate, excludeId = null) {
         const cutoffRange = `${fromDate} to ${toDate}`;
         return allRecords.some(record => {
             if (excludeId && record.id === excludeId) return false;
             return record.employee_name === name && 
-                   record.outlet === outlet && 
-                   record.dealer === dealer &&
+                   record.department === client && 
                    record.cutoff_range === cutoffRange;
         });
     }
 
+    // ============ FIXED SAVE RECORD ============
     async function saveRecord() {
         const name = document.getElementById('empName').value;
-        let outlet = document.getElementById('outlet').value;
-        let dealer = document.getElementById('dealer').value;
+        let client = document.getElementById('client').value;
         const fromDate = document.getElementById('fromDate').value;
         const toDate = document.getElementById('toDate').value;
         const remarks = document.getElementById('remarks').value;
         
-        if (stafferOutlet) {
-            outlet = stafferOutlet;
+        if (stafferClient) {
+            client = stafferClient;
         }
         
-        if (!name || !outlet || !dealer || !fromDate || !toDate) {
+        if (!name || !client || !fromDate || !toDate) {
             await showMessage('Missing Fields', 'Please fill all required fields', 'warning');
             return;
         }
@@ -1027,10 +899,11 @@
             return;
         }
         
+        // Check for duplicate only when creating new record (not when editing)
         if (!editingId) {
-            const isDuplicate = await checkDuplicateSubmission(name, outlet, dealer, fromDate, toDate);
+            const isDuplicate = await checkDuplicateSubmission(name, client, fromDate, toDate);
             if (isDuplicate) {
-                await showMessage('Duplicate Entry', `Employee "${name}" already has a DTR record for outlet "${outlet}" with dealer "${dealer}" for cutoff period ${fromDate} to ${toDate}. Only one submission per cutoff is allowed.`, 'error');
+                await showMessage('Duplicate Entry', `Employee "${name}" already has a DTR record for cutoff period ${fromDate} to ${toDate}. Only one submission per cutoff is allowed.`, 'error');
                 return;
             }
         }
@@ -1039,8 +912,7 @@
         
         const recordData = {
             employee_name: name,
-            outlet: outlet,
-            dealer: dealer,
+            department: client,
             cutoff_from: fromDate,
             cutoff_to: toDate,
             cutoff_range: cutoffRange,
@@ -1051,6 +923,7 @@
         
         try {
             if (editingId) {
+                // UPDATE existing record
                 const response = await fetch(`${SUPABASE_URL}/rest/v1/dtr_records?id=eq.${editingId}`, {
                     method: 'PATCH',
                     headers: {
@@ -1065,6 +938,7 @@
                 await showMessage('Success!', 'Record updated successfully!', 'success');
                 editingId = null;
             } else {
+                // CREATE new record
                 const response = await fetch(`${SUPABASE_URL}/rest/v1/dtr_records`, {
                     method: 'POST',
                     headers: {
@@ -1079,9 +953,8 @@
                 await showMessage('Success!', 'Record saved to database!', 'success');
             }
             
+            // Reset form
             document.getElementById('empName').value = '';
-            document.getElementById('outlet').value = '';
-            document.getElementById('dealer').value = '';
             document.getElementById('remarks').value = '';
             document.getElementById('preview').style.display = 'none';
             document.getElementById('preview').src = '';
@@ -1097,20 +970,25 @@
         }
     }
 
+    // ============ FIXED EDIT RECORD ============
     function editRecord(record) {
-        if (stafferOutlet && record.outlet !== stafferOutlet) {
-            showMessage('Access Denied', 'You can only edit records for your assigned outlet: ' + stafferOutlet, 'error');
+        // Check permission for staffers
+        if (stafferClient && record.department !== stafferClient) {
+            showMessage('Access Denied', 'You can only edit records for your assigned client: ' + stafferClient, 'error');
             return;
         }
         
+        // Set editing ID
         editingId = record.id;
+        
+        // Populate form with record data
         document.getElementById('empName').value = record.employee_name;
-        document.getElementById('outlet').value = record.outlet;
-        document.getElementById('dealer').value = record.dealer;
+        document.getElementById('client').value = record.department;
         document.getElementById('fromDate').value = record.cutoff_from || '';
         document.getElementById('toDate').value = record.cutoff_to || '';
         document.getElementById('remarks').value = record.remarks || '';
         
+        // Load image preview
         if (record.image_data) {
             document.getElementById('preview').src = record.image_data;
             document.getElementById('preview').style.display = 'block';
@@ -1120,10 +998,14 @@
             currentImage = null;
         }
         
+        // Change button to Update mode
         document.getElementById('saveBtn').innerHTML = '<i class="bi bi-pencil"></i> Update Record';
         document.getElementById('saveBtn').style.background = '#f59e0b';
         
+        // Scroll to form
         document.querySelector('.form-area').scrollIntoView({ behavior: 'smooth' });
+        
+        // Show edit mode message
         showMessage('Edit Mode', `You are now editing record for "${record.employee_name}". Make your changes and click Update.`, 'info');
     }
 
@@ -1236,7 +1118,7 @@
             
             for (let i = 0; i < toDownload.length; i++) {
                 const record = toDownload[i];
-                const fileName = `${record.employee_name.replace(/[^a-z0-9]/gi, '_')}_${record.outlet}_${record.dealer}_${record.cutoff_from}_${record.id}.png`;
+                const fileName = `${record.employee_name.replace(/[^a-z0-9]/gi, '_')}_${record.department}_${record.cutoff_from}_${record.id}.png`;
                 
                 const imageData = record.image_data;
                 const base64Data = imageData.split(',')[1];
@@ -1294,13 +1176,13 @@
 
     function getFilteredRecords() {
         const searchTerm = document.getElementById('searchName') ? document.getElementById('searchName').value.toLowerCase() : '';
-        const filterOutlet = document.getElementById('filterOutlet') ? document.getElementById('filterOutlet').value : '';
+        const filterClient = document.getElementById('filterClient') ? document.getElementById('filterClient').value : '';
         const filterDateFrom = document.getElementById('filterDateFrom') ? document.getElementById('filterDateFrom').value : '';
         const filterDateTo = document.getElementById('filterDateTo') ? document.getElementById('filterDateTo').value : '';
         
         return allRecords.filter(r => {
             if (searchTerm && !(r.employee_name || '').toLowerCase().includes(searchTerm)) return false;
-            if (filterOutlet && r.outlet !== filterOutlet) return false;
+            if (filterClient && r.department !== filterClient) return false;
             if (filterDateFrom && r.cutoff_from && r.cutoff_from < filterDateFrom) return false;
             if (filterDateTo && r.cutoff_to && r.cutoff_to > filterDateTo) return false;
             return true;
@@ -1388,6 +1270,7 @@
             if (isAdmin) {
                 actionButtons = `<button class="delete-btn" onclick="deleteRecord(${record.id})"><i class="bi bi-trash"></i> Delete</button>`;
             } else {
+                // Use onclick with record data as string
                 actionButtons = `<button class="edit-btn" onclick='editRecord(${JSON.stringify(record).replace(/'/g, "&#39;")})'><i class="bi bi-pencil"></i> Edit</button>`;
             }
             
@@ -1397,8 +1280,7 @@
                 <img src="${record.image_data}" class="card-img" alt="DTR" onclick="window.open(this.src)">
                 <div class="card-body">
                     <div class="name">👤 ${escapeHtml(record.employee_name)}</div>
-                    <div class="outlet">📍 ${escapeHtml(record.outlet)}</div>
-                    <div class="dealer">🏪 Dealer: ${escapeHtml(record.dealer)}</div>
+                    <div class="client">🏢 ${escapeHtml(record.department)}</div>
                     <div class="date">📅 Cutoff: ${record.cutoff_range || record.cutoff_from + ' → ' + record.cutoff_to}</div>
                     ${record.remarks ? `<div class="date">💬 ${escapeHtml(record.remarks)}</div>` : ''}
                     ${actionButtons}
@@ -1414,8 +1296,8 @@
         const now = new Date();
         const thisMonth = allRecords.filter(r => r.created_at && new Date(r.created_at).getMonth() === now.getMonth());
         if(document.getElementById('monthCount')) document.getElementById('monthCount').textContent = thisMonth.length;
-        const uniqueOutlets = new Set(allRecords.map(r => r.outlet));
-        if(document.getElementById('outletCount')) document.getElementById('outletCount').textContent = uniqueOutlets.size;
+        const uniqueClients = new Set(allRecords.map(r => r.department));
+        if(document.getElementById('clientCount')) document.getElementById('clientCount').textContent = uniqueClients.size;
     }
 
     function escapeHtml(text) {
@@ -1425,6 +1307,7 @@
         return div.innerHTML;
     }
 
+    // Image preview
     if(document.getElementById('imageFile')) {
         document.getElementById('imageFile').addEventListener('change', function(e) {
             const file = e.target.files[0];
@@ -1441,13 +1324,15 @@
         });
     }
 
+    // Event listeners for live filters
     if(document.getElementById('searchName')) {
         document.getElementById('searchName').addEventListener('input', applyFiltersAndRender);
-        document.getElementById('filterOutlet').addEventListener('change', applyFiltersAndRender);
+        document.getElementById('filterClient').addEventListener('change', applyFiltersAndRender);
         document.getElementById('filterDateFrom').addEventListener('change', applyFiltersAndRender);
         document.getElementById('filterDateTo').addEventListener('change', applyFiltersAndRender);
     }
     
+    // Print and delete buttons
     if(document.getElementById('selectAllBtn')) {
         document.getElementById('selectAllBtn').addEventListener('click', selectAllFiltered);
         document.getElementById('deselectAllBtn').addEventListener('click', deselectAll);
@@ -1456,21 +1341,25 @@
         document.getElementById('downloadSelectedBtn').addEventListener('click', downloadSelectedAsZip);
     }
     
+    // Save button
     if(document.getElementById('saveBtn')) {
         document.getElementById('saveBtn').addEventListener('click', saveRecord);
     }
 
+    // Set default dates
     const today = new Date();
     const firstDay = new Date(today.getFullYear(), today.getMonth(), 1).toISOString().split('T')[0];
     const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0).toISOString().split('T')[0];
     if(document.getElementById('fromDate')) document.getElementById('fromDate').value = firstDay;
     if(document.getElementById('toDate')) document.getElementById('toDate').value = lastDay;
 
+    // Login button
     document.getElementById('loginBtn').addEventListener('click', login);
     if(document.getElementById('logoutBtn')) {
         document.getElementById('logoutBtn').addEventListener('click', logout);
     }
 
+    // Check session on load
     checkSession();
 </script>
 </body>
