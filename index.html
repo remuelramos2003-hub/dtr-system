@@ -190,7 +190,7 @@
         .print-bar button{width:auto;padding:8px 16px;}
         .grid{
             display:grid;
-            grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
+            grid-template-columns:repeat(auto-fill,minmax(340px,1fr));
             gap:20px;
             max-height:550px;
             overflow-y:auto;
@@ -208,7 +208,12 @@
             box-shadow:0 8px 20px var(--hover-shadow);
             border-color:#4361ee;
         }
-        .card-img{width:100%;height:200px;object-fit:cover;cursor:pointer;}
+        .card-img{
+            width:100%;
+            height:200px;
+            object-fit:cover;
+            cursor:pointer;
+        }
         .card-body{padding:15px;}
         .name{font-weight:bold;color:var(--text-color);}
         .outlet-text{color:#10b981;font-size:0.85em;margin:3px 0;}
@@ -302,6 +307,21 @@
             transition:all 0.3s;
         }
         .mode-toggle:hover{transform:scale(1.05);}
+        .thumbnail-gallery{
+            display:flex;
+            flex-wrap:wrap;
+            gap:5px;
+            margin-top:5px;
+        }
+        .thumbnail-gallery img{
+            width:50px;
+            height:50px;
+            object-fit:cover;
+            border-radius:4px;
+            cursor:pointer;
+            border:1px solid var(--border-color);
+        }
+        .thumbnail-gallery img:hover{transform:scale(1.1);}
         @media(max-width:768px){
             .stats{grid-template-columns:repeat(3,1fr);}
             .two-columns{grid-template-columns:1fr;}
@@ -527,7 +547,7 @@
         await Swal.fire({ title, text: message, icon: type, confirmButtonColor: '#4361ee' });
     }
     
-    // DARK MODE TOGGLE - FIXED
+    // DARK MODE TOGGLE
     function toggleDarkMode() {
         document.body.classList.toggle('dark-mode');
         const btn = document.getElementById('modeToggle');
@@ -540,7 +560,6 @@
         }
     }
     
-    // CHECK SAVED DARK MODE PREFERENCE
     function checkDarkMode() {
         const darkMode = localStorage.getItem('darkMode');
         if (darkMode === 'enabled') {
@@ -552,7 +571,6 @@
         }
     }
     
-    // Admin selector for AHAM/FBC
     function selectDealerType(type) {
         adminDealerType = type;
         document.getElementById('btnAham').classList.remove('active');
@@ -563,7 +581,6 @@
             document.getElementById('dealerContainer').style.display = 'block';
         } else {
             document.getElementById('btnFbc').classList.add('active');
-            // For FBC, hide outlet and dealer (FBC has no outlet/dealer)
             document.getElementById('outletContainer').style.display = 'none';
             document.getElementById('dealerContainer').style.display = 'none';
         }
@@ -606,9 +623,7 @@
         const adminSelector = document.getElementById('adminSelector');
         
         if (userRole === 'admin') {
-            // Admin: Show AHAM/FBC selector
             adminSelector.classList.remove('hidden');
-            // Default to AHAM
             selectDealerType('AHAM');
             dealerSelect.disabled = false;
             outletSelect.disabled = false;
@@ -736,9 +751,7 @@
         });
     }
     
-    // FIXED SAVE RECORD FUNCTION
     async function saveRecord() {
-        // Get form values
         const name = document.getElementById('empName').value.trim();
         let outlet = document.getElementById('outlet').value;
         let dealer = document.getElementById('dealer').value;
@@ -746,23 +759,19 @@
         const toDate = document.getElementById('toDate').value;
         const remarks = document.getElementById('remarks').value;
         
-        // For Admin: use the selected dealer type (AHAM or FBC)
         if (userRole === 'admin') {
             if (adminDealerType === 'AHAM') {
                 dealer = 'AHAM OFFICE';
-                // Outlet is required for AHAM
                 if (!outlet || outlet === '') {
                     showMessage('Error', 'Please select an outlet for AHAM', 'error');
                     return;
                 }
             } else {
                 dealer = 'FBC';
-                // For FBC, outlet is NOT required - set to null or 'N/A'
                 outlet = null;
             }
         }
         
-        // For staffers, override dealer with their assigned one
         if (userRole === 'staffer') {
             if (userAssignment === 'AHAM') {
                 dealer = 'AHAM OFFICE';
@@ -772,12 +781,10 @@
                 }
             } else if (userAssignment === 'FBC') {
                 dealer = 'FBC';
-                // For FBC staffers, outlet is NOT required
                 outlet = null;
             }
         }
         
-        // Validation
         if (!name) {
             showMessage('Error', 'Please enter employee name', 'error');
             return;
@@ -799,7 +806,6 @@
         const batchId = Date.now().toString();
         let successCount = 0;
         
-        // Show loading
         const saveBtn = document.getElementById('saveBtn');
         const originalText = saveBtn.innerHTML;
         saveBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Saving...';
@@ -847,7 +853,6 @@
             if (successCount > 0) {
                 await showMessage('Success!', `${successCount} image(s) saved successfully!`, 'success');
                 
-                // Reset form
                 document.getElementById('empName').value = '';
                 document.getElementById('remarks').value = '';
                 document.getElementById('imageFiles').value = '';
@@ -858,7 +863,6 @@
                 }
                 currentImages = [];
                 
-                // Reset dates to current month
                 const today = new Date();
                 document.getElementById('fromDate').value = new Date(today.getFullYear(), today.getMonth(), 1).toISOString().split('T')[0];
                 document.getElementById('toDate').value = new Date(today.getFullYear(), today.getMonth() + 1, 0).toISOString().split('T')[0];
@@ -872,6 +876,69 @@
             saveBtn.innerHTML = originalText;
             saveBtn.disabled = false;
         }
+    }
+    
+    // FIXED: Render grid with all images in a gallery
+    function renderGrid(records) {
+        const grid = document.getElementById('recordsGrid');
+        if (records.length === 0) { 
+            grid.innerHTML = '<div class="loading">No records found.</div>'; 
+            return; 
+        }
+        
+        // Group by batch_id
+        const grouped = {};
+        records.forEach(r => { 
+            const key = r.batch_id || r.id; 
+            if (!grouped[key]) {
+                grouped[key] = { 
+                    ...r, 
+                    images: [] 
+                };
+            }
+            grouped[key].images.push(r.image_data);
+        });
+        
+        const list = Object.values(grouped);
+        const isAdmin = userRole === 'admin';
+        
+        grid.innerHTML = list.map(g => {
+            // Show first image as main, and thumbnails for others
+            const mainImage = g.images[0] || '';
+            const thumbnails = g.images.slice(1);
+            
+            return `
+            <div class="card">
+                ${isAdmin ? `<input type="checkbox" class="select-checkbox" data-id="${g.batch_id || g.id}" ${selectedRecords.has(g.batch_id || g.id) ? 'checked' : ''}>` : ''}
+                <img src="${mainImage}" class="card-img" onclick="window.open(this.src)">
+                <div class="card-body">
+                    <div class="name">👤 ${escapeHtml(g.employee_name)}</div>
+                    <div class="outlet-text">📍 ${escapeHtml(g.outlet || 'N/A')}</div>
+                    <div class="dealer-text">🏪 ${escapeHtml(g.dealer)}</div>
+                    <div class="date">📅 ${g.cutoff_range}</div>
+                    ${g.remarks ? `<div class="date">💬 ${escapeHtml(g.remarks)}</div>` : ''}
+                    <div class="batch-badge">📸 ${g.images.length} images</div>
+                    ${thumbnails.length > 0 ? `
+                        <div class="thumbnail-gallery">
+                            ${thumbnails.map(img => `<img src="${img}" onclick="event.stopPropagation(); window.open(this.src)">`).join('')}
+                        </div>
+                    ` : ''}
+                    ${isAdmin ? `<button class="delete-btn" onclick="deleteRecord('${g.batch_id || g.id}')">Delete Batch</button>` : ''}
+                </div>
+            </div>
+        `}).join('');
+        
+        // Attach checkbox events
+        document.querySelectorAll('.select-checkbox').forEach(cb => {
+            cb.addEventListener('change', (e) => {
+                const id = e.target.dataset.id;
+                if (e.target.checked) selectedRecords.add(id);
+                else selectedRecords.delete(id);
+                document.getElementById('deleteCount').innerText = selectedRecords.size;
+                document.getElementById('printCount').innerText = selectedRecords.size;
+                document.getElementById('downloadCount').innerText = selectedRecords.size;
+            });
+        });
     }
     
     async function deleteRecord(batchId) {
@@ -902,17 +969,36 @@
     }
     
     async function printSelected() {
-        const toPrint = allRecords.filter(r => selectedRecords.has(r.batch_id || r.id));
-        if (toPrint.length === 0) { showMessage('No Selection', 'Select records to print', 'warning'); return; }
+        const toPrint = [];
+        allRecords.forEach(r => {
+            if (selectedRecords.has(r.batch_id || r.id)) {
+                toPrint.push(r.image_data);
+            }
+        });
+        
+        if (toPrint.length === 0) { 
+            showMessage('No Selection', 'Select records to print', 'warning'); 
+            return; 
+        }
         
         const win = window.open('', '_blank');
-        win.document.write(`<html><head><title>DTR Print</title><style>.page{page-break-after:always;height:100vh;display:flex;justify-content:center;align-items:center;} img{max-width:100%;max-height:100%;object-fit:contain;}</style></head><body>${toPrint.map(r => `<div class="page"><img src="${r.image_data}"></div>`).join('')}</body></html>`);
-        win.document.close(); win.print();
+        win.document.write(`<html><head><title>DTR Print</title><style>.page{page-break-after:always;height:100vh;display:flex;justify-content:center;align-items:center;} img{max-width:100%;max-height:100%;object-fit:contain;}</style></head><body>${toPrint.map(img => `<div class="page"><img src="${img}"></div>`).join('')}</body></html>`);
+        win.document.close(); 
+        win.print();
     }
     
     async function downloadSelected() {
-        const toDownload = allRecords.filter(r => selectedRecords.has(r.batch_id || r.id));
-        if (toDownload.length === 0) { showMessage('No Selection', 'Select records to download', 'warning'); return; }
+        const toDownload = [];
+        allRecords.forEach(r => {
+            if (selectedRecords.has(r.batch_id || r.id)) {
+                toDownload.push(r.image_data);
+            }
+        });
+        
+        if (toDownload.length === 0) { 
+            showMessage('No Selection', 'Select records to download', 'warning'); 
+            return; 
+        }
         
         const btn = document.getElementById('downloadSelectedBtn');
         const orig = btn.innerHTML;
@@ -923,56 +1009,17 @@
             const zip = new JSZip();
             const folder = zip.folder('DTR_Records');
             for (let i = 0; i < toDownload.length; i++) {
-                const r = toDownload[i];
-                const fileName = `${r.employee_name.replace(/[^a-z0-9]/gi, '_')}_${i}.png`;
-                const b64 = r.image_data.split(',')[1];
+                const b64 = toDownload[i].split(',')[1];
                 const bin = atob(b64);
                 const arr = new Uint8Array(bin.length);
                 for (let j = 0; j < bin.length; j++) arr[j] = bin.charCodeAt(j);
-                folder.file(fileName, arr);
+                folder.file(`image_${i+1}.png`, arr);
             }
             const content = await zip.generateAsync({ type: 'blob' });
             saveAs(content, `DTR_Records_${Date.now()}.zip`);
             showMessage('Complete', `${toDownload.length} images downloaded`, 'success');
         } catch(e) { showMessage('Error', e.message, 'error'); }
         finally { btn.innerHTML = orig; btn.disabled = false; }
-    }
-    
-    function renderGrid(records) {
-        const grid = document.getElementById('recordsGrid');
-        if (records.length === 0) { grid.innerHTML = '<div class="loading">No records found.</div>'; return; }
-        
-        const grouped = {};
-        records.forEach(r => { const key = r.batch_id || r.id; if (!grouped[key]) grouped[key] = { ...r, images: [r.image_data] }; else grouped[key].images.push(r.image_data); });
-        const list = Object.values(grouped);
-        const isAdmin = userRole === 'admin';
-        
-        grid.innerHTML = list.map(g => `
-            <div class="card">
-                ${isAdmin ? `<input type="checkbox" class="select-checkbox" data-id="${g.batch_id || g.id}" ${selectedRecords.has(g.batch_id || g.id) ? 'checked' : ''}>` : ''}
-                <img src="${g.images[0]}" class="card-img" onclick="window.open(this.src)">
-                <div class="card-body">
-                    <div class="name">👤 ${escapeHtml(g.employee_name)}</div>
-                    <div class="outlet-text">📍 ${escapeHtml(g.outlet)}</div>
-                    <div class="dealer-text">🏪 ${escapeHtml(g.dealer)}</div>
-                    <div class="date">📅 ${g.cutoff_range}</div>
-                    ${g.remarks ? `<div class="date">💬 ${escapeHtml(g.remarks)}</div>` : ''}
-                    <div class="batch-badge">📸 ${g.images.length} images</div>
-                    ${isAdmin ? `<button class="delete-btn" onclick="deleteRecord('${g.batch_id || g.id}')">Delete</button>` : ''}
-                </div>
-            </div>
-        `).join('');
-        
-        document.querySelectorAll('.select-checkbox').forEach(cb => {
-            cb.addEventListener('change', (e) => {
-                const id = e.target.dataset.id;
-                if (e.target.checked) selectedRecords.add(id);
-                else selectedRecords.delete(id);
-                document.getElementById('deleteCount').innerText = selectedRecords.size;
-                document.getElementById('printCount').innerText = selectedRecords.size;
-                document.getElementById('downloadCount').innerText = selectedRecords.size;
-            });
-        });
     }
     
     function updateStats() {
