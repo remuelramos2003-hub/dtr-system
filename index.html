@@ -6,13 +6,11 @@
     <title>DTR System - Admin & Staffer Portal</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-    <!-- SweetAlert for beautiful message boxes -->
+    <!-- SweetAlert -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <!-- JSZip Library for creating ZIP files -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     <style>
-        /* Light Mode (Default) */
         :root {
             --bg-color: #f0f2f5;
             --card-bg: white;
@@ -22,9 +20,11 @@
             --form-bg: #f8f9fa;
             --stat-bg: #f8f9fa;
             --hover-shadow: rgba(0,0,0,0.1);
+            --success-bg: #d4edda;
+            --warning-bg: #fff3cd;
+            --info-bg: #d1ecf1;
         }
         
-        /* Dark Mode */
         body.dark-mode {
             --bg-color: #1a1a2e;
             --card-bg: #16213e;
@@ -34,6 +34,9 @@
             --form-bg: #1e293b;
             --stat-bg: #1e293b;
             --hover-shadow: rgba(255,255,255,0.1);
+            --success-bg: #0d3b2e;
+            --warning-bg: #3d2e1e;
+            --info-bg: #1e3a5f;
         }
         
         body {
@@ -44,20 +47,18 @@
             color: var(--text-color);
         }
         .container{
-            max-width:1300px;
+            max-width:1400px;
             margin:0 auto;
             background:var(--card-bg);
             border-radius:20px;
             padding:20px;
             box-shadow:0 1px 3px rgba(0,0,0,0.1);
-            transition: all 0.3s ease;
         }
         h1{
             text-align:center;
             color:var(--text-color);
             margin-bottom:20px;
         }
-        /* Login Page Styles */
         .login-container {
             max-width: 450px;
             margin: 100px auto;
@@ -71,14 +72,6 @@
             margin-bottom: 10px;
             color: var(--text-color);
         }
-        .login-container p {
-            color: #666;
-            margin-bottom: 30px;
-        }
-        .login-container input {
-            margin-bottom: 20px;
-        }
-        /* Improved User Badge */
         .user-badge {
             position: fixed;
             top: 20px;
@@ -94,30 +87,6 @@
             display: flex;
             align-items: center;
             gap: 12px;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.2);
-        }
-        .user-badge i {
-            font-size: 16px;
-        }
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .user-role {
-            background: rgba(255,255,255,0.2);
-            padding: 4px 10px;
-            border-radius: 30px;
-            font-size: 12px;
-        }
-        .outlet-badge {
-            background: #10b981;
-            color: white;
-            padding: 4px 12px;
-            border-radius: 30px;
-            font-size: 12px;
-            font-weight: 600;
         }
         .logout-btn {
             background: rgba(220, 53, 69, 0.9);
@@ -137,18 +106,24 @@
             background: #dc3545;
             transform: scale(1.02);
         }
+        .role-badge {
+            background: rgba(255,255,255,0.2);
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-size: 12px;
+        }
         .status{
             text-align:center;
             padding:10px;
             border-radius:10px;
             margin-bottom:20px;
         }
-        .status.success{background:#d4edda;color:#155724;}
+        .status.success{background:var(--success-bg);color:#155724;}
         .status.error{background:#f8d7da;color:#721c24;}
-        .status.info{background:#d1ecf1;color:#0c5460;}
+        .status.info{background:var(--info-bg);color:#0c5460;}
         .stats{
             display:grid;
-            grid-template-columns:repeat(4,1fr);
+            grid-template-columns:repeat(5,1fr);
             gap:15px;
             margin-bottom:25px;
         }
@@ -221,9 +196,6 @@
             color:#666;
             font-weight:500;
         }
-        body.dark-mode .filter-group label{
-            color:#94a3b8;
-        }
         .filter-group input,.filter-group select{
             width:100%;
             margin:0;
@@ -240,11 +212,6 @@
             width:auto;
             padding:8px 16px;
         }
-        .print-bar .selected-info{
-            color:#4361ee;
-            font-size:14px;
-            margin-left:auto;
-        }
         .grid{
             display:grid;
             grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
@@ -259,18 +226,12 @@
             border:1px solid var(--border-color);
             border-radius:12px;
             overflow:hidden;
-            box-shadow:0 1px 3px rgba(0,0,0,0.05);
-            position:relative;
             transition: all 0.2s;
         }
         .card:hover{
             transform: translateY(-4px);
             box-shadow: 0 8px 20px var(--hover-shadow);
             border-color: #4361ee;
-        }
-        .card.selected{
-            border:3px solid #4361ee;
-            background: rgba(67,97,238,0.05);
         }
         .card-img{
             width:100%;
@@ -300,8 +261,14 @@
             color:#666;
             font-size:0.8em;
         }
-        body.dark-mode .date{
-            color:#94a3b8;
+        .batch-badge{
+            background:#4361ee;
+            color:white;
+            padding:2px 8px;
+            border-radius:20px;
+            font-size:10px;
+            display:inline-block;
+            margin-top:5px;
         }
         .delete-btn{
             background:#dc3545;
@@ -314,10 +281,6 @@
             cursor:pointer;
             transition: all 0.2s;
         }
-        .delete-btn:hover{
-            background:#c82333;
-            transform: translateY(-1px);
-        }
         .edit-btn{
             background:#f59e0b;
             color:white;
@@ -329,19 +292,6 @@
             cursor:pointer;
             transition: all 0.2s;
         }
-        .edit-btn:hover{
-            background:#d97706;
-            transform: translateY(-1px);
-        }
-        .select-checkbox{
-            position:absolute;
-            top:10px;
-            right:10px;
-            width:22px;
-            height:22px;
-            cursor:pointer;
-            z-index:10;
-        }
         .preview-img{
             max-width:100%;
             max-height:150px;
@@ -350,27 +300,12 @@
             display:none;
         }
         .guide-box{
-            background: #e3f2fd;
+            background: var(--info-bg);
             border-left: 4px solid #4361ee;
             padding: 12px 15px;
             border-radius: 10px;
             margin-bottom: 20px;
             font-size: 14px;
-        }
-        body.dark-mode .guide-box{
-            background: #1e293b;
-            border-left-color: #4361ee;
-            color: #e2e8f0;
-        }
-        .guide-box i{
-            color: #4361ee;
-            margin-right: 8px;
-        }
-        .guide-box ul{
-            margin: 8px 0 0 20px;
-        }
-        .guide-box li{
-            margin: 4px 0;
         }
         .mode-toggle{
             position: fixed;
@@ -389,11 +324,6 @@
             justify-content: center;
             box-shadow: 0 4px 12px rgba(0,0,0,0.15);
             z-index: 1000;
-            transition: all 0.3s;
-        }
-        .mode-toggle:hover{
-            transform: scale(1.05);
-            background: #304ff2;
         }
         .date-label-group{
             display: flex;
@@ -406,77 +336,64 @@
             color: #666;
             margin-bottom: 0;
         }
-        body.dark-mode .date-label-group label{
-            color: #94a3b8;
-        }
-        .btn-delete-selected{
-            background: #dc3545;
-        }
-        .btn-delete-selected:hover{
-            background: #c82333;
-        }
-        .btn-download{
-            background: #8b5cf6;
-        }
-        .btn-download:hover{
-            background: #7c3aed;
-        }
-        .hidden{
-            display: none;
-        }
         .two-columns {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 15px;
         }
+        .image-preview-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .preview-item {
+            position: relative;
+        }
+        .preview-item img {
+            width: 100%;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+        .remove-image {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #dc3545;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        .submission-status {
+            font-size: 12px;
+            padding: 4px 8px;
+            border-radius: 20px;
+            display: inline-block;
+            background: #10b981;
+            color: white;
+        }
         @media(max-width:768px){
-            .stats{grid-template-columns:repeat(2,1fr);}
-            .mode-toggle{
-                bottom: 15px;
-                right: 15px;
-                width: 45px;
-                height: 45px;
-                font-size: 20px;
-            }
-            .filter-group{
-                min-width:100%;
-            }
-            .user-badge {
-                top: 10px;
-                right: 10px;
-                padding: 6px 12px;
-                font-size: 11px;
-            }
-            .logout-btn {
-                padding: 4px 10px;
-                font-size: 10px;
-            }
-            .two-columns {
-                grid-template-columns: 1fr;
-                gap: 10px;
-            }
+            .stats{grid-template-columns:repeat(3,1fr);}
+            .two-columns{grid-template-columns:1fr;gap:10px;}
+            .filter-group{min-width:100%;}
+            .user-badge{top:10px;right:10px;padding:6px 12px;font-size:11px;}
         }
         @media print{
-            .form-area, .filter-bar, .print-bar, .stats, .delete-btn, .edit-btn, .select-checkbox, .status, .mode-toggle, .guide-box, .btn-delete-selected, .user-badge{
+            .form-area, .filter-bar, .print-bar, .stats, .delete-btn, .edit-btn, .status, .mode-toggle, .guide-box, .user-badge{
                 display:none !important;
-            }
-            * {
-                margin: 0;
-                padding: 0;
-                box-sizing: border-box;
-            }
-            body {
-                margin: 0;
-                padding: 0;
-                background: white;
             }
             .print-page {
                 page-break-after: always;
                 break-after: page;
-                margin: 0;
-                padding: 0;
                 width: 100%;
-                height: 100%;
+                height: 100vh;
                 display: flex;
                 justify-content: center;
                 align-items: center;
@@ -485,11 +402,11 @@
                 max-width: 100%;
                 max-height: 100%;
                 object-fit: contain;
-                display: block;
-                margin: 0 auto;
             }
         }
         .loading{text-align:center;padding:40px;color:#666;}
+        select[size="1"] { height: auto; }
+        option { padding: 8px; }
     </style>
 </head>
 <body>
@@ -501,6 +418,8 @@
     <div class="form-area" style="background:transparent; padding:0;">
         <select id="roleSelect" style="margin-bottom:15px;">
             <option value="admin">Admin</option>
+            <option value="coordinator_aham">Coordinator - AHAM</option>
+            <option value="coordinator_fbc">Coordinator - FBC</option>
             <option value="staffer_marilao">Staffer - MARILAO</option>
             <option value="staffer_morato">Staffer - MORATO AVE</option>
             <option value="staffer_gensan">Staffer - GENERAL SANTOS</option>
@@ -513,12 +432,11 @@
 <!-- Main App Container -->
 <div id="appContainer" style="display:none;">
 <div class="container">
-    <!-- User Badge -->
     <div class="user-badge">
         <div class="user-info">
             <i class="bi bi-person-circle"></i>
             <span id="userRoleDisplay">Staffer</span>
-            <span id="outletBadge" class="outlet-badge"></span>
+            <span id="assignBadge" class="role-badge"></span>
         </div>
         <button id="logoutBtn" class="logout-btn">
             <i class="bi bi-box-arrow-right"></i> Logout
@@ -528,36 +446,45 @@
     <h1><i class="bi bi-cloud-database"></i> Philman Power Center INC - DTR System</h1>
     <div id="status" class="status info">🔄 Connecting to database...</div>
 
-    <!-- Beginner User Guide -->
     <div id="guideBox" class="guide-box">
         <i class="bi bi-info-circle"></i> <strong>Quick Guide</strong>
         <ul>
-            <li><i class="bi bi-plus-circle"></i> <strong>Add Record:</strong> Fill out the form below, select an image, then click "Save to Database"</li>
+            <li id="addGuideItem"><i class="bi bi-plus-circle"></i> <strong>Add Record:</strong> Fill out the form, select images, then click "Save to Database"</li>
             <li><i class="bi bi-search"></i> <strong>Search & Filter:</strong> Use the filter bar to search by name, outlet, or cutoff date range</li>
-            <li><i class="bi bi-check-square"></i> <strong>Select Records:</strong> Check the boxes on cards to select them (Admin only)</li>
-            <li id="printGuideItem"><i class="bi bi-printer"></i> <strong>Print:</strong> Select records, then click "Print Selected" (Admin only)</li>
-            <li id="downloadGuideItem"><i class="bi bi-download"></i> <strong>Batch Download:</strong> Select records, then click "Download ZIP" (Admin only)</li>
-            <li id="deleteGuideItem"><i class="bi bi-trash"></i> <strong>Delete:</strong> Click delete on a single card OR select multiple cards (Admin only)</li>
-            <li id="editGuideItem"><i class="bi bi-pencil"></i> <strong>Edit:</strong> Click Edit button on any card to modify record</li>
-            <li><i class="bi bi-moon-stars"></i> <strong>Dark/Light Mode:</strong> Click the circle button at the bottom right to switch themes</li>
+            <li id="printGuideItem"><i class="bi bi-printer"></i> <strong>Print:</strong> Click "Print Report" to print submission summary</li>
+            <li id="viewGuideItem"><i class="bi bi-eye"></i> <strong>View Submissions:</strong> Coordinators can view who has submitted DTRs</li>
+            <li id="editGuideItem"><i class="bi bi-pencil"></i> <strong>Edit:</strong> Staffers can edit their own records</li>
+            <li><i class="bi bi-moon-stars"></i> <strong>Dark/Light Mode:</strong> Click the circle button at the bottom right</li>
         </ul>
     </div>
 
-    <div class="stats">
+    <!-- Coordinator Stats -->
+    <div id="coordinatorStats" class="stats">
+        <div class="stat-card"><i class="bi bi-people"></i><h3 id="totalEmployees">0</h3><p>Total Employees</p></div>
+        <div class="stat-card"><i class="bi bi-check-circle"></i><h3 id="submittedCount">0</h3><p>Submitted</p></div>
+        <div class="stat-card"><i class="bi bi-clock-history"></i><h3 id="pendingCount">0</h3><p>Pending</p></div>
+        <div class="stat-card"><i class="bi bi-percent"></i><h3 id="completionRate">0%</h3><p>Completion Rate</p></div>
+        <div class="stat-card"><i class="bi bi-files"></i><h3 id="totalImages">0</h3><p>Total Images</p></div>
+    </div>
+
+    <!-- Regular Stats -->
+    <div id="regularStats" class="stats" style="display:none;">
         <div class="stat-card"><i class="bi bi-files"></i><h3 id="totalCount">0</h3><p>Records</p></div>
         <div class="stat-card"><i class="bi bi-people"></i><h3 id="empCount">0</h3><p>Employees</p></div>
         <div class="stat-card"><i class="bi bi-calendar"></i><h3 id="monthCount">0</h3><p>This Month</p></div>
         <div class="stat-card"><i class="bi bi-building"></i><h3 id="outletCount">0</h3><p>Outlets</p></div>
+        <div class="stat-card"><i class="bi bi-images"></i><h3 id="imageCount">0</h3><p>Images</p></div>
     </div>
 
-    <div class="form-area">
+    <!-- Staffer Form -->
+    <div id="stafferForm" class="form-area">
         <h4><i class="bi bi-plus-circle"></i> Add DTR Record</h4>
         <input type="text" id="empName" placeholder="Employee Name *">
         
         <div class="two-columns">
             <div>
                 <label style="font-size:12px; color:#666;">Outlet *</label>
-                <select id="outlet" required>
+                <select id="outlet" required size="5" style="height:120px;">
                     <option value="">Select Outlet</option>
                     <option>MARILAO,BULACAN</option><option>MORATO AVE.</option><option>GENERAL SANTOS</option>
                     <option>CEBU CITY</option><option>ROSALES,PANGASINAN</option><option>BOHOL</option>
@@ -565,20 +492,20 @@
                     <option>ILLUSTRE</option><option>ETON QC,</option><option>EMPORIUM,MAKATI CITY</option>
                     <option>ROXAS</option><option>CLARK,PAMPANGA</option><option>CAMILING</option>
                     <option>warehouse</option><option>SAN PABLO,LAGUNA</option><option>NOVALICHES,QC</option>
-                    <option>MORATO AVE.QUEZON AVE</option><option>CARCAR CITY,CEBU</option><option>LUCENA</option>
-                    <option>CDO 2</option><option>MANAOAG</option><option>IRIGA CITY</option>
-                    <option>KAWIT</option><option>MARIKINA</option><option>MASBATE</option>
-                    <option>LA TRINIDAD,BENGUET</option><option>DCWC AGDAO</option><option>NAGA CITY,CAMARINES SUR</option>
-                    <option>MANGALDAN</option><option>MUZON/STA.MARIA</option><option>TARLAC</option>
-                    <option>DAVAO</option><option>CONSOLACION CEBU</option><option>SAVEMORE NUÑEZ</option>
-                    <option>DASMA., CAVITE</option><option>TRECE MARTIRES</option><option>DAVAO /GMALL -BAJADA</option>
-                    <option>SEASIDE,CEBU CITY</option><option>NEW MANILA</option><option>TABUNOK,CEBU</option>
-                    <option>BACOLOD</option><option>AYALA CEBU</option><option>IMUS/DASMA/BACOOR</option>
-                    <option>IROSIN</option><option>SQUARE,PANGASINAN</option><option>PLARIDEL</option>
-                    <option>CHEF'S MAGIC/AHAM</option><option>ABRA</option><option>UGAC</option>
-                    <option>CENTRO,NAGA</option><option>PAMPANGA</option><option>CAINTA,RIZAL</option>
-                    <option>BALIWAG</option><option>GOA,CAMARINES SUR</option><option>AHAM OFFICE</option>
-                    <option>STA.ANA,PAMPANGA</option><option>DAU</option><option>LIPA,BATANGAS</option>
+                    <option>CARCAR CITY,CEBU</option><option>LUCENA</option><option>CDO 2</option>
+                    <option>MANAOAG</option><option>IRIGA CITY</option><option>KAWIT</option>
+                    <option>MARIKINA</option><option>MASBATE</option><option>LA TRINIDAD,BENGUET</option>
+                    <option>DCWC AGDAO</option><option>NAGA CITY,CAMARINES SUR</option><option>MANGALDAN</option>
+                    <option>MUZON/STA.MARIA</option><option>TARLAC</option><option>DAVAO</option>
+                    <option>CONSOLACION CEBU</option><option>SAVEMORE NUÑEZ</option><option>DASMA., CAVITE</option>
+                    <option>TRECE MARTIRES</option><option>DAVAO /GMALL -BAJADA</option><option>SEASIDE,CEBU CITY</option>
+                    <option>NEW MANILA</option><option>TABUNOK,CEBU</option><option>BACOLOD</option>
+                    <option>AYALA CEBU</option><option>IMUS/DASMA/BACOOR</option><option>IROSIN</option>
+                    <option>SQUARE,PANGASINAN</option><option>PLARIDEL</option><option>CHEF'S MAGIC/AHAM</option>
+                    <option>ABRA</option><option>UGAC</option><option>CENTRO,NAGA</option>
+                    <option>PAMPANGA</option><option>CAINTA,RIZAL</option><option>BALIWAG</option>
+                    <option>GOA,CAMARINES SUR</option><option>AHAM OFFICE</option><option>STA.ANA,PAMPANGA</option>
+                    <option>DAU</option><option>NAGA</option><option>LIPA,BATANGAS</option>
                     <option>BICUTAN</option><option>NOVALICHES 1</option><option>LAGUNA</option>
                     <option>TANZA,CAVITE</option><option>DAET,CAMARINES SUR</option><option>ROSARIO,LA UNION</option>
                     <option>PILI</option><option>CALBAYOG</option><option>NAGA POLANGUI 2</option>
@@ -587,11 +514,10 @@
                     <option>EXHIBITORS MANILA</option><option>NUVALI,LAGUNA</option><option>DAGUPAN,PANGASINAN</option>
                     <option>MOALBOAL</option><option>CABANATUAN,NUEVA ECIJA</option><option>SUNSTAR/PAGSANJAN</option>
                     <option>NORTH CALOOCAN</option><option>CALAMBA,LAGUNA</option><option>FAIRVIEW MAIN</option>
-                    <option>ILOILO</option><option>DAVAO DEL SUR , DIGOS CITY</option><option>TANZA,KAWIT</option>
-                    <option>ZAMBOANGA</option><option>ILOILO CITY, ILOILO</option><option>CONDONI</option>
-                    <option>GUIMBA</option><option>DAU,PAMPANGA</option><option>MINGLANILLA,CEBU</option>
-                    <option>CALBANGA</option><option>CATARMAN</option><option>ALABANG/ TAGUIG</option>
-                    <option>DARAGA,ALBAY</option><option>LAOG CITY, ILOCOS NORTE</option>
+                    <option>ILOILO</option><option>DAVAO DEL SUR , DIGOS CITY</option><option>ZAMBOANGA</option>
+                    <option>ILOILO CITY, ILOILO</option><option>CONDONI</option><option>GUIMBA</option>
+                    <option>MINGLANILLA,CEBU</option><option>CALBANGA</option><option>CATARMAN</option>
+                    <option>ALABANG/ TAGUIG</option><option>DARAGA,ALBAY</option><option>LAOG CITY, ILOCOS NORTE</option>
                     <option>Mamandil Talavera Nueva Ecija</option><option>SOUTHMALL,LAS PINAS</option>
                     <option>PACO,MANILA</option><option>VELEZ,CAGAYAN DE ORO CITY</option>
                     <option>COMMONWEALTH Q.C</option><option>SAN FERNANDO</option><option>MARQUEE</option>
@@ -606,37 +532,35 @@
                     <option>BORONGAN</option><option>CATAINGAN</option><option>CALOOCAN</option>
                     <option>LIGAO</option><option>MACTAN,CEBU</option><option>TABACO CITY,ALBAY</option>
                     <option>BACACAY</option><option>MOA,PASAY</option><option>LIMKETKAI,CAGAYAN DE ORO</option>
-                    <option>GUAGUA</option><option>MANILA</option><option>LA FLUERZA,ALABANG- THE VILLAGE SUARE</option>
+                    <option>GUAGUA</option><option>LA FLUERZA,ALABANG- THE VILLAGE SUARE</option>
                     <option>ILAGAN</option><option>LAOAG</option><option>PASIG</option>
                     <option>TAGUM</option><option>FTI TAGUIG,METRO MNL</option><option>VIRAC</option>
                     <option>TOLEDO</option><option>STO.TOMAS,BATANGAS</option><option>ARGAO CEBU</option>
-                    <option>STO.BATANGAS</option><option>PARAÑAQUE</option><option>CAGAYAN DE ORO</option>
-                    <option>LAOG</option><option>PAETE/STA.CRUZ</option><option>TARA,MASBATE</option>
-                    <option>TRECE MARTINEZ</option><option>R.A FUENTE CEBU</option><option>KADIWA</option>
+                    <option>PARAÑAQUE</option><option>CAGAYAN DE ORO</option><option>PAETE/STA.CRUZ</option>
+                    <option>TARA,MASBATE</option><option>R.A FUENTE CEBU</option><option>KADIWA</option>
                     <option>POLANGUI 2</option><option>DELGADO</option><option>BUTUAN,AGUSAN DEL NORTE</option>
                     <option>DINALUPIHAN</option><option>BAGO,NEGROS OCCIDENTAL</option><option>LEGASPI</option>
                     <option>AMPARO</option><option>ILIGAN,ISABELA</option><option>PROJECT 8/LAONG-LAAN</option>
                     <option>SAN PEDRO 2</option><option>N.EDSA,QC (THE BLOCK)</option><option>ANABU/ BUHAY NA TUBIG</option>
                     <option>NASUGBO</option><option>JMALL</option><option>ANTIPOLO</option>
                     <option>QUEZON AVE</option><option>LIBERTAD</option><option>CUBAO, QUEZON CITY</option>
-                    <option>TRECE CAVITE</option><option>ALLEN, NORTHERN SAMAR</option><option>CDO,MISAMIS ORIENTAL</option>
-                    <option>SILAY/TALISAY</option><option>HINOBA-AN,N. OCCIDENTAL</option><option>CANDON</option>
-                    <option>CIRCUIT MAKATI</option><option>TAGUIG</option><option>TANAY</option>
+                    <option>ALLEN, NORTHERN SAMAR</option><option>SILAY/TALISAY</option><option>HINOBA-AN,N. OCCIDENTAL</option>
+                    <option>CANDON</option><option>CIRCUIT MAKATI</option><option>VIRAC,CATANDUANES</option>
                     <option>ALABANG,MUNTINLUPA</option><option>JARO 2 / GTMALL</option><option>BUHANGIN,DAVAO</option>
                     <option>GENSAN</option><option>LABO,CAMARINES NORTE</option><option>MOLINO</option>
-                    <option>NACARLAN</option><option>IMUS,CAVITE</option><option>JUBAN,SORSOGON</option>
-                    <option>LIMBMANAN,CAMARINES SUR</option><option>TAYUMAN,TONDO,MNL</option><option>NAIC/ROSARIO,CAVITE</option>
-                    <option>MAKATI JAZZ</option><option>CABADBARAN</option><option>CAUAYAN,ISABELA</option>
-                    <option>BAYOMBONG,NUEVA ECIJA</option><option>VISAYAS AVE., Q.C</option><option>PUERTO PRINSESA,PALAWAN</option>
-                    <option>CLARK PAMPANGGA</option><option>KABANKALAN,BACOLOD</option><option>BINAN, LAGUNA/LOS BANOS</option>
-                    <option>LEGAZPI,ALBAY</option><option>DANAO</option><option>VALENZUELA</option>
-                    <option>PANABO</option><option>LILOAN</option><option>CADIZ,NEGROS OCCIDENTAL</option>
-                    <option>MANDAUE, CEBU CITY</option><option>OTIS</option>
+                    <option>NACARLAN</option><option>JUBAN,SORSOGON</option><option>LIMBMANAN,CAMARINES SUR</option>
+                    <option>TAYUMAN,TONDO,MNL</option><option>NAIC/ROSARIO,CAVITE</option><option>MAKATI JAZZ</option>
+                    <option>CABADBARAN</option><option>CAUAYAN,ISABELA</option><option>BAYOMBONG,NUEVA ECIJA</option>
+                    <option>VISAYAS AVE., Q.C</option><option>PUERTO PRINSESA,PALAWAN</option><option>CLARK PAMPANGGA</option>
+                    <option>KABANKALAN,BACOLOD</option><option>BINAN, LAGUNA/LOS BANOS</option><option>LEGAZPI,ALBAY</option>
+                    <option>DANAO</option><option>VALENZUELA</option><option>PANABO</option>
+                    <option>LILOAN</option><option>CADIZ,NEGROS OCCIDENTAL</option><option>MANDAUE, CEBU CITY</option>
+                    <option>OTIS</option>
                 </select>
             </div>
             <div>
                 <label style="font-size:12px; color:#666;">Dealer *</label>
-                <select id="dealer" required>
+                <select id="dealer" required size="5" style="height:120px;">
                     <option value="">Select Dealer</option>
                     <option>SACI</option><option>AHAM OFFICE</option><option>SVI</option><option>S&R</option>
                     <option>BOHOL QUALITY</option><option>SSM</option><option>GAISANO GRAND</option>
@@ -665,126 +589,109 @@
             <input type="date" id="toDate" style="flex:1">
         </div>
         <textarea id="remarks" rows="2" placeholder="Remarks (optional)"></textarea>
-        <input type="file" id="imageFile" accept="image/*">
-        <img id="preview" class="preview-img">
+        
+        <label style="font-size:12px; color:#666;">DTR Pictures * (Select multiple)</label>
+        <input type="file" id="imageFiles" accept="image/*" multiple>
+        <div id="imagePreviewContainer" class="image-preview-container"></div>
+        
         <button id="saveBtn"><i class="bi bi-save"></i> Save to Database</button>
     </div>
 
-    <!-- Filter Bar with Labels -->
-    <div class="filter-bar">
-        <div class="filter-group">
-            <label><i class="bi bi-search"></i> Search by Name</label>
-            <input type="text" id="searchName" placeholder="Enter employee name...">
+    <!-- Coordinator View -->
+    <div id="coordinatorView" style="display:none;">
+        <div class="filter-bar">
+            <div class="filter-group">
+                <label><i class="bi bi-search"></i> Search Employee</label>
+                <input type="text" id="searchEmployee" placeholder="Enter employee name...">
+            </div>
+            <div class="filter-group">
+                <label><i class="bi bi-calendar"></i> Cutoff Period</label>
+                <select id="filterCutoff"><option value="all">All Cutoffs</option></select>
+            </div>
+            <button id="printReportBtn" style="width:auto; background:#2e7d32;"><i class="bi bi-printer"></i> Print Report</button>
         </div>
-        <div class="filter-group" id="outletFilterGroup">
-            <label><i class="bi bi-building"></i> Filter by Outlet</label>
-            <select id="filterOutlet">
-                <option value="">All Outlets</option>
-            </select>
-        </div>
-        <div class="filter-group">
-            <label><i class="bi bi-calendar-plus"></i> Cutoff From Date</label>
-            <input type="date" id="filterDateFrom" placeholder="From Date">
-        </div>
-        <div class="filter-group">
-            <label><i class="bi bi-calendar-minus"></i> Cutoff To Date</label>
-            <input type="date" id="filterDateTo" placeholder="To Date">
-        </div>
+        <div id="submissionGrid" class="grid"></div>
     </div>
 
-    <!-- Print Bar -->
-    <div id="adminPrintBar" class="print-bar">
-        <button id="selectAllBtn" style="background:#28a745;">Select All</button>
-        <button id="deselectAllBtn" style="background:#6c757d;">Deselect All</button>
-        <button id="deleteSelectedBtn" class="btn-delete-selected" style="background:#dc3545;"><i class="bi bi-trash"></i> Delete Selected (<span id="deleteSelectedCount">0</span>)</button>
-        <button id="printSelectedBtn" style="background:#17a2b8;"><i class="bi bi-printer"></i> Print Selected (<span id="selectedCount">0</span>)</button>
-        <button id="downloadSelectedBtn" class="btn-download" style="background:#8b5cf6;"><i class="bi bi-download"></i> Download ZIP (<span id="downloadCount">0</span>)</button>
-        <span id="selectedInfo" class="selected-info"></span>
-    </div>
+    <!-- Regular Records View -->
+    <div id="regularView">
+        <div class="filter-bar">
+            <div class="filter-group">
+                <label><i class="bi bi-search"></i> Search by Name</label>
+                <input type="text" id="searchName" placeholder="Enter employee name...">
+            </div>
+            <div class="filter-group" id="outletFilterGroup">
+                <label><i class="bi bi-building"></i> Filter by Outlet</label>
+                <select id="filterOutlet"><option value="">All Outlets</option></select>
+            </div>
+            <div class="filter-group">
+                <label><i class="bi bi-calendar-plus"></i> From Date</label>
+                <input type="date" id="filterDateFrom">
+            </div>
+            <div class="filter-group">
+                <label><i class="bi bi-calendar-minus"></i> To Date</label>
+                <input type="date" id="filterDateTo">
+            </div>
+        </div>
 
-    <div id="recordsGrid" class="grid"><div class="loading">Loading records from database...</div></div>
+        <div id="adminPrintBar" class="print-bar">
+            <button id="selectAllBtn" style="background:#28a745;">Select All</button>
+            <button id="deselectAllBtn" style="background:#6c757d;">Deselect All</button>
+            <button id="deleteSelectedBtn" style="background:#dc3545;"><i class="bi bi-trash"></i> Delete (<span id="deleteSelectedCount">0</span>)</button>
+            <button id="printSelectedBtn" style="background:#17a2b8;"><i class="bi bi-printer"></i> Print (<span id="selectedCount">0</span>)</button>
+            <button id="downloadSelectedBtn" style="background:#8b5cf6;"><i class="bi bi-download"></i> ZIP (<span id="downloadCount">0</span>)</button>
+        </div>
+
+        <div id="recordsGrid" class="grid"><div class="loading">Loading records...</div></div>
+    </div>
 </div>
-
-<!-- Dark/Light Mode Toggle Button -->
-<button class="mode-toggle" id="modeToggle" title="Dark/Light Mode">
-    <i class="bi bi-moon-stars"></i>
-</button>
+<button class="mode-toggle" id="modeToggle" title="Dark/Light Mode"><i class="bi bi-moon-stars"></i></button>
 </div>
 
 <script>
-    // ============ USER AUTHENTICATION ============
-    let currentUser = null;
-    let stafferOutlet = null;
-    
+    let currentUser = null, userRole = null, userAssignment = null;
     const credentials = {
         admin: 'admin123',
+        coordinator_aham: 'coordaham123',
+        coordinator_fbc: 'coordfbc123',
         staffer_marilao: 'marilao123',
         staffer_morato: 'morato123',
         staffer_gensan: 'gensan123'
     };
     
-    async function showMessage(title, message, type = 'success') {
-        const iconMap = {
-            success: 'success',
-            error: 'error',
-            warning: 'warning',
-            info: 'info'
-        };
-        await Swal.fire({
-            title: title,
-            text: message,
-            icon: iconMap[type] || 'info',
-            confirmButtonColor: '#4361ee',
-            confirmButtonText: 'OK'
-        });
+    async function showMessage(title, message, type) {
+        await Swal.fire({ title, text: message, icon: type, confirmButtonColor: '#4361ee', confirmButtonText: 'OK' });
     }
     
     function login() {
         const role = document.getElementById('roleSelect').value;
         const password = document.getElementById('passwordInput').value;
-        
         if (credentials[role] === password) {
             currentUser = role;
             localStorage.setItem('dtrUser', currentUser);
-            localStorage.setItem('dtrUserRole', role);
-            
-            if (currentUser === 'staffer_marilao') {
-                stafferOutlet = 'MARILAO,BULACAN';
-            } else if (currentUser === 'staffer_morato') {
-                stafferOutlet = 'MORATO AVE.';
-            } else if (currentUser === 'staffer_gensan') {
-                stafferOutlet = 'GENERAL SANTOS';
-            } else {
-                stafferOutlet = null;
+            if (role === 'admin') userRole = 'admin';
+            else if (role === 'coordinator_aham') { userRole = 'coordinator'; userAssignment = 'AHAM'; }
+            else if (role === 'coordinator_fbc') { userRole = 'coordinator'; userAssignment = 'FBC'; }
+            else { userRole = 'staffer';
+                if (role === 'staffer_marilao') userAssignment = 'MARILAO,BULACAN';
+                else if (role === 'staffer_morato') userAssignment = 'MORATO AVE.';
+                else if (role === 'staffer_gensan') userAssignment = 'GENERAL SANTOS';
             }
-            
             showMainApp();
-        } else {
-            showMessage('Login Failed', 'Invalid password', 'error');
-        }
+        } else showMessage('Login Failed', 'Invalid password', 'error');
     }
     
     function logout() {
-        Swal.fire({
-            title: 'Logout',
-            text: 'Are you sure you want to logout?',
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonColor: '#dc3545',
-            cancelButtonColor: '#6c757d',
-            confirmButtonText: 'Yes, Logout',
-            cancelButtonText: 'Cancel'
-        }).then((result) => {
+        Swal.fire({ title: 'Logout', text: 'Are you sure?', icon: 'question', showCancelButton: true,
+            confirmButtonColor: '#dc3545', cancelButtonColor: '#6c757d', confirmButtonText: 'Yes' })
+        .then(result => {
             if (result.isConfirmed) {
-                currentUser = null;
-                stafferOutlet = null;
-                selectedRecords.clear();
+                currentUser = null; userRole = null; userAssignment = null; selectedRecords.clear(); imageFilesList = [];
                 localStorage.removeItem('dtrUser');
-                localStorage.removeItem('dtrUserRole');
                 document.getElementById('appContainer').style.display = 'none';
                 document.getElementById('loginContainer').style.display = 'block';
                 document.getElementById('passwordInput').value = '';
-                showMessage('Logged Out', 'You have been successfully logged out.', 'success');
+                showMessage('Logged Out', 'Successfully logged out.', 'success');
             }
         });
     }
@@ -792,316 +699,226 @@
     function showMainApp() {
         document.getElementById('loginContainer').style.display = 'none';
         document.getElementById('appContainer').style.display = 'block';
-        
-        let displayName = '';
-        let outletBadgeText = '';
-        
-        if (currentUser === 'admin') {
-            displayName = 'Admin';
-            outletBadgeText = '';
-        } else if (currentUser === 'staffer_marilao') {
-            displayName = 'Staffer';
-            outletBadgeText = 'MARILAO';
-        } else if (currentUser === 'staffer_morato') {
-            displayName = 'Staffer';
-            outletBadgeText = 'MORATO AVE';
-        } else if (currentUser === 'staffer_gensan') {
-            displayName = 'Staffer';
-            outletBadgeText = 'GEN SANTOS';
+        let displayName = '', assignText = '';
+        if (userRole === 'admin') {
+            displayName = 'Admin'; assignText = 'Full Access';
+            document.getElementById('stafferForm').style.display = 'block';
+            document.getElementById('coordinatorView').style.display = 'none';
+            document.getElementById('regularView').style.display = 'block';
+            document.getElementById('coordinatorStats').style.display = 'none';
+            document.getElementById('regularStats').style.display = 'flex';
+            document.getElementById('addGuideItem').style.display = 'list-item';
+            document.getElementById('printGuideItem').style.display = 'list-item';
+            document.getElementById('editGuideItem').style.display = 'list-item';
+            document.getElementById('viewGuideItem').style.display = 'none';
+        } else if (userRole === 'coordinator') {
+            displayName = 'Coordinator'; assignText = userAssignment;
+            document.getElementById('stafferForm').style.display = 'none';
+            document.getElementById('coordinatorView').style.display = 'block';
+            document.getElementById('regularView').style.display = 'none';
+            document.getElementById('coordinatorStats').style.display = 'flex';
+            document.getElementById('regularStats').style.display = 'none';
+            document.getElementById('addGuideItem').style.display = 'none';
+            document.getElementById('printGuideItem').style.display = 'list-item';
+            document.getElementById('editGuideItem').style.display = 'none';
+            document.getElementById('viewGuideItem').style.display = 'list-item';
+        } else {
+            displayName = 'Staffer'; assignText = userAssignment;
+            document.getElementById('stafferForm').style.display = 'block';
+            document.getElementById('coordinatorView').style.display = 'none';
+            document.getElementById('regularView').style.display = 'block';
+            document.getElementById('coordinatorStats').style.display = 'none';
+            document.getElementById('regularStats').style.display = 'flex';
+            document.getElementById('addGuideItem').style.display = 'list-item';
+            document.getElementById('printGuideItem').style.display = 'none';
+            document.getElementById('editGuideItem').style.display = 'list-item';
+            document.getElementById('viewGuideItem').style.display = 'none';
+            document.getElementById('adminPrintBar').style.display = 'none';
+            document.getElementById('outletFilterGroup').style.display = 'none';
+            const outletSelect = document.getElementById('outlet');
+            if (userAssignment) { outletSelect.value = userAssignment; outletSelect.disabled = true; }
         }
-        
         document.getElementById('userRoleDisplay').innerText = displayName;
-        const outletBadge = document.getElementById('outletBadge');
-        if (outletBadgeText) {
-            outletBadge.innerText = outletBadgeText;
-            outletBadge.style.display = 'inline-block';
-        } else {
-            outletBadge.style.display = 'none';
-        }
-        
-        const isAdmin = (currentUser === 'admin');
-        
-        if (!isAdmin) {
-            const adminPrintBar = document.getElementById('adminPrintBar');
-            if (adminPrintBar) adminPrintBar.style.display = 'none';
-            
-            const deleteGuideItem = document.getElementById('deleteGuideItem');
-            if (deleteGuideItem) deleteGuideItem.style.display = 'none';
-            const printGuideItem = document.getElementById('printGuideItem');
-            if (printGuideItem) printGuideItem.style.display = 'none';
-            const downloadGuideItem = document.getElementById('downloadGuideItem');
-            if (downloadGuideItem) downloadGuideItem.style.display = 'none';
-            
-            const outletSelect = document.getElementById('outlet');
-            if (stafferOutlet) {
-                outletSelect.value = stafferOutlet;
-                outletSelect.disabled = true;
-            }
-            
-            const outletFilterGroup = document.getElementById('outletFilterGroup');
-            if (outletFilterGroup) outletFilterGroup.style.display = 'none';
-            
-        } else {
-            const adminPrintBar = document.getElementById('adminPrintBar');
-            if (adminPrintBar) adminPrintBar.style.display = 'flex';
-            
-            const deleteGuideItem = document.getElementById('deleteGuideItem');
-            if (deleteGuideItem) deleteGuideItem.style.display = 'list-item';
-            const printGuideItem = document.getElementById('printGuideItem');
-            if (printGuideItem) printGuideItem.style.display = 'list-item';
-            const downloadGuideItem = document.getElementById('downloadGuideItem');
-            if (downloadGuideItem) downloadGuideItem.style.display = 'list-item';
-            
-            const outletSelect = document.getElementById('outlet');
-            outletSelect.disabled = false;
-            
-            const outletFilterGroup = document.getElementById('outletFilterGroup');
-            if (outletFilterGroup) outletFilterGroup.style.display = 'block';
-        }
-        
+        const badge = document.getElementById('assignBadge');
+        if (assignText) { badge.innerText = assignText; badge.style.display = 'inline-block'; }
+        else badge.style.display = 'none';
         document.getElementById('modeToggle').style.display = 'flex';
-        loadRecords();
+        if (userRole === 'coordinator') loadSubmissionSummary();
+        else loadRecords();
     }
     
     function checkSession() {
-        const savedUser = localStorage.getItem('dtrUser');
-        const savedRole = localStorage.getItem('dtrUserRole');
-        if (savedUser && savedRole) {
-            currentUser = savedUser;
-            if (currentUser === 'staffer_marilao') {
-                stafferOutlet = 'MARILAO,BULACAN';
-            } else if (currentUser === 'staffer_morato') {
-                stafferOutlet = 'MORATO AVE.';
-            } else if (currentUser === 'staffer_gensan') {
-                stafferOutlet = 'GENERAL SANTOS';
+        const saved = localStorage.getItem('dtrUser');
+        if (saved) {
+            currentUser = saved;
+            if (currentUser === 'admin') userRole = 'admin';
+            else if (currentUser === 'coordinator_aham') { userRole = 'coordinator'; userAssignment = 'AHAM'; }
+            else if (currentUser === 'coordinator_fbc') { userRole = 'coordinator'; userAssignment = 'FBC'; }
+            else { userRole = 'staffer';
+                if (currentUser === 'staffer_marilao') userAssignment = 'MARILAO,BULACAN';
+                else if (currentUser === 'staffer_morato') userAssignment = 'MORATO AVE.';
+                else if (currentUser === 'staffer_gensan') userAssignment = 'GENERAL SANTOS';
             }
             showMainApp();
         }
     }
     
-    // ============ SUPABASE CONFIG ============
     const SUPABASE_URL = "https://oioamrxxcgwejaaglvbg.supabase.co";
     const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9pb2Ftcnh4Y2d3ZWphYWdsdmJnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE0NjUxNzYsImV4cCI6MjA5NzA0MTE3Nn0.NrprjEB1cNHCqgYCerhcX3_79UvEBjhmu-ueGl1dlew";
     
-    let allRecords = [];
-    let currentImage = null;
-    let selectedRecords = new Set();
-    let editingId = null;
-
-    function initTheme() {
-        const savedTheme = localStorage.getItem('theme');
-        if (savedTheme === 'dark') {
-            document.body.classList.add('dark-mode');
-            if(document.getElementById('modeToggle')) document.getElementById('modeToggle').innerHTML = '<i class="bi bi-sun"></i>';
-        } else {
-            document.body.classList.remove('dark-mode');
-            if(document.getElementById('modeToggle')) document.getElementById('modeToggle').innerHTML = '<i class="bi bi-moon-stars"></i>';
-        }
-    }
+    let allRecords = [], imageFilesList = [], selectedRecords = new Set(), editingId = null;
     
+    function initTheme() {
+        const saved = localStorage.getItem('theme');
+        if (saved === 'dark') { document.body.classList.add('dark-mode'); document.getElementById('modeToggle').innerHTML = '<i class="bi bi-sun"></i>'; }
+        else { document.body.classList.remove('dark-mode'); document.getElementById('modeToggle').innerHTML = '<i class="bi bi-moon-stars"></i>'; }
+    }
     function toggleTheme() {
         if (document.body.classList.contains('dark-mode')) {
-            document.body.classList.remove('dark-mode');
-            localStorage.setItem('theme', 'light');
-            if(document.getElementById('modeToggle')) document.getElementById('modeToggle').innerHTML = '<i class="bi bi-moon-stars"></i>';
+            document.body.classList.remove('dark-mode'); localStorage.setItem('theme', 'light');
+            document.getElementById('modeToggle').innerHTML = '<i class="bi bi-moon-stars"></i>';
         } else {
-            document.body.classList.add('dark-mode');
-            localStorage.setItem('theme', 'dark');
-            if(document.getElementById('modeToggle')) document.getElementById('modeToggle').innerHTML = '<i class="bi bi-sun"></i>';
+            document.body.classList.add('dark-mode'); localStorage.setItem('theme', 'dark');
+            document.getElementById('modeToggle').innerHTML = '<i class="bi bi-sun"></i>';
         }
     }
-    
-    if(document.getElementById('modeToggle')) {
-        document.getElementById('modeToggle').addEventListener('click', toggleTheme);
-    }
+    document.getElementById('modeToggle').addEventListener('click', toggleTheme);
     initTheme();
 
-    function populateFilters() {
-        const outlets = [...new Set(allRecords.map(r => r.outlet).filter(Boolean))];
-        const filterOutlet = document.getElementById('filterOutlet');
-        if (filterOutlet) {
-            filterOutlet.innerHTML = '<option value="">All Outlets</option>';
-            outlets.forEach(outlet => {
-                const option = document.createElement('option');
-                option.value = outlet;
-                option.textContent = outlet;
-                filterOutlet.appendChild(option);
-            });
+    document.getElementById('imageFiles').addEventListener('change', function(e) {
+        imageFilesList = Array.from(e.target.files);
+        const container = document.getElementById('imagePreviewContainer');
+        container.innerHTML = '';
+        imageFilesList.forEach((file, idx) => {
+            const reader = new FileReader();
+            reader.onload = ev => {
+                const div = document.createElement('div');
+                div.className = 'preview-item';
+                div.innerHTML = `<img src="${ev.target.result}"><div class="remove-image" data-index="${idx}">×</div>`;
+                container.appendChild(div);
+            };
+            reader.readAsDataURL(file);
+        });
+    });
+    document.getElementById('imagePreviewContainer').addEventListener('click', e => {
+        if (e.target.classList.contains('remove-image')) {
+            const idx = parseInt(e.target.dataset.index);
+            imageFilesList.splice(idx, 1);
+            const dt = new DataTransfer();
+            imageFilesList.forEach(f => dt.items.add(f));
+            document.getElementById('imageFiles').files = dt.files;
+            document.getElementById('imageFiles').dispatchEvent(new Event('change'));
         }
+    });
+
+    async function loadSubmissionSummary() {
+        try {
+            const res = await fetch(`${SUPABASE_URL}/rest/v1/dtr_records?select=*&order=created_at.desc`, {
+                headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+            });
+            let data = await res.json();
+            if (userAssignment === 'AHAM') data = data.filter(r => r.dealer === 'AHAM OFFICE' || r.dealer?.includes('AHAM'));
+            else if (userAssignment === 'FBC') data = data.filter(r => r.dealer === 'FBC');
+            const subs = {};
+            data.forEach(r => { const key = `${r.employee_name}|${r.cutoff_range}`;
+                if (!subs[key]) subs[key] = { employee_name: r.employee_name, cutoff_range: r.cutoff_range, outlet: r.outlet, dealer: r.dealer, image_count: 1, submitted_at: r.created_at };
+                else subs[key].image_count++;
+            });
+            const list = Object.values(subs);
+            document.getElementById('totalEmployees').textContent = [...new Set(list.map(s => s.employee_name))].length;
+            document.getElementById('submittedCount').textContent = list.length;
+            document.getElementById('totalImages').textContent = data.length;
+            document.getElementById('completionRate').textContent = Math.round((list.length / Math.max(list.length, 1)) * 100) + '%';
+            const grid = document.getElementById('submissionGrid');
+            if (list.length === 0) grid.innerHTML = '<div class="loading">No submissions found.</div>';
+            else grid.innerHTML = list.map(s => `<div class="card"><div class="card-body"><div class="name">👤 ${escapeHtml(s.employee_name)}</div><div class="outlet-text">📍 ${escapeHtml(s.outlet || 'N/A')}</div><div class="dealer-text">🏪 ${escapeHtml(s.dealer)}</div><div class="date">📅 ${s.cutoff_range}</div><div class="batch-badge">📸 ${s.image_count} images</div><div class="submission-status">✓ Submitted ${new Date(s.submitted_at).toLocaleDateString()}</div></div></div>`).join('');
+        } catch(e) { console.error(e); }
     }
 
     async function loadRecords() {
         try {
-            const statusDiv = document.getElementById('status');
-            if(statusDiv) {
-                statusDiv.innerHTML = '🔄 Syncing...';
-                statusDiv.className = 'status info';
-            }
-            
-            const response = await fetch(`${SUPABASE_URL}/rest/v1/dtr_records?select=*&order=created_at.desc`, {
-                headers: {
-                    'apikey': SUPABASE_KEY,
-                    'Authorization': `Bearer ${SUPABASE_KEY}`
-                }
+            document.getElementById('status').innerHTML = '🔄 Syncing...';
+            const res = await fetch(`${SUPABASE_URL}/rest/v1/dtr_records?select=*&order=created_at.desc`, {
+                headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
             });
-            
-            if (!response.ok) {
-                throw new Error(`HTTP ${response.status}`);
-            }
-            
-            let data = await response.json();
-            
-            if (stafferOutlet) {
-                data = data.filter(record => record.outlet === stafferOutlet);
-            }
-            
+            let data = await res.json();
+            if (userRole === 'staffer' && userAssignment) data = data.filter(r => r.outlet === userAssignment);
             allRecords = data || [];
-            populateFilters();
+            const outlets = [...new Set(allRecords.map(r => r.outlet).filter(Boolean))];
+            const filterOutlet = document.getElementById('filterOutlet');
+            if (filterOutlet) { filterOutlet.innerHTML = '<option value="">All Outlets</option>'; outlets.forEach(o => { const opt = document.createElement('option'); opt.value = o; opt.textContent = o; filterOutlet.appendChild(opt); }); }
             applyFiltersAndRender();
-            
-            if(statusDiv) {
-                statusDiv.innerHTML = '✅ Connected - Live Database';
-                statusDiv.className = 'status success';
-            }
-            
-        } catch (error) {
-            console.error('Error:', error);
-            const statusDiv = document.getElementById('status');
-            if(statusDiv) {
-                statusDiv.innerHTML = '❌ Connection Error';
-                statusDiv.className = 'status error';
-            }
-        }
+            document.getElementById('status').innerHTML = '✅ Connected - Live Database';
+        } catch(e) { document.getElementById('status').innerHTML = '❌ Connection Error'; }
     }
 
     function applyFiltersAndRender() {
-        const searchTerm = document.getElementById('searchName') ? document.getElementById('searchName').value.toLowerCase() : '';
-        const filterOutlet = document.getElementById('filterOutlet') ? document.getElementById('filterOutlet').value : '';
-        const filterDateFrom = document.getElementById('filterDateFrom') ? document.getElementById('filterDateFrom').value : '';
-        const filterDateTo = document.getElementById('filterDateTo') ? document.getElementById('filterDateTo').value : '';
-        
+        const search = document.getElementById('searchName')?.value.toLowerCase() || '';
+        const outlet = document.getElementById('filterOutlet')?.value || '';
+        const from = document.getElementById('filterDateFrom')?.value || '';
+        const to = document.getElementById('filterDateTo')?.value || '';
         let filtered = allRecords.filter(r => {
-            if (searchTerm && !(r.employee_name || '').toLowerCase().includes(searchTerm)) return false;
-            if (filterOutlet && r.outlet !== filterOutlet) return false;
-            if (filterDateFrom && r.cutoff_from && r.cutoff_from < filterDateFrom) return false;
-            if (filterDateTo && r.cutoff_to && r.cutoff_to > filterDateTo) return false;
+            if (search && !(r.employee_name || '').toLowerCase().includes(search)) return false;
+            if (outlet && r.outlet !== outlet) return false;
+            if (from && r.cutoff_from && r.cutoff_from < from) return false;
+            if (to && r.cutoff_to && r.cutoff_to > to) return false;
             return true;
         });
-        
         renderGrid(filtered);
         updateStats();
         updateSelectedInfo();
     }
 
-    async function checkDuplicateSubmission(name, outlet, dealer, fromDate, toDate, excludeId = null) {
-        const cutoffRange = `${fromDate} to ${toDate}`;
-        return allRecords.some(record => {
-            if (excludeId && record.id === excludeId) return false;
-            return record.employee_name === name && 
-                   record.outlet === outlet && 
-                   record.dealer === dealer &&
-                   record.cutoff_range === cutoffRange;
-        });
+    async function checkDuplicate(name, outlet, dealer, from, to) {
+        const range = `${from} to ${to}`;
+        return allRecords.some(r => r.employee_name === name && r.outlet === outlet && r.dealer === dealer && r.cutoff_range === range);
     }
 
     async function saveRecord() {
-        const name = document.getElementById('empName').value;
+        let name = document.getElementById('empName').value;
         let outlet = document.getElementById('outlet').value;
         let dealer = document.getElementById('dealer').value;
-        const fromDate = document.getElementById('fromDate').value;
-        const toDate = document.getElementById('toDate').value;
+        const from = document.getElementById('fromDate').value;
+        const to = document.getElementById('toDate').value;
         const remarks = document.getElementById('remarks').value;
-        
-        if (stafferOutlet) {
-            outlet = stafferOutlet;
-        }
-        
-        if (!name || !outlet || !dealer || !fromDate || !toDate) {
-            await showMessage('Missing Fields', 'Please fill all required fields', 'warning');
-            return;
-        }
-        
-        if (!currentImage && !editingId) {
-            await showMessage('No Image', 'Please select an image', 'warning');
-            return;
-        }
-        
-        if (!editingId) {
-            const isDuplicate = await checkDuplicateSubmission(name, outlet, dealer, fromDate, toDate);
-            if (isDuplicate) {
-                await showMessage('Duplicate Entry', `Employee "${name}" already has a DTR record for outlet "${outlet}" with dealer "${dealer}" for cutoff period ${fromDate} to ${toDate}. Only one submission per cutoff is allowed.`, 'error');
-                return;
-            }
-        }
-        
-        const cutoffRange = `${fromDate} to ${toDate}`;
-        
-        const recordData = {
-            employee_name: name,
-            outlet: outlet,
-            dealer: dealer,
-            cutoff_from: fromDate,
-            cutoff_to: toDate,
-            cutoff_range: cutoffRange,
-            remarks: remarks || '',
-            image_data: currentImage,
-            created_at: new Date().toISOString()
-        };
-        
+        if (userRole === 'staffer' && userAssignment) outlet = userAssignment;
+        if (!name || !outlet || !dealer || !from || !to) { showMessage('Missing Fields', 'Please fill all required fields', 'warning'); return; }
+        if (imageFilesList.length === 0 && !editingId) { showMessage('No Images', 'Please select at least one image', 'warning'); return; }
+        if (!editingId && await checkDuplicate(name, outlet, dealer, from, to)) { showMessage('Duplicate Entry', `Employee "${name}" already submitted for ${from} to ${to}`, 'error'); return; }
+        const range = `${from} to ${to}`;
         try {
             if (editingId) {
-                const response = await fetch(`${SUPABASE_URL}/rest/v1/dtr_records?id=eq.${editingId}`, {
-                    method: 'PATCH',
-                    headers: {
-                        'apikey': SUPABASE_KEY,
-                        'Authorization': `Bearer ${SUPABASE_KEY}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(recordData)
-                });
-                
-                if (!response.ok) throw new Error(`HTTP ${response.status}`);
-                await showMessage('Success!', 'Record updated successfully!', 'success');
+                for (let img of imageFilesList) {
+                    const imgData = await readFile(img);
+                    await fetch(`${SUPABASE_URL}/rest/v1/dtr_records?id=eq.${editingId}`, {
+                        method: 'PATCH', headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ employee_name: name, outlet, dealer, cutoff_from: from, cutoff_to: to, cutoff_range: range, remarks, image_data: imgData })
+                    });
+                }
+                await showMessage('Success!', 'Record updated!', 'success');
                 editingId = null;
             } else {
-                const response = await fetch(`${SUPABASE_URL}/rest/v1/dtr_records`, {
-                    method: 'POST',
-                    headers: {
-                        'apikey': SUPABASE_KEY,
-                        'Authorization': `Bearer ${SUPABASE_KEY}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(recordData)
-                });
-                
-                if (!response.ok) throw new Error(`HTTP ${response.status}`);
-                await showMessage('Success!', 'Record saved to database!', 'success');
+                const batchId = Date.now().toString();
+                for (let img of imageFilesList) {
+                    const imgData = await readFile(img);
+                    await fetch(`${SUPABASE_URL}/rest/v1/dtr_records`, {
+                        method: 'POST', headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ employee_name: name, outlet, dealer, cutoff_from: from, cutoff_to: to, cutoff_range: range, remarks, image_data: imgData, batch_id: batchId })
+                    });
+                }
+                await showMessage('Success!', `${imageFilesList.length} image(s) saved!`, 'success');
             }
-            
-            document.getElementById('empName').value = '';
-            document.getElementById('outlet').value = '';
-            document.getElementById('dealer').value = '';
-            document.getElementById('remarks').value = '';
-            document.getElementById('preview').style.display = 'none';
-            document.getElementById('preview').src = '';
-            document.getElementById('imageFile').value = '';
-            currentImage = null;
-            document.getElementById('saveBtn').innerHTML = '<i class="bi bi-save"></i> Save to Database';
-            document.getElementById('saveBtn').style.background = '#4361ee';
-            
-            await loadRecords();
-            
-        } catch (error) {
-            await showMessage('Error', 'Error: ' + error.message, 'error');
-        }
+            document.getElementById('empName').value = ''; document.getElementById('remarks').value = ''; document.getElementById('imageFiles').value = '';
+            document.getElementById('imagePreviewContainer').innerHTML = ''; imageFilesList = [];
+            if (userRole === 'coordinator') loadSubmissionSummary();
+            else loadRecords();
+        } catch(e) { showMessage('Error', e.message, 'error'); }
     }
+    
+    function readFile(file) { return new Promise((resolve, reject) => { const reader = new FileReader(); reader.onload = () => resolve(reader.result); reader.onerror = reject; reader.readAsDataURL(file); }); }
 
     function editRecord(record) {
-        if (stafferOutlet && record.outlet !== stafferOutlet) {
-            showMessage('Access Denied', 'You can only edit records for your assigned outlet: ' + stafferOutlet, 'error');
-            return;
-        }
-        
+        if ((userRole === 'staffer' && userAssignment && record.outlet !== userAssignment)) { showMessage('Access Denied', 'You can only edit your outlet records', 'error'); return; }
         editingId = record.id;
         document.getElementById('empName').value = record.employee_name;
         document.getElementById('outlet').value = record.outlet;
@@ -1109,367 +926,90 @@
         document.getElementById('fromDate').value = record.cutoff_from || '';
         document.getElementById('toDate').value = record.cutoff_to || '';
         document.getElementById('remarks').value = record.remarks || '';
-        
-        if (record.image_data) {
-            document.getElementById('preview').src = record.image_data;
-            document.getElementById('preview').style.display = 'block';
-            currentImage = record.image_data;
-        } else {
-            document.getElementById('preview').style.display = 'none';
-            currentImage = null;
-        }
-        
         document.getElementById('saveBtn').innerHTML = '<i class="bi bi-pencil"></i> Update Record';
         document.getElementById('saveBtn').style.background = '#f59e0b';
-        
-        document.querySelector('.form-area').scrollIntoView({ behavior: 'smooth' });
-        showMessage('Edit Mode', `You are now editing record for "${record.employee_name}". Make your changes and click Update.`, 'info');
+        showMessage('Edit Mode', `Editing "${record.employee_name}"`, 'info');
     }
 
     async function deleteRecord(id) {
-        if (currentUser !== 'admin') {
-            await showMessage('Access Denied', 'Only Admin can delete records', 'error');
-            return;
-        }
-        
-        const result = await Swal.fire({
-            title: 'Delete Record?',
-            text: 'This action cannot be undone!',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#dc3545',
-            cancelButtonColor: '#6c757d',
-            confirmButtonText: 'Yes, delete it!',
-            cancelButtonText: 'Cancel'
-        });
-        
+        if (userRole !== 'admin') { showMessage('Access Denied', 'Only Admin can delete', 'error'); return; }
+        const result = await Swal.fire({ title: 'Delete?', text: 'Cannot be undone!', icon: 'warning', showCancelButton: true, confirmButtonColor: '#dc3545', confirmButtonText: 'Yes' });
         if (result.isConfirmed) {
-            try {
-                const response = await fetch(`${SUPABASE_URL}/rest/v1/dtr_records?id=eq.${id}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'apikey': SUPABASE_KEY,
-                        'Authorization': `Bearer ${SUPABASE_KEY}`
-                    }
-                });
-                
-                if (!response.ok) throw new Error(`HTTP ${response.status}`);
-                
-                selectedRecords.delete(id);
-                await showMessage('Deleted!', 'Record has been deleted.', 'success');
-                await loadRecords();
-                
-            } catch (error) {
-                await showMessage('Error', 'Error: ' + error.message, 'error');
-            }
+            await fetch(`${SUPABASE_URL}/rest/v1/dtr_records?id=eq.${id}`, { method: 'DELETE', headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` } });
+            selectedRecords.delete(id);
+            await loadRecords();
         }
     }
 
     async function deleteSelectedRecords() {
-        if (currentUser !== 'admin') {
-            await showMessage('Access Denied', 'Only Admin can delete records', 'error');
-            return;
-        }
-        
+        if (userRole !== 'admin') return;
         const toDelete = allRecords.filter(r => selectedRecords.has(r.id));
-        
-        if (toDelete.length === 0) {
-            await showMessage('No Selection', 'No records selected to delete', 'warning');
-            return;
-        }
-        
-        const result = await Swal.fire({
-            title: 'Delete Selected Records?',
-            text: `You are about to delete ${toDelete.length} record(s). This cannot be undone!`,
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#dc3545',
-            cancelButtonColor: '#6c757d',
-            confirmButtonText: 'Yes, delete them!',
-            cancelButtonText: 'Cancel'
-        });
-        
+        if (toDelete.length === 0) return;
+        const result = await Swal.fire({ title: `Delete ${toDelete.length} records?`, text: 'Cannot be undone!', icon: 'warning', showCancelButton: true, confirmButtonColor: '#dc3545' });
         if (result.isConfirmed) {
-            try {
-                for (const record of toDelete) {
-                    await fetch(`${SUPABASE_URL}/rest/v1/dtr_records?id=eq.${record.id}`, {
-                        method: 'DELETE',
-                        headers: {
-                            'apikey': SUPABASE_KEY,
-                            'Authorization': `Bearer ${SUPABASE_KEY}`
-                        }
-                    });
-                }
-                
-                selectedRecords.clear();
-                await showMessage('Deleted!', `${toDelete.length} record(s) have been deleted.`, 'success');
-                await loadRecords();
-                
-            } catch (error) {
-                await showMessage('Error', 'Error: ' + error.message, 'error');
-            }
+            for (let r of toDelete) await fetch(`${SUPABASE_URL}/rest/v1/dtr_records?id=eq.${r.id}`, { method: 'DELETE', headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` } });
+            selectedRecords.clear();
+            await loadRecords();
         }
     }
 
-    async function downloadSelectedAsZip() {
-        if (currentUser !== 'admin') {
-            await showMessage('Access Denied', 'Only Admin can download records', 'error');
-            return;
-        }
-        
-        const toDownload = allRecords.filter(r => selectedRecords.has(r.id));
-        
-        if (toDownload.length === 0) {
-            await showMessage('No Selection', 'No records selected to download', 'warning');
-            return;
-        }
-        
-        const downloadBtn = document.getElementById('downloadSelectedBtn');
-        const originalText = downloadBtn.innerHTML;
-        downloadBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Creating ZIP...';
-        downloadBtn.disabled = true;
-        
-        try {
-            const zip = new JSZip();
-            const folder = zip.folder("DTR_Records");
-            
-            for (let i = 0; i < toDownload.length; i++) {
-                const record = toDownload[i];
-                const fileName = `${record.employee_name.replace(/[^a-z0-9]/gi, '_')}_${record.outlet}_${record.dealer}_${record.cutoff_from}_${record.id}.png`;
-                
-                const imageData = record.image_data;
-                const base64Data = imageData.split(',')[1];
-                const binaryData = atob(base64Data);
-                const array = new Uint8Array(binaryData.length);
-                for (let j = 0; j < binaryData.length; j++) {
-                    array[j] = binaryData.charCodeAt(j);
-                }
-                
-                folder.file(fileName, array);
-            }
-            
-            const content = await zip.generateAsync({ type: "blob" });
-            const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
-            saveAs(content, `DTR_Records_${timestamp}.zip`);
-            
-            await showMessage('Download Complete', `Successfully downloaded ${toDownload.length} record(s) as ZIP file!`, 'success');
-            
-        } catch (error) {
-            await showMessage('Error', 'Error creating ZIP file: ' + error.message, 'error');
-        } finally {
-            downloadBtn.innerHTML = originalText;
-            downloadBtn.disabled = false;
-        }
+    function printCoordinatorReport() {
+        const cards = document.querySelectorAll('#submissionGrid .card');
+        if (cards.length === 0) { showMessage('No Data', 'Nothing to print', 'warning'); return; }
+        const win = window.open('', '_blank');
+        win.document.write(`<html><head><title>DTR Report - ${userAssignment}</title><style>body{font-family:Arial;padding:20px;} table{width:100%;border-collapse:collapse;} th,td{border:1px solid #ddd;padding:8px;text-align:left;} th{background:#4361ee;color:white;}</style></head><body><h1>DTR Submission Report</h1><p>Coordinator: ${userAssignment}</p><p>Generated: ${new Date().toLocaleString()}</p><table><thead><tr><th>Employee</th><th>Outlet</th><th>Dealer</th><th>Cutoff</th><th>Images</th><th>Date</th></tr></thead><tbody>${Array.from(cards).map(c => { const n = c.querySelector('.name')?.innerText.replace('👤 ', '') || ''; const o = c.querySelector('.outlet-text')?.innerText.replace('📍 ', '') || ''; const d = c.querySelector('.dealer-text')?.innerText.replace('🏪 ', '') || ''; const cut = c.querySelector('.date')?.innerText.replace('📅 ', '') || ''; const img = c.querySelector('.batch-badge')?.innerText.replace('📸 ', '').replace(' images', '') || ''; const dt = c.querySelector('.submission-status')?.innerText.replace('✓ Submitted ', '') || ''; return `<tr><td>${n}</td><td>${o}</td><td>${d}</td><td>${cut}</td><td>${img}</td><td>${dt}</td></tr>`; }).join('')}</tbody></table></body></html>`);
+        win.document.close(); win.print();
     }
 
-    function toggleSelectRecord(id) {
-        if (currentUser !== 'admin') {
-            showMessage('Access Denied', 'Only Admin can select records', 'error');
-            return;
-        }
-        if (selectedRecords.has(id)) {
-            selectedRecords.delete(id);
-        } else {
-            selectedRecords.add(id);
-        }
-        applyFiltersAndRender();
-    }
-
-    function selectAllFiltered() {
-        if (currentUser !== 'admin') {
-            showMessage('Access Denied', 'Only Admin can select records', 'error');
-            return;
-        }
-        const filteredRecords = getFilteredRecords();
-        filteredRecords.forEach(r => selectedRecords.add(r.id));
-        applyFiltersAndRender();
-    }
-
-    function deselectAll() {
-        if (currentUser !== 'admin') return;
-        selectedRecords.clear();
-        applyFiltersAndRender();
-    }
-
-    function getFilteredRecords() {
-        const searchTerm = document.getElementById('searchName') ? document.getElementById('searchName').value.toLowerCase() : '';
-        const filterOutlet = document.getElementById('filterOutlet') ? document.getElementById('filterOutlet').value : '';
-        const filterDateFrom = document.getElementById('filterDateFrom') ? document.getElementById('filterDateFrom').value : '';
-        const filterDateTo = document.getElementById('filterDateTo') ? document.getElementById('filterDateTo').value : '';
-        
-        return allRecords.filter(r => {
-            if (searchTerm && !(r.employee_name || '').toLowerCase().includes(searchTerm)) return false;
-            if (filterOutlet && r.outlet !== filterOutlet) return false;
-            if (filterDateFrom && r.cutoff_from && r.cutoff_from < filterDateFrom) return false;
-            if (filterDateTo && r.cutoff_to && r.cutoff_to > filterDateTo) return false;
-            return true;
-        });
-    }
-
-    async function printSelectedRecords() {
-        if (currentUser !== 'admin') {
-            await showMessage('Access Denied', 'Only Admin can print records', 'error');
-            return;
-        }
-        
-        const toPrint = allRecords.filter(r => selectedRecords.has(r.id));
-        
-        if (toPrint.length === 0) {
-            await showMessage('No Selection', 'No records selected to print', 'warning');
-            return;
-        }
-        
-        const printWindow = window.open('', '_blank');
-        printWindow.document.write(`
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <title>DTR Pictures - Bond Paper Print</title>
-                <style>
-                    * { margin: 0; padding: 0; box-sizing: border-box; }
-                    body { margin: 0; padding: 0; background: white; }
-                    @page { size: portrait; margin: 0; }
-                    @page landscape { size: landscape; margin: 0; }
-                    .print-container { width: 100%; min-height: 100vh; }
-                    .print-page {
-                        page-break-after: always;
-                        break-after: page;
-                        width: 100%;
-                        height: 100vh;
-                        display: flex;
-                        justify-content: center;
-                        align-items: center;
-                        background: white;
-                    }
-                    .print-img {
-                        max-width: 100%;
-                        max-height: 100%;
-                        width: auto;
-                        height: auto;
-                        object-fit: contain;
-                        display: block;
-                        margin: 0 auto;
-                    }
-                </style>
-            </head>
-            <body>
-                <div class="print-container">
-                    ${toPrint.map((r, index) => `<div class="print-page"><img class="print-img" src="${r.image_data}"></div>`).join('')}
-                </div>
-            </body>
-            </html>
-        `);
-        printWindow.document.close();
-        printWindow.print();
-    }
-
-    function updateSelectedInfo() {
-        const count = selectedRecords.size;
-        if(document.getElementById('selectedCount')) document.getElementById('selectedCount').innerText = count;
-        if(document.getElementById('deleteSelectedCount')) document.getElementById('deleteSelectedCount').innerText = count;
-        if(document.getElementById('downloadCount')) document.getElementById('downloadCount').innerText = count;
-    }
-
-    function renderGrid(filteredRecords) {
+    function renderGrid(records) {
         const grid = document.getElementById('recordsGrid');
-        
         if (!grid) return;
-        
-        if (filteredRecords.length === 0) {
-            grid.innerHTML = '<div class="loading">No records found. Add your first DTR!</div>';
-            return;
-        }
-        
-        const isAdmin = currentUser === 'admin';
-        
-        grid.innerHTML = filteredRecords.map(record => {
-            let actionButtons = '';
-            if (isAdmin) {
-                actionButtons = `<button class="delete-btn" onclick="deleteRecord(${record.id})"><i class="bi bi-trash"></i> Delete</button>`;
-            } else {
-                actionButtons = `<button class="edit-btn" onclick='editRecord(${JSON.stringify(record).replace(/'/g, "&#39;")})'><i class="bi bi-pencil"></i> Edit</button>`;
-            }
-            
-            return `
-            <div class="card ${selectedRecords.has(record.id) ? 'selected' : ''}">
-                ${isAdmin ? `<input type="checkbox" class="select-checkbox" ${selectedRecords.has(record.id) ? 'checked' : ''} onchange="toggleSelectRecord(${record.id})">` : ''}
-                <img src="${record.image_data}" class="card-img" alt="DTR" onclick="window.open(this.src)">
-                <div class="card-body">
-                    <div class="name">👤 ${escapeHtml(record.employee_name)}</div>
-                    <div class="outlet-text">📍 ${escapeHtml(record.outlet)}</div>
-                    <div class="dealer-text">🏪 Dealer: ${escapeHtml(record.dealer)}</div>
-                    <div class="date">📅 Cutoff: ${record.cutoff_range || record.cutoff_from + ' → ' + record.cutoff_to}</div>
-                    ${record.remarks ? `<div class="date">💬 ${escapeHtml(record.remarks)}</div>` : ''}
-                    ${actionButtons}
-                </div>
-            </div>
-        `}).join('');
+        if (records.length === 0) { grid.innerHTML = '<div class="loading">No records found.</div>'; return; }
+        const grouped = {};
+        records.forEach(r => { const key = r.batch_id || r.id; if (!grouped[key]) grouped[key] = { ...r, images: [r.image_data] }; else grouped[key].images.push(r.image_data); });
+        const list = Object.values(grouped);
+        grid.innerHTML = list.map(g => `<div class="card">${userRole === 'admin' ? `<input type="checkbox" class="select-checkbox" style="position:absolute;top:10px;right:10px;width:22px;height:22px;" ${selectedRecords.has(g.id) ? 'checked' : ''} onchange="toggleSelectRecord(${g.id})">` : ''}<img src="${g.images[0]}" class="card-img" onclick="window.open(this.src)"><div class="card-body"><div class="name">👤 ${escapeHtml(g.employee_name)}</div><div class="outlet-text">📍 ${escapeHtml(g.outlet)}</div><div class="dealer-text">🏪 ${escapeHtml(g.dealer)}</div><div class="date">📅 ${g.cutoff_range}</div>${g.remarks ? `<div class="date">💬 ${escapeHtml(g.remarks)}</div>` : ''}<div class="batch-badge">📸 ${g.images.length} images</div>${userRole === 'admin' ? `<button class="delete-btn" onclick="deleteRecord(${g.id})">Delete Batch</button>` : ''}${userRole === 'staffer' ? `<button class="edit-btn" onclick='editRecord({id:${g.id}, employee_name:"${g.employee_name}", outlet:"${g.outlet}", dealer:"${g.dealer}", cutoff_from:"${g.cutoff_from}", cutoff_to:"${g.cutoff_to}", remarks:"${g.remarks || ''}"})'>Edit</button>` : ''}</div></div>`).join('');
     }
 
     function updateStats() {
-        if(document.getElementById('totalCount')) document.getElementById('totalCount').textContent = allRecords.length;
+        if (document.getElementById('totalCount')) document.getElementById('totalCount').textContent = allRecords.length;
         const uniqueEmps = new Set(allRecords.map(r => r.employee_name));
-        if(document.getElementById('empCount')) document.getElementById('empCount').textContent = uniqueEmps.size;
+        if (document.getElementById('empCount')) document.getElementById('empCount').textContent = uniqueEmps.size;
+        const uniqueOutlets = new Set(allRecords.map(r => r.outlet));
+        if (document.getElementById('outletCount')) document.getElementById('outletCount').textContent = uniqueOutlets.size;
+        if (document.getElementById('imageCount')) document.getElementById('imageCount').textContent = allRecords.length;
         const now = new Date();
         const thisMonth = allRecords.filter(r => r.created_at && new Date(r.created_at).getMonth() === now.getMonth());
-        if(document.getElementById('monthCount')) document.getElementById('monthCount').textContent = thisMonth.length;
-        const uniqueOutlets = new Set(allRecords.map(r => r.outlet));
-        if(document.getElementById('outletCount')) document.getElementById('outletCount').textContent = uniqueOutlets.size;
+        if (document.getElementById('monthCount')) document.getElementById('monthCount').textContent = thisMonth.length;
     }
 
-    function escapeHtml(text) {
-        if (!text) return '';
-        const div = document.createElement('div');
-        div.textContent = text;
-        return div.innerHTML;
-    }
+    function toggleSelectRecord(id) { if (selectedRecords.has(id)) selectedRecords.delete(id); else selectedRecords.add(id); applyFiltersAndRender(); }
+    function selectAllFiltered() { const filtered = getFilteredRecords(); filtered.forEach(r => selectedRecords.add(r.id)); applyFiltersAndRender(); }
+    function deselectAll() { selectedRecords.clear(); applyFiltersAndRender(); }
+    function getFilteredRecords() { const s = document.getElementById('searchName')?.value.toLowerCase() || '', o = document.getElementById('filterOutlet')?.value || '', f = document.getElementById('filterDateFrom')?.value || '', t = document.getElementById('filterDateTo')?.value || ''; return allRecords.filter(r => { if (s && !(r.employee_name || '').toLowerCase().includes(s)) return false; if (o && r.outlet !== o) return false; if (f && r.cutoff_from && r.cutoff_from < f) return false; if (t && r.cutoff_to && r.cutoff_to > t) return false; return true; }); }
+    async function printSelectedRecords() { const toPrint = allRecords.filter(r => selectedRecords.has(r.id)); if (toPrint.length === 0) return; const win = window.open('', '_blank'); win.document.write(`<html><head><title>DTR Print</title><style>.print-page{page-break-after:always;height:100vh;display:flex;justify-content:center;align-items:center;} img{max-width:100%;max-height:100%;object-fit:contain;}</style></head><body>${toPrint.map(r => `<div class="print-page"><img src="${r.image_data}"></div>`).join('')}</body></html>`); win.document.close(); win.print(); }
+    async function downloadSelectedAsZip() { const toDownload = allRecords.filter(r => selectedRecords.has(r.id)); if (toDownload.length === 0) return; const btn = document.getElementById('downloadSelectedBtn'); const orig = btn.innerHTML; btn.innerHTML = 'Creating ZIP...'; btn.disabled = true; try { const zip = new JSZip(); const folder = zip.folder('DTR_Records'); for (let i = 0; i < toDownload.length; i++) { const r = toDownload[i]; const fileName = `${r.employee_name.replace(/[^a-z0-9]/gi, '_')}_${r.outlet}_${i}.png`; const b64 = r.image_data.split(',')[1]; const bin = atob(b64); const arr = new Uint8Array(bin.length); for (let j = 0; j < bin.length; j++) arr[j] = bin.charCodeAt(j); folder.file(fileName, arr); } const content = await zip.generateAsync({ type: 'blob' }); saveAs(content, `DTR_Records_${Date.now()}.zip`); await showMessage('Complete', `${toDownload.length} images downloaded`, 'success'); } catch(e) { showMessage('Error', e.message, 'error'); } finally { btn.innerHTML = orig; btn.disabled = false; } }
+    function updateSelectedInfo() { const c = selectedRecords.size; if (document.getElementById('selectedCount')) document.getElementById('selectedCount').innerText = c; if (document.getElementById('deleteSelectedCount')) document.getElementById('deleteSelectedCount').innerText = c; if (document.getElementById('downloadCount')) document.getElementById('downloadCount').innerText = c; }
+    function escapeHtml(t) { if (!t) return ''; const d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
 
-    if(document.getElementById('imageFile')) {
-        document.getElementById('imageFile').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(event) {
-                    const preview = document.getElementById('preview');
-                    preview.src = event.target.result;
-                    preview.style.display = 'block';
-                    currentImage = event.target.result;
-                };
-                reader.readAsDataURL(file);
-            }
-        });
-    }
-
-    if(document.getElementById('searchName')) {
-        document.getElementById('searchName').addEventListener('input', applyFiltersAndRender);
-        document.getElementById('filterOutlet').addEventListener('change', applyFiltersAndRender);
-        document.getElementById('filterDateFrom').addEventListener('change', applyFiltersAndRender);
-        document.getElementById('filterDateTo').addEventListener('change', applyFiltersAndRender);
-    }
+    document.getElementById('searchName')?.addEventListener('input', applyFiltersAndRender);
+    document.getElementById('filterOutlet')?.addEventListener('change', applyFiltersAndRender);
+    document.getElementById('filterDateFrom')?.addEventListener('change', applyFiltersAndRender);
+    document.getElementById('filterDateTo')?.addEventListener('change', applyFiltersAndRender);
+    document.getElementById('searchEmployee')?.addEventListener('input', () => loadSubmissionSummary());
+    document.getElementById('selectAllBtn')?.addEventListener('click', selectAllFiltered);
+    document.getElementById('deselectAllBtn')?.addEventListener('click', deselectAll);
+    document.getElementById('printSelectedBtn')?.addEventListener('click', printSelectedRecords);
+    document.getElementById('deleteSelectedBtn')?.addEventListener('click', deleteSelectedRecords);
+    document.getElementById('downloadSelectedBtn')?.addEventListener('click', downloadSelectedAsZip);
+    document.getElementById('printReportBtn')?.addEventListener('click', printCoordinatorReport);
+    document.getElementById('saveBtn')?.addEventListener('click', saveRecord);
     
-    if(document.getElementById('selectAllBtn')) {
-        document.getElementById('selectAllBtn').addEventListener('click', selectAllFiltered);
-        document.getElementById('deselectAllBtn').addEventListener('click', deselectAll);
-        document.getElementById('printSelectedBtn').addEventListener('click', printSelectedRecords);
-        document.getElementById('deleteSelectedBtn').addEventListener('click', deleteSelectedRecords);
-        document.getElementById('downloadSelectedBtn').addEventListener('click', downloadSelectedAsZip);
-    }
-    
-    if(document.getElementById('saveBtn')) {
-        document.getElementById('saveBtn').addEventListener('click', saveRecord);
-    }
-
     const today = new Date();
-    const firstDay = new Date(today.getFullYear(), today.getMonth(), 1).toISOString().split('T')[0];
-    const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0).toISOString().split('T')[0];
-    if(document.getElementById('fromDate')) document.getElementById('fromDate').value = firstDay;
-    if(document.getElementById('toDate')) document.getElementById('toDate').value = lastDay;
-
+    document.getElementById('fromDate').value = new Date(today.getFullYear(), today.getMonth(), 1).toISOString().split('T')[0];
+    document.getElementById('toDate').value = new Date(today.getFullYear(), today.getMonth() + 1, 0).toISOString().split('T')[0];
     document.getElementById('loginBtn').addEventListener('click', login);
-    if(document.getElementById('logoutBtn')) {
-        document.getElementById('logoutBtn').addEventListener('click', logout);
-    }
-
+    document.getElementById('logoutBtn')?.addEventListener('click', logout);
     checkSession();
 </script>
 </body>
