@@ -699,19 +699,49 @@
                         <div><label class="form-label">DEALER *</label>
                             <select id="fAhamDealer">
                                 <option value="">-- Select Dealer --</option>
-                                <option>SACI</option><option>AHAM OFFICE</option><option>SVI</option><option>S&R</option>
-                                <option>BOHOL QUALITY</option><option>SSM</option><option>GAISANO GRAND</option>
-                                <option>ANSONS</option><option>GAISANO MALL</option><option>MEGASAVER</option>
-                                <option>ALSONS</option><option>METRO</option><option>CSI</option><option>CONSUMERS</option>
-                                <option>SNR</option><option>SMCO</option><option>DCWC</option><option>SAVEMORE</option>
-                                <option>ROYAL STAR</option><option>AMERICAN HOME</option><option>LCC</option>
-                                <option>MIKE'S</option><option>BODEGA HOMEPLUS</option><option>WILLY & SONS</option>
-                                <option>TARGET MALL</option><option>TIONGSAN</option><option>LANDERS</option>
-                                <option>ROBINSON</option><option>RRS</option><option>PUREGOLD</option><option>KCC</option>
-                                <option>NIG MKTG</option><option>SM HEROES HALL</option><option>R/A</option><option>CTC</option>
-                                <option>REIN AND RAINY</option><option>ASIAN HOME</option><option>FC HOME</option>
-                                <option>WAREHOUSE</option><option>HOMEWORLD</option><option>WESTERN</option>
-                                <option>ROYALSTAR</option><option>GAISANO</option>
+                                <option value="AHAM OFFICE">AHAM OFFICE</option>
+                                <option value="SACI">SACI</option>
+                                <option value="SVI">SVI</option>
+                                <option value="S&R">S&R</option>
+                                <option value="BOHOL QUALITY">BOHOL QUALITY</option>
+                                <option value="SSM">SSM</option>
+                                <option value="GAISANO GRAND">GAISANO GRAND</option>
+                                <option value="ANSONS">ANSONS</option>
+                                <option value="GAISANO MALL">GAISANO MALL</option>
+                                <option value="MEGASAVER">MEGASAVER</option>
+                                <option value="ALSONS">ALSONS</option>
+                                <option value="METRO">METRO</option>
+                                <option value="CSI">CSI</option>
+                                <option value="CONSUMERS">CONSUMERS</option>
+                                <option value="SNR">SNR</option>
+                                <option value="SMCO">SMCO</option>
+                                <option value="DCWC">DCWC</option>
+                                <option value="SAVEMORE">SAVEMORE</option>
+                                <option value="ROYAL STAR">ROYAL STAR</option>
+                                <option value="AMERICAN HOME">AMERICAN HOME</option>
+                                <option value="LCC">LCC</option>
+                                <option value="MIKE'S">MIKE'S</option>
+                                <option value="BODEGA HOMEPLUS">BODEGA HOMEPLUS</option>
+                                <option value="WILLY & SONS">WILLY & SONS</option>
+                                <option value="TARGET MALL">TARGET MALL</option>
+                                <option value="TIONGSAN">TIONGSAN</option>
+                                <option value="LANDERS">LANDERS</option>
+                                <option value="ROBINSON">ROBINSON</option>
+                                <option value="RRS">RRS</option>
+                                <option value="PUREGOLD">PUREGOLD</option>
+                                <option value="KCC">KCC</option>
+                                <option value="NIG MKTG">NIG MKTG</option>
+                                <option value="SM HEROES HALL">SM HEROES HALL</option>
+                                <option value="R/A">R/A</option>
+                                <option value="CTC">CTC</option>
+                                <option value="REIN AND RAINY">REIN AND RAINY</option>
+                                <option value="ASIAN HOME">ASIAN HOME</option>
+                                <option value="FC HOME">FC HOME</option>
+                                <option value="WAREHOUSE">WAREHOUSE</option>
+                                <option value="HOMEWORLD">HOMEWORLD</option>
+                                <option value="WESTERN">WESTERN</option>
+                                <option value="ROYALSTAR">ROYALSTAR</option>
+                                <option value="GAISANO">GAISANO</option>
                             </select>
                         </div>
                         <div><label class="form-label">OUTLET *</label>
@@ -1501,7 +1531,10 @@
             allStaffers = data || [];
             allStaffersForComparison = data || [];
             renderStaffers();
-        } catch(e) { console.error(e); }
+        } catch(e) { 
+            console.error(e);
+            document.getElementById('staffersGrid').innerHTML = '<div class="loading">Error loading staffers. Please refresh.</div>';
+        }
     }
     
     function renderStaffers() {
@@ -1734,6 +1767,7 @@
         document.getElementById('modalTitle').innerText = 'Add';
         document.getElementById('modalSaveBtnText').innerText = 'Save';
         
+        // Clear AHAM form
         document.getElementById('fAhamIdNo').value = '';
         document.getElementById('fAhamSurname').value = '';
         document.getElementById('fAhamName').value = '';
@@ -1753,6 +1787,7 @@
         document.getElementById('fAhamPayroll').value = '';
         document.getElementById('fAhamRemarks').value = '';
         
+        // Clear FBC form
         document.getElementById('fFbcStoreCode').value = '';
         document.getElementById('fFbcStoreName').value = '';
         document.getElementById('fFbcPlottedDisers').value = '';
@@ -2002,8 +2037,8 @@
                         body: JSON.stringify({ printed: true })
                     });
                 }
-                selectedSubmissions.clear();
                 await showMessage('Success', `${selectedSubmissions.size} record(s) marked as printed`, 'success');
+                selectedSubmissions.clear();
                 loadDTRSubmissions();
             } catch(e) {
                 showMessage('Error', e.message, 'error');
