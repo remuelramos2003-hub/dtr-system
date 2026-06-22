@@ -160,6 +160,21 @@
         .filter-group input,.filter-group select{
             width:100%;
             padding:8px;
+            border:1px solid var(--border-color);
+            border-radius:8px;
+            background:var(--input-bg);
+            color:var(--text-color);
+        }
+        .print-bar{
+            display:flex;
+            gap:10px;
+            margin-bottom:20px;
+            flex-wrap:wrap;
+            align-items:center;
+        }
+        .print-bar button{
+            width:auto;
+            padding:8px 16px;
         }
         .grid{
             display:grid;
@@ -167,6 +182,7 @@
             gap:20px;
             max-height:550px;
             overflow-y:auto;
+            padding:5px;
         }
         .card{
             background:var(--card-bg);
@@ -181,6 +197,10 @@
             box-shadow:0 8px 20px var(--hover-shadow);
             border-color:#4361ee;
         }
+        .card.selected{
+            border:3px solid #4361ee;
+            background:rgba(67,97,238,0.05);
+        }
         .card-img{
             width:100%;
             height:200px;
@@ -191,6 +211,7 @@
         .name{font-weight:bold;color:var(--text-color);}
         .outlet-text{color:#10b981;font-size:0.85em;margin:3px 0;}
         .dealer-text{color:#f59e0b;font-size:0.85em;}
+        .store-text{color:#8b5cf6;font-size:0.85em;margin:3px 0;}
         .date{color:var(--label-color);font-size:0.8em;}
         .batch-badge{
             background:#4361ee;
@@ -211,7 +232,17 @@
             width:100%;
             cursor:pointer;
         }
+        .select-checkbox{
+            position:absolute;
+            top:10px;
+            right:10px;
+            width:22px;
+            height:22px;
+            cursor:pointer;
+            z-index:10;
+        }
         .two-columns{display:grid;grid-template-columns:1fr 1fr;gap:15px;}
+        .three-columns{display:grid;grid-template-columns:1fr 1fr 1fr;gap:15px;}
         .preview-container{
             display:flex;
             flex-wrap:wrap;
@@ -340,6 +371,9 @@
         .image-viewer .image-counter {color:white;font-size:16px;}
         @media(max-width:768px){
             .two-columns{grid-template-columns:1fr;}
+            .three-columns{grid-template-columns:1fr;}
+            .print-bar{flex-direction:column;}
+            .print-bar button{width:100%;}
         }
         .loading{text-align:center;padding:40px;color:var(--label-color);}
         select:disabled{background-color:#e9ecef;cursor:not-allowed;}
@@ -383,10 +417,43 @@
             background: #304ff2;
             border: 2px solid #4361ee;
         }
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .action-buttons button {
+            width: auto;
+            padding: 8px 16px;
+        }
+        .action-buttons .selected-count {
+            color: var(--label-color);
+            font-size: 14px;
+        }
+        .date-label-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 5px;
+        }
+        .date-label-group label {
+            flex: 1;
+            font-size: 12px;
+            color: var(--label-color);
+            margin-bottom: 0;
+            font-weight: 500;
+        }
         @media(max-width:768px){
             .submission-summary {
                 grid-template-columns: 1fr 1fr;
                 gap: 15px;
+            }
+            .action-buttons {
+                flex-direction: column;
+            }
+            .action-buttons button {
+                width: 100%;
             }
         }
     </style>
@@ -436,8 +503,9 @@
         <i class="bi bi-info-circle"></i> <strong>Quick Guide</strong>
         <ul>
             <li>📸 Select multiple images - each DTR picture saves as a separate record</li>
-            <li>🔍 Use filters to search by name or cutoff period</li>
-            <li>🖼️ Click on any image or thumbnail to view in fullscreen with navigation</li>
+            <li>🔍 Use live filters to search by name or cutoff period</li>
+            <li>✅ Select checkboxes to batch delete, print, or download</li>
+            <li>🖼️ Click on any image to view in fullscreen with navigation</li>
         </ul>
     </div>
 
@@ -453,104 +521,283 @@
         
         <input type="text" id="empName" placeholder="Employee Name *">
         
-        <div class="two-columns">
-            <div id="outletContainer">
-                <label style="font-size:12px;color:var(--label-color);">Outlet *</label>
-                <select id="outlet">
-                    <option value="">-- Select Outlet --</option>
-                    <option>MARILAO,BULACAN</option><option>MORATO AVE.</option><option>GENERAL SANTOS</option>
-                    <option>CEBU CITY</option><option>ROSALES,PANGASINAN</option><option>BOHOL</option>
-                    <option>STA.ROSA,LAGUNA</option><option>NAIC,CAVITE</option><option>BANKAL/BAJADA</option>
-                    <option>ILLUSTRE</option><option>ETON QC,</option><option>EMPORIUM,MAKATI CITY</option>
-                    <option>ROXAS</option><option>CLARK,PAMPANGA</option><option>CAMILING</option>
-                    <option>warehouse</option><option>SAN PABLO,LAGUNA</option><option>NOVALICHES,QC</option>
-                    <option>CARCAR CITY,CEBU</option><option>LUCENA</option><option>CDO 2</option>
-                    <option>MANAOAG</option><option>IRIGA CITY</option><option>KAWIT</option>
-                    <option>MARIKINA</option><option>MASBATE</option><option>LA TRINIDAD,BENGUET</option>
-                    <option>DCWC AGDAO</option><option>NAGA CITY,CAMARINES SUR</option><option>MANGALDAN</option>
-                    <option>MUZON/STA.MARIA</option><option>TARLAC</option><option>DAVAO</option>
-                    <option>CONSOLACION CEBU</option><option>SAVEMORE NUÑEZ</option><option>DASMA., CAVITE</option>
-                    <option>TRECE MARTIRES</option><option>DAVAO /GMALL -BAJADA</option><option>SEASIDE,CEBU CITY</option>
-                    <option>NEW MANILA</option><option>TABUNOK,CEBU</option><option>BACOLOD</option>
-                    <option>AYALA CEBU</option><option>IMUS/DASMA/BACOOR</option><option>IROSIN</option>
-                    <option>SQUARE,PANGASINAN</option><option>PLARIDEL</option><option>CHEF'S MAGIC/AHAM</option>
-                    <option>ABRA</option><option>UGAC</option><option>CENTRO,NAGA</option>
-                    <option>PAMPANGA</option><option>CAINTA,RIZAL</option><option>BALIWAG</option>
-                    <option>GOA,CAMARINES SUR</option><option>AHAM OFFICE</option><option>STA.ANA,PAMPANGA</option>
-                    <option>DAU</option><option>NAGA</option><option>LIPA,BATANGAS</option>
-                    <option>BICUTAN</option><option>NOVALICHES 1</option><option>LAGUNA</option>
-                    <option>TANZA,CAVITE</option><option>DAET,CAMARINES SUR</option><option>ROSARIO,LA UNION</option>
-                    <option>PILI</option><option>CALBAYOG</option><option>NAGA POLANGUI 2</option>
-                    <option>ARCOVIA,PASIG</option><option>CATANAUAN</option><option>RIVERBANK</option>
-                    <option>DUMAGUETE CITY</option><option>IBA,ZAMBALES</option><option>SIPOCOT,CAMARINES SUR</option>
-                    <option>EXHIBITORS MANILA</option><option>NUVALI,LAGUNA</option><option>DAGUPAN,PANGASINAN</option>
-                    <option>MOALBOAL</option><option>CABANATUAN,NUEVA ECIJA</option><option>SUNSTAR/PAGSANJAN</option>
-                    <option>NORTH CALOOCAN</option><option>CALAMBA,LAGUNA</option><option>FAIRVIEW MAIN</option>
-                    <option>ILOILO</option><option>DAVAO DEL SUR , DIGOS CITY</option><option>ZAMBOANGA</option>
-                    <option>ILOILO CITY, ILOILO</option><option>CONDONI</option><option>GUIMBA</option>
-                    <option>MINGLANILLA,CEBU</option><option>CALBANGA</option><option>CATARMAN</option>
-                    <option>ALABANG/ TAGUIG</option><option>DARAGA,ALBAY</option><option>LAOG CITY, ILOCOS NORTE</option>
-                    <option>Mamandil Talavera Nueva Ecija</option><option>SOUTHMALL,LAS PINAS</option>
-                    <option>PACO,MANILA</option><option>VELEZ,CAGAYAN DE ORO CITY</option>
-                    <option>COMMONWEALTH Q.C</option><option>SAN FERNANDO</option><option>MARQUEE</option>
-                    <option>BULAN,SORSOGON</option><option>BATANGAS CITY</option><option>ILIGAN,LANAO DEL NORTE</option>
-                    <option>LAS PINAS</option><option>VICTORIA CITY</option><option>PANTUKAN</option>
-                    <option>TALAVERA</option><option>CARMEN</option><option>PIODURAN</option>
-                    <option>CHERRY SHAW/ MEGA A</option><option>KALIBO</option><option>LA UNION</option>
-                    <option>LEMERY,BATANGAS</option><option>BACOOR,CAVITE</option><option>LOPEZ,QUEZON</option>
-                    <option>GENERAL TRIAS</option><option>TACLOBAN</option><option>SORSOGON</option>
-                    <option>COTABATO</option><option>FTI,TAGUIG</option><option>GUMACA QUEZON</option>
-                    <option>POLOMOLOK</option><option>NORTH RECLAMATION AREA</option><option>ANTIQUE</option>
-                    <option>BORONGAN</option><option>CATAINGAN</option><option>CALOOCAN</option>
-                    <option>LIGAO</option><option>MACTAN,CEBU</option><option>TABACO CITY,ALBAY</option>
-                    <option>BACACAY</option><option>MOA,PASAY</option><option>LIMKETKAI,CAGAYAN DE ORO</option>
-                    <option>GUAGUA</option><option>LA FLUERZA,ALABANG- THE VILLAGE SUARE</option>
-                    <option>ILAGAN</option><option>LAOAG</option><option>PASIG</option>
-                    <option>TAGUM</option><option>FTI TAGUIG,METRO MNL</option><option>VIRAC</option>
-                    <option>TOLEDO</option><option>STO.TOMAS,BATANGAS</option><option>ARGAO CEBU</option>
-                    <option>PARAÑAQUE</option><option>CAGAYAN DE ORO</option><option>PAETE/STA.CRUZ</option>
-                    <option>TARA,MASBATE</option><option>R.A FUENTE CEBU</option><option>KADIWA</option>
-                    <option>POLANGUI 2</option><option>DELGADO</option><option>BUTUAN,AGUSAN DEL NORTE</option>
-                    <option>DINALUPIHAN</option><option>BAGO,NEGROS OCCIDENTAL</option><option>LEGASPI</option>
-                    <option>AMPARO</option><option>ILIGAN,ISABELA</option><option>PROJECT 8/LAONG-LAAN</option>
-                    <option>SAN PEDRO 2</option><option>N.EDSA,QC (THE BLOCK)</option><option>ANABU/ BUHAY NA TUBIG</option>
-                    <option>NASUGBO</option><option>JMALL</option><option>ANTIPOLO</option>
-                    <option>QUEZON AVE</option><option>LIBERTAD</option><option>CUBAO, QUEZON CITY</option>
-                    <option>ALLEN, NORTHERN SAMAR</option><option>SILAY/TALISAY</option><option>HINOBA-AN,N. OCCIDENTAL</option>
-                    <option>CANDON</option><option>CIRCUIT MAKATI</option><option>VIRAC,CATANDUANES</option>
-                    <option>ALABANG,MUNTINLUPA</option><option>JARO 2 / GTMALL</option><option>BUHANGIN,DAVAO</option>
-                    <option>GENSAN</option><option>LABO,CAMARINES NORTE</option><option>MOLINO</option>
-                    <option>NACARLAN</option><option>JUBAN,SORSOGON</option><option>LIMBMANAN,CAMARINES SUR</option>
-                    <option>TAYUMAN,TONDO,MNL</option><option>NAIC/ROSARIO,CAVITE</option><option>MAKATI JAZZ</option>
-                    <option>CABADBARAN</option><option>CAUAYAN,ISABELA</option><option>BAYOMBONG,NUEVA ECIJA</option>
-                    <option>VISAYAS AVE., Q.C</option><option>PUERTO PRINSESA,PALAWAN</option><option>CLARK PAMPANGGA</option>
-                    <option>KABANKALAN,BACOLOD</option><option>BINAN, LAGUNA/LOS BANOS</option><option>LEGAZPI,ALBAY</option>
-                    <option>DANAO</option><option>VALENZUELA</option><option>PANABO</option>
-                    <option>LILOAN</option><option>CADIZ,NEGROS OCCIDENTAL</option><option>MANDAUE, CEBU CITY</option>
-                    <option>OTIS</option>
-                </select>
+        <!-- AHAM Fields -->
+        <div id="ahamFields">
+            <div class="two-columns">
+                <div id="outletContainer">
+                    <label style="font-size:12px;color:var(--label-color);">Outlet *</label>
+                    <select id="outlet">
+                        <option value="">-- Select Outlet --</option>
+                        <option>MARILAO,BULACAN</option><option>MORATO AVE.</option><option>GENERAL SANTOS</option>
+                        <option>CEBU CITY</option><option>ROSALES,PANGASINAN</option><option>BOHOL</option>
+                        <option>STA.ROSA,LAGUNA</option><option>NAIC,CAVITE</option><option>BANKAL/BAJADA</option>
+                        <option>ILLUSTRE</option><option>ETON QC,</option><option>EMPORIUM,MAKATI CITY</option>
+                        <option>ROXAS</option><option>CLARK,PAMPANGA</option><option>CAMILING</option>
+                        <option>warehouse</option><option>SAN PABLO,LAGUNA</option><option>NOVALICHES,QC</option>
+                    </select>
+                </div>
+                <div id="dealerContainer">
+                    <label style="font-size:12px;color:var(--label-color);">Dealer *</label>
+                    <select id="dealer">
+                        <option value="">-- Select Dealer --</option>
+                        <option>SACI</option><option>AHAM OFFICE</option><option>SVI</option><option>S&R</option>
+                        <option>BOHOL QUALITY</option><option>SSM</option><option>GAISANO GRAND</option>
+                        <option>ANSONS</option><option>GAISANO MALL</option><option>MEGASAVER</option>
+                        <option>ALSONS</option><option>METRO</option><option>CSI</option>
+                    </select>
+                </div>
             </div>
-            <div id="dealerContainer">
-                <label style="font-size:12px;color:var(--label-color);">Dealer *</label>
-                <select id="dealer">
-                    <option value="">-- Select Dealer --</option>
-                    <option>SACI</option><option>AHAM OFFICE</option><option>SVI</option><option>S&R</option>
-                    <option>BOHOL QUALITY</option><option>SSM</option><option>GAISANO GRAND</option>
-                    <option>ANSONS</option><option>GAISANO MALL</option><option>MEGASAVER</option>
-                    <option>ALSONS</option><option>METRO</option><option>CSI</option><option>CONSUMERS</option>
-                    <option>SNR</option><option>SMCO</option><option>DCWC</option><option>SAVEMORE</option>
-                    <option>ROYAL STAR</option><option>AMERICAN HOME</option><option>LCC</option>
-                    <option>MIKE'S</option><option>BODEGA HOMEPLUS</option><option>WILLY & SONS</option>
-                    <option>TARGET MALL</option><option>TIONGSAN</option><option>LANDERS</option>
-                    <option>ROBINSON</option><option>RRS</option><option>PUREGOLD</option><option>KCC</option>
-                    <option>NIG MKTG</option><option>SM HEROES HALL</option><option>R/A</option><option>CTC</option>
-                    <option>REIN AND RAINY</option><option>ASIAN HOME</option><option>FC HOME</option>
-                    <option>WAREHOUSE</option><option>HOMEWORLD</option><option>WESTERN</option>
-                    <option>ROYALSTAR</option><option>GAISANO</option>
+        </div>
+        
+        <!-- FBC Fields -->
+        <div id="fbcFields" style="display:none;">
+            <div class="two-columns">
+                <div id="outletContainerFBC" style="display:none;">
+                    <label style="font-size:12px;color:var(--label-color);">Outlet</label>
+                    <input type="text" id="outletFBC" value="N/A" disabled style="background:#e9ecef;">
+                </div>
+                <div id="dealerContainerFBC" style="display:none;">
+                    <label style="font-size:12px;color:var(--label-color);">Dealer</label>
+                    <input type="text" id="dealerFBC" value="FBC" disabled style="background:#e9ecef;">
+                </div>
+            </div>
+            <div class="form-group">
+                <label style="font-size:12px;color:var(--label-color);">Store Name *</label>
+                <select id="storeName" style="height:200px;">
+                    <option value="">-- Select Store --</option>
+                    <option>MABCES NEW STORE</option>
+                    <option>JACKMAN MUNOZ</option>
+                    <option>RH ERMITA 103</option>
+                    <option>RH ANTIQUE 373</option>
+                    <option>RH CAGAYAN DE ORO (CDO) 183</option>
+                    <option>RH CALAPAN ORIENTAL MINDORO</option>
+                    <option>RH DASMARINAS 157</option>
+                    <option>RH GAISANO DIGOS 378</option>
+                    <option>RH GAISANO GRAND MALL CALBAYOG (SAMAR) 408</option>
+                    <option>RH GAISANO KALIBO 302</option>
+                    <option>RH PANABO 196</option>
+                    <option>RH GAISANO ROXAS 186</option>
+                    <option>RH GALLERIA LUISA BOHOL (TAGBILARAN) 340</option>
+                    <option>RH GALLERIA 101</option>
+                    <option>RH ILOCOS NORTE 169</option>
+                    <option>RH LUCKY CHINA TOWN 401</option>
+                    <option>RH RP MALABON 332</option>
+                    <option>RH MONTALBAN TOWN CENTER 125</option>
+                    <option>RH NE MALL BALER AURORA 406</option>
+                    <option>RH NORTH TACLOBAN 411</option>
+                    <option>RH NOVALICHES 109</option>
+                    <option>RH PUREGOLD PASO DE BLAS 390</option>
+                    <option>RH RIVERBANKS MARIKINA 108</option>
+                    <option>RH SANTIAGO ISABELA 334</option>
+                    <option>RH TANDANG SORA 311</option>
+                    <option>RH XENTRO ROXAS ISABELA 368</option>
+                    <option>RH WILSAM BORONGAN UPTOWN MALL 458</option>
+                    <option>RH BULUA 472</option>
+                    <option>RH SIARGAO TOWN CENTER 469</option>
+                    <option>RH STATION B MALL BORACAY 491</option>
+                    <option>RH GAISANO CAPITAL KAPATAGAN 482</option>
+                    <option>RH SANJOSE TOWN MALL 495</option>
+                    <option>RH PRIMARK NOVELETA 496</option>
+                    <option>RH LIPA TOWN CENTER 494</option>
+                    <option>RH GAISANO GRANDMALL BALAMBAN 499</option>
+                    <option>RH MEGA MAGALANG 506</option>
+                    <option>RH KABANKALAN 531</option>
+                    <option>RH STA LUCIA DAVAO 521</option>
+                    <option>RH VIRAC</option>
+                    <option>RH SAN CARLOS TOWN CENTER</option>
+                    <option>RH LEMERY BATANGAS 343</option>
+                    <option>HEM GRAND MALL MAASIM 437</option>
+                    <option>WH GUIGUINTO 322</option>
+                    <option>RH NUCITI BATANGAS 321</option>
+                    <option>RH CALINAN DAVAO 512</option>
+                    <option>RH PUREGOLD BAYAWAN 443</option>
+                    <option>RH PANGASINAN 307</option>
+                    <option>WH TAGAYTAY 375</option>
+                    <option>WH CARMONA</option>
+                    <option>HEM LCC POLANGUI 434</option>
+                    <option>RH PALAWAN 308</option>
+                    <option>RH CEBU 182</option>
+                    <option>RH TAGAYTAY 375</option>
+                    <option>RH ANTIPOLO 465</option>
+                    <option>RH GAPAN478/GAPAN NUEVA ECIJA</option>
+                    <option>RH GAISANO GRAND LILOAN CEBU/RH PARK MALL</option>
+                    <option>RH BACOLOD 181</option>
+                    <option>RH GAISANO GRAND MALL SILAY BACOLOD 412</option>
+                    <option>RH BAGUIO CENTERMALL 153</option>
+                    <option>RH CENTERPOINTE BAGUIO 362</option>
+                    <option>RH NEPOMALL DAGUPAN 161</option>
+                    <option>RH CENTERPOINT DAGUPAN 468</option>
+                    <option>RH EMALL CEBU 189</option>
+                    <option>RH SOUTH TOWN CENTER CEBU 363</option>
+                    <option>RH FAIRVIEW CENTERMALL 105</option>
+                    <option>RH REGALADO COMMUNITY MALL 367</option>
+                    <option>RH GAISANO CAPITAL BINANGONAN 409</option>
+                    <option>RH TANAY TOWN CENTER 418</option>
+                    <option>RH GAISANO MACTAN 197</option>
+                    <option>RH GAISANO MACTAN (ISLAND) 354</option>
+                    <option>RH GT MOLO ILOILO 326</option>
+                    <option>RH MARYMART ILOILO 184</option>
+                    <option>RH IL CENTRO CAINTA 355</option>
+                    <option>RH UP TOWN CENTER 493</option>
+                    <option>RH LUCKY GOLD PASIG 323</option>
+                    <option>RH WELCOME MERCEDES PASIG 379</option>
+                    <option>RH CHERRY FOODARAMA SHAW 361</option>
+                    <option>RH PACITA</option>
+                    <option>RH WM SAN FERNANDO 300</option>
+                    <option>RH BACOLOR 501</option>
+                    <option>RH OTIS 119</option>
+                    <option>WH BAY CITY MACAPAGAL 461</option>
+                    <option>RH METRO PLAZA MALARIA 438</option>
+                    <option>WH ALTARAZA 475</option>
+                    <option>RH SHOPWISE SUCAT 511</option>
+                    <option>WH SUCAT PARAÑAQUE 309</option>
+                    <option>RH BF PARAÑAQUE 121</option>
+                    <option>RH SHOPWISE SUCAT 511</option>
+                    <option>WH GEN TRIAS 255</option>
+                    <option>WH TRECE MARTIRES CAVITE 324</option>
+                    <option>WH BICUTAN 339</option>
+                    <option>WH MUNTINLUPA WEST 481</option>
+                    <option>HM EMALL NAGALAND 162</option>
+                    <option>RH LCC NAGA 352</option>
+                    <option>RH ALIMALL 102</option>
+                    <option>RH UP CAMPUS</option>
+                    <option>RH BAGONG SILANG CALOOCAN 535</option>
+                    <option>RH ZABARTE 449</option>
+                    <option>RH MARIKINA 399</option>
+                    <option>RH XELAND 470</option>
+                    <option>LUXENBERG MARKETING INC. (HOME ALONG) - APALIT PAMPANGA</option>
+                    <option>LUXENBERG MARKETING INC. (HOME ALONG) - MANDALUYONG</option>
+                    <option>LUXENBERG MARKETING INC. (HOME ALONG) - STA. ROSA</option>
+                    <option>LUXENBERG MARKETING INC. (HOME ALONG) - MUNTINLUPA</option>
+                    <option>LUXENBERG MARKETING INC. (HOME ALONG) - MONTALBAN</option>
+                    <option>LUXENBERG MARKETING INC. (HOME ALONG) - MALABON</option>
+                    <option>LUXENBERG MARKETING INC. (HOME ALONG) - GOV. PASCUAL (MALABON)</option>
+                    <option>PRINCE WAREHOUSE - PRINCE TANJAY</option>
+                    <option>PRINCE WAREHOUSE - DC OROQUIETTA OROQUIETTA</option>
+                    <option>APPLIANCE CENTRUM - BACOLOD</option>
+                    <option>RA ANTIPOLO</option>
+                    <option>RA ANTIQUE</option>
+                    <option>RA CAGAYAN DE ORO</option>
+                    <option>RA CAINTA</option>
+                    <option>RA DAVAO BAJADA</option>
+                    <option>RA GENSAN</option>
+                    <option>RA ILOILO</option>
+                    <option>RA MAGNOLIA</option>
+                    <option>RA MONTALBAN</option>
+                    <option>RA NORTH TACLOBAN</option>
+                    <option>RA PALAWAN</option>
+                    <option>RA POLANGUI</option>
+                    <option>RA REGALADO</option>
+                    <option>RA ROXAS</option>
+                    <option>RA TACLOBAN</option>
+                    <option>RA TAGUM</option>
+                    <option>RA TANAY</option>
+                    <option>RA TORIL DAVAO</option>
+                    <option>RA XENTROMALL VIGAN</option>
+                    <option>RA IBA ZAMBALES</option>
+                    <option>RA GINGOOG</option>
+                    <option>RA VALENCIA BUKIDNON</option>
+                    <option>RA PAGADIAN</option>
+                    <option>RA CALAPAN</option>
+                    <option>RA COTA</option>
+                    <option>RA BUTUAN</option>
+                    <option>RA BAGONG SILANG</option>
+                    <option>RA PASO DE BLAS</option>
+                    <option>RA BALIBAGO</option>
+                    <option>RA MARQUEE ANGELES</option>
+                    <option>RA BAGUIO</option>
+                    <option>RA BAGUIO CENTERPOINT PLAZA</option>
+                    <option>RA BLUEWAVE MARIKINA</option>
+                    <option>RA RIVERBANKS</option>
+                    <option>RA PANGASINAN</option>
+                    <option>RA SAN CARLOS</option>
+                    <option>RA GALLERIA SOUTH</option>
+                    <option>RA FESTIVAL MALL ALABANG</option>
+                    <option>RA GALLERIA</option>
+                    <option>RA OPUS</option>
+                    <option>SAVER'S - BATAAN 2</option>
+                    <option>SAVER'S - BARRETO</option>
+                    <option>SAVER'S - SAN FERNANDO</option>
+                    <option>SAVER'S - VISAYAS</option>
+                    <option>SAVER'S - HENSON</option>
+                    <option>SAVER'S - ANGELES (PLARIDEL)</option>
+                    <option>SAVER'S - BALIBAGO</option>
+                    <option>SAVER'S - MABALACAT</option>
+                    <option>SAVER'S - DONBONI</option>
+                    <option>SAVERS SOUTH CALOOCAN</option>
+                    <option>RA MALABON</option>
+                    <option>MG COLON (Cebu)</option>
+                    <option>MG MANDAUE (Cebu)</option>
+                    <option>MG ANGELES (Pampanga)</option>
+                    <option>MG LAPU LAPU (Cebu)</option>
+                    <option>MG LUCENA</option>
+                    <option>MG MAMBALING (Cebu)</option>
+                    <option>MG MARKET MARKET (Taguig)</option>
+                    <option>MG TAGAYTAY</option>
+                    <option>MG TOLEDO (Cebu)</option>
+                    <option>MG CARCAR</option>
+                    <option>MG METRO GAISANO (AYALA)</option>
+                    <option>MG TACLOBAN</option>
+                    <option>MG METRO SANDS (DANAO)</option>
+                    <option>MG SUPER METRO COLON</option>
+                    <option>MG HINIGARAN (NEGROS OCCIDENTAL)</option>
+                    <option>MG ANGELES TWIN GROCER</option>
+                    <option>MG BAIS NEGROS ORIENTAL</option>
+                    <option>MG ALABANG</option>
+                    <option>GAISANO GRAND FIESTA MALL (GFM) (TABUNOK)</option>
+                    <option>GAISANO GRAND BACOLOD MALL GCB CITY OF BACOLOD</option>
+                    <option>GAISANO GRAND BACOLOD MAIN (BAC)</option>
+                    <option>GAISANO GRAND KABANKALAN (KB)</option>
+                    <option>GAISANO GRAND TOLEDO (TDO)</option>
+                    <option>GAISANO GRAND CARCAR (CAR)</option>
+                    <option>GAISANO GRAND MOALBOAL (MBL)</option>
+                    <option>GAISANO GRAND NABUNTURAN (NBT)</option>
+                    <option>GAISANO GRAND CALBAYOG (CBG)</option>
+                    <option>GAISANO GRAND BALAMBAN</option>
+                    <option>GAISANO GRAND PLAZA MACTAN</option>
+                    <option>GAISANO GRAND OSLOB</option>
+                    <option>GAISANO GRAND PANABO</option>
+                    <option>GAISANO GRAND ANTIQUE</option>
+                    <option>GAISANO GRAND KALIBO</option>
+                    <option>GAISANO GRAND CARMEN</option>
+                    <option>GAISANO GRAND POLOMOLOK</option>
+                    <option>GAISANO GRAND GINGOOG</option>
+                    <option>GAISANO CAGAYAN INC.GAISANO TUBOD</option>
+                    <option>GAISANO CAGAYAN.INC CAGAYAN DE ORO CITY (CT)</option>
+                    <option>GAISANO CAGAYAN INC. ILIGAN MALL</option>
+                    <option>GAISANO MALL BAJADA (DAVAO)GSC</option>
+                    <option>GAISANO GRAND MALL TIBONGCO DAVAO</option>
+                    <option>BODEGA GLASSWARE</option>
+                    <option>HONGKONG BAZAAR -HONGKONG FITNESS AND MUSICAL GOODS TRADING</option>
+                    <option>KENLYN GENERAL MERCHANDISE - GUMACA GITNA</option>
+                    <option>KENLYN GENERAL MERCHANDISE - GUMACA (828)</option>
+                    <option>LCC - TCL MERCHANDISE BROKERAGE INC. - LEGAZPI</option>
+                    <option>LCC - TCL MERCHANDISE BROKERAGE INC. - 21102 TCL CENTRAL TABACO WHSE 2</option>
+                    <option>LCC - TCL MERCHANDISE BROKERAGE INC POLANGUI</option>
+                    <option>RIEN N' RAINY DRY GOODS & MDSE.</option>
+                    <option>ME AND CITY BALAYAN</option>
+                    <option>ME AND CITY BAUAN BATANGAS</option>
+                    <option>ME AND CITY CALAPAN</option>
+                    <option>ME AND CITY ROSARIO BATANGAS</option>
+                    <option>TRADER'S CHOICE LEBERTAD</option>
+                    <option>MS.MANELYN VALIENTE</option>
+                    <option>GMALL GENSAN [DEPT.STORE]</option>
+                    <option>MIDDLE EAST TRADING - BURGOS 2</option>
+                    <option>MIDDLE EAST TRADING - HI-WAY NUEVA ECIJA</option>
+                    <option>MIDDLE EAST TRADING - CABANATUAN CITY</option>
+                    <option>MIDDLE EAST TRADING - NE PACIFIC</option>
+                    <option>MIDDLE EAST TRADING - NUEVA ECIJA TRADING CORP. (CEMP MIDDLE EAST TRADING CORP.)</option>
+                    <option>OCAMPOS-OCAMPOS PLARIDEL ST.</option>
+                    <option>OCAMPOS DINALUPIHAN</option>
+                    <option>PRICEWISE MARKETING CORP.</option>
                 </select>
             </div>
         </div>
         
+        <div class="date-label-group">
+            <label><i class="bi bi-calendar-plus"></i> From Date</label>
+            <label><i class="bi bi-calendar-minus"></i> To Date</label>
+        </div>
         <div style="display:flex;gap:10px;align-items:center;margin:10px 0;">
             <input type="date" id="fromDate" style="flex:1">
             <span style="color:var(--text-color);">→</span>
@@ -589,17 +836,40 @@
             </div>
         </div>
         
+        <!-- Live Filters -->
         <div class="filter-bar">
             <div class="filter-group">
-                <label><i class="bi bi-search"></i> Search Employee</label>
-                <input type="text" id="searchEmployee" placeholder="Enter employee name...">
+                <label><i class="bi bi-search"></i> Search Employee (Live)</label>
+                <input type="text" id="searchEmployee" placeholder="Type to filter..." oninput="applySubmissionFilters()">
             </div>
             <div class="filter-group">
                 <label><i class="bi bi-calendar"></i> Cutoff Period</label>
-                <select id="filterCutoff"><option value="all">All Cutoffs</option></select>
+                <select id="filterCutoff" onchange="applySubmissionFilters()">
+                    <option value="all">All Cutoffs</option>
+                </select>
             </div>
-            <button id="printReportBtn" style="width:auto; background:#2e7d32;"><i class="bi bi-printer"></i> Print Report</button>
         </div>
+        
+        <!-- Action Buttons - Batch Operations -->
+        <div class="action-buttons" id="actionButtons">
+            <button id="selectAllBtn" style="background:#28a745;" onclick="selectAllSubmissions()">
+                <i class="bi bi-check-all"></i> Select All
+            </button>
+            <button id="deselectAllBtn" style="background:#6c757d;" onclick="deselectAllSubmissions()">
+                <i class="bi bi-x-circle"></i> Deselect All
+            </button>
+            <button id="deleteSelectedBtn" style="background:#dc3545;" onclick="deleteSelectedSubmissions()">
+                <i class="bi bi-trash"></i> Delete Selected (<span id="deleteCount">0</span>)
+            </button>
+            <button id="printSelectedBtn" style="background:#17a2b8;" onclick="printSelectedSubmissions()">
+                <i class="bi bi-printer"></i> Print Selected (<span id="printCount">0</span>)
+            </button>
+            <button id="downloadSelectedBtn" style="background:#8b5cf6;" onclick="downloadSelectedSubmissions()">
+                <i class="bi bi-download"></i> Download ZIP (<span id="downloadCount">0</span>)
+            </button>
+            <span class="selected-count" id="selectedInfo">0 selected</span>
+        </div>
+        
         <div id="submissionGrid" class="grid"><div class="loading">Loading submissions...</div></div>
     </div>
 </div>
@@ -611,12 +881,11 @@
     const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9pb2Ftcnh4Y2d3ZWphYWdsdmJnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE0NjUxNzYsImV4cCI6MjA5NzA0MTE3Nn0.NrprjEB1cNHCqgYCerhcX3_79UvEBjhmu-ueGl1dlew";
     
     let currentUser = null, userRole = null, userAssignment = null;
-    let allRecords = [];
-    let currentImages = [];
-    let adminDealerType = 'AHAM';
     let allEmployees = [];
     let adminTab = 'ALL';
-    
+    let selectedSubmissions = new Set();
+    let currentImages = [];
+    let adminDealerType = 'AHAM';
     let viewerImages = [];
     let viewerIndex = 0;
     let viewerBatchId = null;
@@ -698,14 +967,23 @@
         adminDealerType = type;
         document.getElementById('btnAham').classList.remove('active');
         document.getElementById('btnFbc').classList.remove('active');
+        
         if (type === 'AHAM') {
             document.getElementById('btnAham').classList.add('active');
+            document.getElementById('ahamFields').style.display = 'block';
+            document.getElementById('fbcFields').style.display = 'none';
             document.getElementById('outletContainer').style.display = 'block';
             document.getElementById('dealerContainer').style.display = 'block';
+            document.getElementById('outletContainerFBC').style.display = 'none';
+            document.getElementById('dealerContainerFBC').style.display = 'none';
         } else {
             document.getElementById('btnFbc').classList.add('active');
+            document.getElementById('ahamFields').style.display = 'none';
+            document.getElementById('fbcFields').style.display = 'block';
             document.getElementById('outletContainer').style.display = 'none';
             document.getElementById('dealerContainer').style.display = 'none';
+            document.getElementById('outletContainerFBC').style.display = 'block';
+            document.getElementById('dealerContainerFBC').style.display = 'block';
         }
     }
     
@@ -757,37 +1035,50 @@
         const adminSelector = document.getElementById('adminSelector');
         const adminTabs = document.getElementById('adminDealerTabs');
         const stafferForm = document.getElementById('stafferForm');
+        const actionButtons = document.getElementById('actionButtons');
+        const storeNameSelect = document.getElementById('storeName');
         
         if (userRole === 'admin') {
             adminSelector.classList.remove('hidden');
             selectDealerType('AHAM');
             dealerSelect.disabled = false;
             outletSelect.disabled = false;
+            storeNameSelect.disabled = false;
             stafferForm.style.display = 'block';
             adminTabs.classList.remove('hidden');
+            actionButtons.style.display = 'flex';
         } else if (userRole === 'staffer') {
             adminSelector.classList.add('hidden');
             adminTabs.classList.add('hidden');
-            document.getElementById('outletContainer').style.display = 'block';
-            document.getElementById('dealerContainer').style.display = 'block';
+            actionButtons.style.display = 'none';
+            
             if (userAssignment === 'AHAM') {
+                document.getElementById('ahamFields').style.display = 'block';
+                document.getElementById('fbcFields').style.display = 'none';
                 dealerSelect.disabled = false;
                 outletSelect.disabled = false;
+                document.getElementById('outletContainer').style.display = 'block';
+                document.getElementById('dealerContainer').style.display = 'block';
+                document.getElementById('outletContainerFBC').style.display = 'none';
+                document.getElementById('dealerContainerFBC').style.display = 'none';
             } else if (userAssignment === 'FBC') {
-                dealerSelect.value = 'FBC';
-                dealerSelect.disabled = true;
-                outletSelect.disabled = false;
+                document.getElementById('ahamFields').style.display = 'none';
+                document.getElementById('fbcFields').style.display = 'block';
+                document.getElementById('outletContainer').style.display = 'none';
+                document.getElementById('dealerContainer').style.display = 'none';
+                document.getElementById('outletContainerFBC').style.display = 'block';
+                document.getElementById('dealerContainerFBC').style.display = 'block';
+                storeNameSelect.disabled = false;
             }
             stafferForm.style.display = 'block';
         } else if (userRole === 'coordinator') {
             adminSelector.classList.add('hidden');
             adminTabs.classList.add('hidden');
+            actionButtons.style.display = 'flex';
             stafferForm.style.display = 'none';
         }
         
         checkDarkMode();
-        
-        // Load submissions for Admin and Coordinator
         loadSubmissionSummary();
     }
     
@@ -846,6 +1137,7 @@
         const name = document.getElementById('empName').value.trim();
         let outlet = document.getElementById('outlet').value;
         let dealer = document.getElementById('dealer').value;
+        let storeName = document.getElementById('storeName').value;
         const fromDate = document.getElementById('fromDate').value;
         const toDate = document.getElementById('toDate').value;
         const remarks = document.getElementById('remarks').value;
@@ -859,7 +1151,11 @@
                 }
             } else {
                 dealer = 'FBC';
-                outlet = null;
+                outlet = 'N/A';
+                if (!storeName) {
+                    showMessage('Error', 'Please select a store name for FBC', 'error');
+                    return;
+                }
             }
         } else if (userRole === 'staffer') {
             if (userAssignment === 'AHAM') {
@@ -873,7 +1169,11 @@
                 }
             } else if (userAssignment === 'FBC') {
                 dealer = 'FBC';
-                outlet = null;
+                outlet = 'N/A';
+                if (!storeName) {
+                    showMessage('Error', 'Please select a store name', 'error');
+                    return;
+                }
             }
         }
         
@@ -912,6 +1212,7 @@
                     employee_name: name,
                     outlet: outlet,
                     dealer: dealer,
+                    store_name: storeName || '',
                     cutoff_from: fromDate,
                     cutoff_to: toDate,
                     cutoff_range: cutoffRange,
@@ -948,6 +1249,7 @@
                 document.getElementById('imageFiles').value = '';
                 document.getElementById('previewContainer').innerHTML = '';
                 document.getElementById('outlet').value = '';
+                document.getElementById('storeName').value = '';
                 if (userRole !== 'staffer' || userAssignment !== 'FBC') {
                     document.getElementById('dealer').value = '';
                 }
@@ -968,7 +1270,7 @@
         }
     }
     
-    // SUBMISSION SUMMARY (Admin & Coordinator)
+    // ============ SUBMISSION SUMMARY (Admin & Coordinator) ============
     async function loadSubmissionSummary() {
         try {
             document.getElementById('status').innerHTML = '🔄 Loading submissions...';
@@ -982,7 +1284,6 @@
             
             let data = await res.json();
             
-            // Filter based on user role
             if (userRole === 'admin') {
                 if (adminTab === 'AHAM') {
                     data = data.filter(r => r.dealer === 'AHAM OFFICE' || r.dealer?.includes('AHAM'));
@@ -997,7 +1298,6 @@
                 }
             }
             
-            // Group by employee name
             const employeeMap = {};
             const cutoffSet = new Set();
             
@@ -1009,13 +1309,15 @@
                 
                 if (!employeeMap[empKey]) {
                     employeeMap[empKey] = {
+                        id: r.id,
+                        batch_id: r.batch_id || r.id,
                         name: r.employee_name,
                         cutoff: cutoffKey || 'N/A',
                         outlet: r.outlet || 'N/A',
                         dealer: r.dealer || 'N/A',
+                        store_name: r.store_name || '',
                         image_count: 0,
                         submitted_at: r.created_at,
-                        batch_id: r.batch_id,
                         images: []
                     };
                 }
@@ -1023,10 +1325,8 @@
                 employeeMap[empKey].images.push(r.image_data);
             });
             
-            const employeeList = Object.values(employeeMap);
-            allEmployees = employeeList;
+            allEmployees = Object.values(employeeMap);
             
-            // Populate cutoff filter
             const cutoffSelect = document.getElementById('filterCutoff');
             if (cutoffSelect) {
                 cutoffSelect.innerHTML = '<option value="all">All Cutoffs</option>';
@@ -1039,11 +1339,10 @@
                 });
             }
             
-            // Update stats
-            document.getElementById('totalEmployees').textContent = employeeList.length;
-            document.getElementById('submittedCount').textContent = employeeList.length;
+            document.getElementById('totalEmployees').textContent = allEmployees.length;
+            document.getElementById('submittedCount').textContent = allEmployees.length;
             
-            // Apply filters and render
+            selectedSubmissions.clear();
             applySubmissionFilters();
             
             document.getElementById('status').innerHTML = '✅ Connected';
@@ -1071,6 +1370,7 @@
         }
         
         renderSubmissionGrid(filtered);
+        updateSelectedInfo();
     }
     
     function renderSubmissionGrid(employees) {
@@ -1082,17 +1382,19 @@
         }
         
         grid.innerHTML = employees.map(emp => `
-            <div class="card">
+            <div class="card ${selectedSubmissions.has(emp.batch_id) ? 'selected' : ''}">
+                <input type="checkbox" class="select-checkbox" data-id="${emp.batch_id}" ${selectedSubmissions.has(emp.batch_id) ? 'checked' : ''} onclick="toggleSubmissionSelect('${emp.batch_id}')">
                 <div class="card-body">
                     <div class="name">👤 ${escapeHtml(emp.name)}</div>
                     <div class="outlet-text">📍 ${escapeHtml(emp.outlet)}</div>
                     <div class="dealer-text">🏪 ${escapeHtml(emp.dealer)}</div>
+                    ${emp.store_name ? `<div class="store-text">🏬 ${escapeHtml(emp.store_name)}</div>` : ''}
                     <div class="date">📅 ${emp.cutoff}</div>
                     <div class="batch-badge">📸 ${emp.image_count} images</div>
                     ${emp.images.length > 0 ? `
                         <div class="thumbnail-gallery" style="margin-top:8px;">
-                            ${emp.images.slice(0, 4).map(img => `<img src="${img}" style="width:50px;height:50px;object-fit:cover;border-radius:4px;cursor:pointer;" onclick="openImageViewer(${JSON.stringify(emp.images)}, '${emp.batch_id}')">`).join('')}
-                            ${emp.images.length > 4 ? `<span style="font-size:12px;color:#4361ee;">+${emp.images.length - 4} more</span>` : ''}
+                            ${emp.images.slice(0, 4).map(img => `<img src="${img}" style="width:50px;height:50px;object-fit:cover;border-radius:4px;cursor:pointer;" onclick="event.stopPropagation(); openImageViewer(${JSON.stringify(emp.images)}, '${emp.batch_id}')">`).join('')}
+                            ${emp.images.length > 4 ? `<span style="font-size:12px;color:#4361ee;cursor:pointer;" onclick="openImageViewer(${JSON.stringify(emp.images)}, '${emp.batch_id}')">+${emp.images.length - 4} more</span>` : ''}
                         </div>
                     ` : ''}
                     <div class="submission-status" style="background:#10b981;color:white;padding:4px 8px;border-radius:20px;font-size:12px;display:inline-block;margin-top:8px;">✓ Submitted on ${new Date(emp.submitted_at).toLocaleDateString()}</div>
@@ -1101,68 +1403,147 @@
         `).join('');
     }
     
-    function printSubmissionReport() {
-        const cards = document.querySelectorAll('#submissionGrid .card');
-        if (cards.length === 0) { showMessage('No Data', 'No submissions to print', 'warning'); return; }
+    function toggleSubmissionSelect(batchId) {
+        if (selectedSubmissions.has(batchId)) {
+            selectedSubmissions.delete(batchId);
+        } else {
+            selectedSubmissions.add(batchId);
+        }
+        applySubmissionFilters();
+    }
+    
+    function selectAllSubmissions() {
+        const visibleCards = document.querySelectorAll('#submissionGrid .card');
+        visibleCards.forEach(card => {
+            const checkbox = card.querySelector('.select-checkbox');
+            if (checkbox) {
+                const id = checkbox.dataset.id;
+                selectedSubmissions.add(id);
+                card.classList.add('selected');
+                checkbox.checked = true;
+            }
+        });
+        updateSelectedInfo();
+    }
+    
+    function deselectAllSubmissions() {
+        selectedSubmissions.clear();
+        document.querySelectorAll('#submissionGrid .card').forEach(card => {
+            card.classList.remove('selected');
+            const checkbox = card.querySelector('.select-checkbox');
+            if (checkbox) checkbox.checked = false;
+        });
+        updateSelectedInfo();
+    }
+    
+    async function deleteSelectedSubmissions() {
+        if (selectedSubmissions.size === 0) {
+            showMessage('No Selection', 'Please select records to delete', 'warning');
+            return;
+        }
         
-        const title = userRole === 'admin' ? 'Admin - All Submissions' : `Coordinator - ${userAssignment}`;
+        if (userRole !== 'admin') {
+            showMessage('Access Denied', 'Only Admin can delete records', 'error');
+            return;
+        }
+        
+        const result = await Swal.fire({
+            title: 'Delete Selected Records?',
+            text: `You are about to delete ${selectedSubmissions.size} batch(es). This cannot be undone!`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#dc3545',
+            confirmButtonText: 'Yes, delete them!',
+            cancelButtonText: 'Cancel'
+        });
+        
+        if (result.isConfirmed) {
+            try {
+                const idsToDelete = Array.from(selectedSubmissions);
+                for (let batchId of idsToDelete) {
+                    await fetch(`${SUPABASE_URL}/rest/v1/dtr_records?batch_id=eq.${batchId}`, {
+                        method: 'DELETE',
+                        headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+                    });
+                }
+                selectedSubmissions.clear();
+                await showMessage('Deleted!', `${idsToDelete.length} record(s) deleted.`, 'success');
+                await loadSubmissionSummary();
+            } catch(e) {
+                showMessage('Error', e.message, 'error');
+            }
+        }
+    }
+    
+    async function printSelectedSubmissions() {
+        const toPrint = [];
+        allEmployees.forEach(emp => {
+            if (selectedSubmissions.has(emp.batch_id)) {
+                emp.images.forEach(img => toPrint.push(img));
+            }
+        });
+        
+        if (toPrint.length === 0) {
+            showMessage('No Selection', 'Please select records to print', 'warning');
+            return;
+        }
         
         const win = window.open('', '_blank');
-        win.document.write(`
-            <html>
-            <head>
-                <title>DTR Submission Report</title>
-                <style>
-                    body{font-family:Arial;padding:20px;}
-                    h1{text-align:center;color:#1a1a2e;}
-                    .header{text-align:center;margin-bottom:30px;}
-                    table{width:100%;border-collapse:collapse;margin-top:20px;}
-                    th,td{border:1px solid #ddd;padding:10px;text-align:left;}
-                    th{background:#4361ee;color:white;}
-                    .footer{text-align:center;margin-top:30px;color:#666;}
-                </style>
-            </head>
-            <body>
-                <div class="header">
-                    <h1>DTR Submission Report</h1>
-                    <p>${title}</p>
-                    <p>Generated: ${new Date().toLocaleString()}</p>
-                    <p>Total Employees: ${cards.length}</p>
-                </div>
-                <table>
-                    <thead>
-                        <tr><th>Employee Name</th><th>Outlet</th><th>Dealer</th><th>Cutoff Period</th><th>Images</th><th>Submission Date</th></tr>
-                    </thead>
-                    <tbody>
-                        ${Array.from(cards).map(c => {
-                            const name = c.querySelector('.name')?.innerText.replace('👤 ', '') || '';
-                            const outlet = c.querySelector('.outlet-text')?.innerText.replace('📍 ', '') || '';
-                            const dealer = c.querySelector('.dealer-text')?.innerText.replace('🏪 ', '') || '';
-                            const cutoff = c.querySelector('.date')?.innerText.replace('📅 ', '') || '';
-                            const images = c.querySelector('.batch-badge')?.innerText.replace('📸 ', '').replace(' images', '') || '';
-                            const date = c.querySelector('.submission-status')?.innerText.replace('✓ Submitted on ', '') || '';
-                            return `<tr><td>${name}</td><td>${outlet}</td><td>${dealer}</td><td>${cutoff}</td><td>${images}</td><td>${date}</td></tr>`;
-                        }).join('')}
-                    </tbody>
-                </table>
-                <div class="footer">
-                    <p>Philman Power Center INC - DTR System</p>
-                </div>
-            </body>
-            </html>
-        `);
+        win.document.write(`<html><head><title>DTR Print</title><style>.page{page-break-after:always;height:100vh;display:flex;justify-content:center;align-items:center;} img{max-width:100%;max-height:100%;object-fit:contain;}</style></head><body>${toPrint.map(img => `<div class="page"><img src="${img}"></div>`).join('')}</body></html>`);
         win.document.close();
         win.print();
     }
     
+    async function downloadSelectedSubmissions() {
+        const toDownload = [];
+        allEmployees.forEach(emp => {
+            if (selectedSubmissions.has(emp.batch_id)) {
+                emp.images.forEach(img => toDownload.push(img));
+            }
+        });
+        
+        if (toDownload.length === 0) {
+            showMessage('No Selection', 'Please select records to download', 'warning');
+            return;
+        }
+        
+        const btn = document.getElementById('downloadSelectedBtn');
+        const orig = btn.innerHTML;
+        btn.innerHTML = 'Creating ZIP...';
+        btn.disabled = true;
+        
+        try {
+            const zip = new JSZip();
+            const folder = zip.folder('DTR_Records');
+            for (let i = 0; i < toDownload.length; i++) {
+                const b64 = toDownload[i].split(',')[1];
+                const bin = atob(b64);
+                const arr = new Uint8Array(bin.length);
+                for (let j = 0; j < bin.length; j++) arr[j] = bin.charCodeAt(j);
+                folder.file(`image_${i+1}.png`, arr);
+            }
+            const content = await zip.generateAsync({ type: 'blob' });
+            saveAs(content, `DTR_Records_${Date.now()}.zip`);
+            showMessage('Complete', `${toDownload.length} images downloaded`, 'success');
+        } catch(e) {
+            showMessage('Error', e.message, 'error');
+        } finally {
+            btn.innerHTML = orig;
+            btn.disabled = false;
+        }
+    }
+    
+    function updateSelectedInfo() {
+        const count = selectedSubmissions.size;
+        document.getElementById('deleteCount').innerText = count;
+        document.getElementById('printCount').innerText = count;
+        document.getElementById('downloadCount').innerText = count;
+        document.getElementById('selectedInfo').innerText = `${count} selected`;
+    }
+    
     function escapeHtml(t) { if (!t) return ''; const d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
     
-    // Event listeners for submission filters
-    document.getElementById('searchEmployee')?.addEventListener('input', applySubmissionFilters);
-    document.getElementById('filterCutoff')?.addEventListener('change', applySubmissionFilters);
-    
-    // Print button
-    document.getElementById('printReportBtn').addEventListener('click', printSubmissionReport);
+    // Event listeners
     document.getElementById('saveBtn').addEventListener('click', saveRecord);
     
     const today = new Date();
