@@ -442,17 +442,12 @@
             margin-bottom: 0;
             font-weight: 500;
         }
-        /* Smaller Store Name combobox */
-        .store-select-wrapper {
-            max-height: 120px;
-            overflow-y: auto;
-        }
-        .store-select-wrapper select {
-            height: 120px;
-            font-size: 13px;
-        }
-        .store-select-wrapper select option {
-            padding: 4px 8px;
+        /* Store Name combobox - same size as employee name textbox */
+        #storeName {
+            height: 42px;
+            font-size: 14px;
+            padding: 8px 10px;
+            width: 100%;
         }
         @media(max-width:768px){
             .submission-summary {
@@ -559,240 +554,238 @@
             </div>
         </div>
         
-        <!-- FBC Fields - No Outlet/Dealer textboxes -->
+        <!-- FBC Fields - Only Store Name -->
         <div id="fbcFields" style="display:none;">
             <div class="form-group">
                 <label style="font-size:12px;color:var(--label-color);">Store Name *</label>
-                <div class="store-select-wrapper">
-                    <select id="storeName">
-                        <option value="">-- Select Store --</option>
-                        <option>MABCES NEW STORE</option>
-                        <option>JACKMAN MUNOZ</option>
-                        <option>RH ERMITA 103</option>
-                        <option>RH ANTIQUE 373</option>
-                        <option>RH CAGAYAN DE ORO (CDO) 183</option>
-                        <option>RH CALAPAN ORIENTAL MINDORO</option>
-                        <option>RH DASMARINAS 157</option>
-                        <option>RH GAISANO DIGOS 378</option>
-                        <option>RH GAISANO GRAND MALL CALBAYOG (SAMAR) 408</option>
-                        <option>RH GAISANO KALIBO 302</option>
-                        <option>RH PANABO 196</option>
-                        <option>RH GAISANO ROXAS 186</option>
-                        <option>RH GALLERIA LUISA BOHOL (TAGBILARAN) 340</option>
-                        <option>RH GALLERIA 101</option>
-                        <option>RH ILOCOS NORTE 169</option>
-                        <option>RH LUCKY CHINA TOWN 401</option>
-                        <option>RH RP MALABON 332</option>
-                        <option>RH MONTALBAN TOWN CENTER 125</option>
-                        <option>RH NE MALL BALER AURORA 406</option>
-                        <option>RH NORTH TACLOBAN 411</option>
-                        <option>RH NOVALICHES 109</option>
-                        <option>RH PUREGOLD PASO DE BLAS 390</option>
-                        <option>RH RIVERBANKS MARIKINA 108</option>
-                        <option>RH SANTIAGO ISABELA 334</option>
-                        <option>RH TANDANG SORA 311</option>
-                        <option>RH XENTRO ROXAS ISABELA 368</option>
-                        <option>RH WILSAM BORONGAN UPTOWN MALL 458</option>
-                        <option>RH BULUA 472</option>
-                        <option>RH SIARGAO TOWN CENTER 469</option>
-                        <option>RH STATION B MALL BORACAY 491</option>
-                        <option>RH GAISANO CAPITAL KAPATAGAN 482</option>
-                        <option>RH SANJOSE TOWN MALL 495</option>
-                        <option>RH PRIMARK NOVELETA 496</option>
-                        <option>RH LIPA TOWN CENTER 494</option>
-                        <option>RH GAISANO GRANDMALL BALAMBAN 499</option>
-                        <option>RH MEGA MAGALANG 506</option>
-                        <option>RH KABANKALAN 531</option>
-                        <option>RH STA LUCIA DAVAO 521</option>
-                        <option>RH VIRAC</option>
-                        <option>RH SAN CARLOS TOWN CENTER</option>
-                        <option>RH LEMERY BATANGAS 343</option>
-                        <option>HEM GRAND MALL MAASIM 437</option>
-                        <option>WH GUIGUINTO 322</option>
-                        <option>RH NUCITI BATANGAS 321</option>
-                        <option>RH CALINAN DAVAO 512</option>
-                        <option>RH PUREGOLD BAYAWAN 443</option>
-                        <option>RH PANGASINAN 307</option>
-                        <option>WH TAGAYTAY 375</option>
-                        <option>WH CARMONA</option>
-                        <option>HEM LCC POLANGUI 434</option>
-                        <option>RH PALAWAN 308</option>
-                        <option>RH CEBU 182</option>
-                        <option>RH TAGAYTAY 375</option>
-                        <option>RH ANTIPOLO 465</option>
-                        <option>RH GAPAN478/GAPAN NUEVA ECIJA</option>
-                        <option>RH GAISANO GRAND LILOAN CEBU/RH PARK MALL</option>
-                        <option>RH BACOLOD 181</option>
-                        <option>RH GAISANO GRAND MALL SILAY BACOLOD 412</option>
-                        <option>RH BAGUIO CENTERMALL 153</option>
-                        <option>RH CENTERPOINTE BAGUIO 362</option>
-                        <option>RH NEPOMALL DAGUPAN 161</option>
-                        <option>RH CENTERPOINT DAGUPAN 468</option>
-                        <option>RH EMALL CEBU 189</option>
-                        <option>RH SOUTH TOWN CENTER CEBU 363</option>
-                        <option>RH FAIRVIEW CENTERMALL 105</option>
-                        <option>RH REGALADO COMMUNITY MALL 367</option>
-                        <option>RH GAISANO CAPITAL BINANGONAN 409</option>
-                        <option>RH TANAY TOWN CENTER 418</option>
-                        <option>RH GAISANO MACTAN 197</option>
-                        <option>RH GAISANO MACTAN (ISLAND) 354</option>
-                        <option>RH GT MOLO ILOILO 326</option>
-                        <option>RH MARYMART ILOILO 184</option>
-                        <option>RH IL CENTRO CAINTA 355</option>
-                        <option>RH UP TOWN CENTER 493</option>
-                        <option>RH LUCKY GOLD PASIG 323</option>
-                        <option>RH WELCOME MERCEDES PASIG 379</option>
-                        <option>RH CHERRY FOODARAMA SHAW 361</option>
-                        <option>RH PACITA</option>
-                        <option>RH WM SAN FERNANDO 300</option>
-                        <option>RH BACOLOR 501</option>
-                        <option>RH OTIS 119</option>
-                        <option>WH BAY CITY MACAPAGAL 461</option>
-                        <option>RH METRO PLAZA MALARIA 438</option>
-                        <option>WH ALTARAZA 475</option>
-                        <option>RH SHOPWISE SUCAT 511</option>
-                        <option>WH SUCAT PARAÑAQUE 309</option>
-                        <option>RH BF PARAÑAQUE 121</option>
-                        <option>RH SHOPWISE SUCAT 511</option>
-                        <option>WH GEN TRIAS 255</option>
-                        <option>WH TRECE MARTIRES CAVITE 324</option>
-                        <option>WH BICUTAN 339</option>
-                        <option>WH MUNTINLUPA WEST 481</option>
-                        <option>HM EMALL NAGALAND 162</option>
-                        <option>RH LCC NAGA 352</option>
-                        <option>RH ALIMALL 102</option>
-                        <option>RH UP CAMPUS</option>
-                        <option>RH BAGONG SILANG CALOOCAN 535</option>
-                        <option>RH ZABARTE 449</option>
-                        <option>RH MARIKINA 399</option>
-                        <option>RH XELAND 470</option>
-                        <option>LUXENBERG MARKETING INC. (HOME ALONG) - APALIT PAMPANGA</option>
-                        <option>LUXENBERG MARKETING INC. (HOME ALONG) - MANDALUYONG</option>
-                        <option>LUXENBERG MARKETING INC. (HOME ALONG) - STA. ROSA</option>
-                        <option>LUXENBERG MARKETING INC. (HOME ALONG) - MUNTINLUPA</option>
-                        <option>LUXENBERG MARKETING INC. (HOME ALONG) - MONTALBAN</option>
-                        <option>LUXENBERG MARKETING INC. (HOME ALONG) - MALABON</option>
-                        <option>LUXENBERG MARKETING INC. (HOME ALONG) - GOV. PASCUAL (MALABON)</option>
-                        <option>PRINCE WAREHOUSE - PRINCE TANJAY</option>
-                        <option>PRINCE WAREHOUSE - DC OROQUIETTA OROQUIETTA</option>
-                        <option>APPLIANCE CENTRUM - BACOLOD</option>
-                        <option>RA ANTIPOLO</option>
-                        <option>RA ANTIQUE</option>
-                        <option>RA CAGAYAN DE ORO</option>
-                        <option>RA CAINTA</option>
-                        <option>RA DAVAO BAJADA</option>
-                        <option>RA GENSAN</option>
-                        <option>RA ILOILO</option>
-                        <option>RA MAGNOLIA</option>
-                        <option>RA MONTALBAN</option>
-                        <option>RA NORTH TACLOBAN</option>
-                        <option>RA PALAWAN</option>
-                        <option>RA POLANGUI</option>
-                        <option>RA REGALADO</option>
-                        <option>RA ROXAS</option>
-                        <option>RA TACLOBAN</option>
-                        <option>RA TAGUM</option>
-                        <option>RA TANAY</option>
-                        <option>RA TORIL DAVAO</option>
-                        <option>RA XENTROMALL VIGAN</option>
-                        <option>RA IBA ZAMBALES</option>
-                        <option>RA GINGOOG</option>
-                        <option>RA VALENCIA BUKIDNON</option>
-                        <option>RA PAGADIAN</option>
-                        <option>RA CALAPAN</option>
-                        <option>RA COTA</option>
-                        <option>RA BUTUAN</option>
-                        <option>RA BAGONG SILANG</option>
-                        <option>RA PASO DE BLAS</option>
-                        <option>RA BALIBAGO</option>
-                        <option>RA MARQUEE ANGELES</option>
-                        <option>RA BAGUIO</option>
-                        <option>RA BAGUIO CENTERPOINT PLAZA</option>
-                        <option>RA BLUEWAVE MARIKINA</option>
-                        <option>RA RIVERBANKS</option>
-                        <option>RA PANGASINAN</option>
-                        <option>RA SAN CARLOS</option>
-                        <option>RA GALLERIA SOUTH</option>
-                        <option>RA FESTIVAL MALL ALABANG</option>
-                        <option>RA GALLERIA</option>
-                        <option>RA OPUS</option>
-                        <option>SAVER'S - BATAAN 2</option>
-                        <option>SAVER'S - BARRETO</option>
-                        <option>SAVER'S - SAN FERNANDO</option>
-                        <option>SAVER'S - VISAYAS</option>
-                        <option>SAVER'S - HENSON</option>
-                        <option>SAVER'S - ANGELES (PLARIDEL)</option>
-                        <option>SAVER'S - BALIBAGO</option>
-                        <option>SAVER'S - MABALACAT</option>
-                        <option>SAVER'S - DONBONI</option>
-                        <option>SAVERS SOUTH CALOOCAN</option>
-                        <option>RA MALABON</option>
-                        <option>MG COLON (Cebu)</option>
-                        <option>MG MANDAUE (Cebu)</option>
-                        <option>MG ANGELES (Pampanga)</option>
-                        <option>MG LAPU LAPU (Cebu)</option>
-                        <option>MG LUCENA</option>
-                        <option>MG MAMBALING (Cebu)</option>
-                        <option>MG MARKET MARKET (Taguig)</option>
-                        <option>MG TAGAYTAY</option>
-                        <option>MG TOLEDO (Cebu)</option>
-                        <option>MG CARCAR</option>
-                        <option>MG METRO GAISANO (AYALA)</option>
-                        <option>MG TACLOBAN</option>
-                        <option>MG METRO SANDS (DANAO)</option>
-                        <option>MG SUPER METRO COLON</option>
-                        <option>MG HINIGARAN (NEGROS OCCIDENTAL)</option>
-                        <option>MG ANGELES TWIN GROCER</option>
-                        <option>MG BAIS NEGROS ORIENTAL</option>
-                        <option>MG ALABANG</option>
-                        <option>GAISANO GRAND FIESTA MALL (GFM) (TABUNOK)</option>
-                        <option>GAISANO GRAND BACOLOD MALL GCB CITY OF BACOLOD</option>
-                        <option>GAISANO GRAND BACOLOD MAIN (BAC)</option>
-                        <option>GAISANO GRAND KABANKALAN (KB)</option>
-                        <option>GAISANO GRAND TOLEDO (TDO)</option>
-                        <option>GAISANO GRAND CARCAR (CAR)</option>
-                        <option>GAISANO GRAND MOALBOAL (MBL)</option>
-                        <option>GAISANO GRAND NABUNTURAN (NBT)</option>
-                        <option>GAISANO GRAND CALBAYOG (CBG)</option>
-                        <option>GAISANO GRAND BALAMBAN</option>
-                        <option>GAISANO GRAND PLAZA MACTAN</option>
-                        <option>GAISANO GRAND OSLOB</option>
-                        <option>GAISANO GRAND PANABO</option>
-                        <option>GAISANO GRAND ANTIQUE</option>
-                        <option>GAISANO GRAND KALIBO</option>
-                        <option>GAISANO GRAND CARMEN</option>
-                        <option>GAISANO GRAND POLOMOLOK</option>
-                        <option>GAISANO GRAND GINGOOG</option>
-                        <option>GAISANO CAGAYAN INC.GAISANO TUBOD</option>
-                        <option>GAISANO CAGAYAN.INC CAGAYAN DE ORO CITY (CT)</option>
-                        <option>GAISANO CAGAYAN INC. ILIGAN MALL</option>
-                        <option>GAISANO MALL BAJADA (DAVAO)GSC</option>
-                        <option>GAISANO GRAND MALL TIBONGCO DAVAO</option>
-                        <option>BODEGA GLASSWARE</option>
-                        <option>HONGKONG BAZAAR -HONGKONG FITNESS AND MUSICAL GOODS TRADING</option>
-                        <option>KENLYN GENERAL MERCHANDISE - GUMACA GITNA</option>
-                        <option>KENLYN GENERAL MERCHANDISE - GUMACA (828)</option>
-                        <option>LCC - TCL MERCHANDISE BROKERAGE INC. - LEGAZPI</option>
-                        <option>LCC - TCL MERCHANDISE BROKERAGE INC. - 21102 TCL CENTRAL TABACO WHSE 2</option>
-                        <option>LCC - TCL MERCHANDISE BROKERAGE INC POLANGUI</option>
-                        <option>RIEN N' RAINY DRY GOODS & MDSE.</option>
-                        <option>ME AND CITY BALAYAN</option>
-                        <option>ME AND CITY BAUAN BATANGAS</option>
-                        <option>ME AND CITY CALAPAN</option>
-                        <option>ME AND CITY ROSARIO BATANGAS</option>
-                        <option>TRADER'S CHOICE LEBERTAD</option>
-                        <option>MS.MANELYN VALIENTE</option>
-                        <option>GMALL GENSAN [DEPT.STORE]</option>
-                        <option>MIDDLE EAST TRADING - BURGOS 2</option>
-                        <option>MIDDLE EAST TRADING - HI-WAY NUEVA ECIJA</option>
-                        <option>MIDDLE EAST TRADING - CABANATUAN CITY</option>
-                        <option>MIDDLE EAST TRADING - NE PACIFIC</option>
-                        <option>MIDDLE EAST TRADING - NUEVA ECIJA TRADING CORP. (CEMP MIDDLE EAST TRADING CORP.)</option>
-                        <option>OCAMPOS-OCAMPOS PLARIDEL ST.</option>
-                        <option>OCAMPOS DINALUPIHAN</option>
-                        <option>PRICEWISE MARKETING CORP.</option>
-                    </select>
-                </div>
+                <select id="storeName">
+                    <option value="">-- Select Store --</option>
+                    <option>MABCES NEW STORE</option>
+                    <option>JACKMAN MUNOZ</option>
+                    <option>RH ERMITA 103</option>
+                    <option>RH ANTIQUE 373</option>
+                    <option>RH CAGAYAN DE ORO (CDO) 183</option>
+                    <option>RH CALAPAN ORIENTAL MINDORO</option>
+                    <option>RH DASMARINAS 157</option>
+                    <option>RH GAISANO DIGOS 378</option>
+                    <option>RH GAISANO GRAND MALL CALBAYOG (SAMAR) 408</option>
+                    <option>RH GAISANO KALIBO 302</option>
+                    <option>RH PANABO 196</option>
+                    <option>RH GAISANO ROXAS 186</option>
+                    <option>RH GALLERIA LUISA BOHOL (TAGBILARAN) 340</option>
+                    <option>RH GALLERIA 101</option>
+                    <option>RH ILOCOS NORTE 169</option>
+                    <option>RH LUCKY CHINA TOWN 401</option>
+                    <option>RH RP MALABON 332</option>
+                    <option>RH MONTALBAN TOWN CENTER 125</option>
+                    <option>RH NE MALL BALER AURORA 406</option>
+                    <option>RH NORTH TACLOBAN 411</option>
+                    <option>RH NOVALICHES 109</option>
+                    <option>RH PUREGOLD PASO DE BLAS 390</option>
+                    <option>RH RIVERBANKS MARIKINA 108</option>
+                    <option>RH SANTIAGO ISABELA 334</option>
+                    <option>RH TANDANG SORA 311</option>
+                    <option>RH XENTRO ROXAS ISABELA 368</option>
+                    <option>RH WILSAM BORONGAN UPTOWN MALL 458</option>
+                    <option>RH BULUA 472</option>
+                    <option>RH SIARGAO TOWN CENTER 469</option>
+                    <option>RH STATION B MALL BORACAY 491</option>
+                    <option>RH GAISANO CAPITAL KAPATAGAN 482</option>
+                    <option>RH SANJOSE TOWN MALL 495</option>
+                    <option>RH PRIMARK NOVELETA 496</option>
+                    <option>RH LIPA TOWN CENTER 494</option>
+                    <option>RH GAISANO GRANDMALL BALAMBAN 499</option>
+                    <option>RH MEGA MAGALANG 506</option>
+                    <option>RH KABANKALAN 531</option>
+                    <option>RH STA LUCIA DAVAO 521</option>
+                    <option>RH VIRAC</option>
+                    <option>RH SAN CARLOS TOWN CENTER</option>
+                    <option>RH LEMERY BATANGAS 343</option>
+                    <option>HEM GRAND MALL MAASIM 437</option>
+                    <option>WH GUIGUINTO 322</option>
+                    <option>RH NUCITI BATANGAS 321</option>
+                    <option>RH CALINAN DAVAO 512</option>
+                    <option>RH PUREGOLD BAYAWAN 443</option>
+                    <option>RH PANGASINAN 307</option>
+                    <option>WH TAGAYTAY 375</option>
+                    <option>WH CARMONA</option>
+                    <option>HEM LCC POLANGUI 434</option>
+                    <option>RH PALAWAN 308</option>
+                    <option>RH CEBU 182</option>
+                    <option>RH TAGAYTAY 375</option>
+                    <option>RH ANTIPOLO 465</option>
+                    <option>RH GAPAN478/GAPAN NUEVA ECIJA</option>
+                    <option>RH GAISANO GRAND LILOAN CEBU/RH PARK MALL</option>
+                    <option>RH BACOLOD 181</option>
+                    <option>RH GAISANO GRAND MALL SILAY BACOLOD 412</option>
+                    <option>RH BAGUIO CENTERMALL 153</option>
+                    <option>RH CENTERPOINTE BAGUIO 362</option>
+                    <option>RH NEPOMALL DAGUPAN 161</option>
+                    <option>RH CENTERPOINT DAGUPAN 468</option>
+                    <option>RH EMALL CEBU 189</option>
+                    <option>RH SOUTH TOWN CENTER CEBU 363</option>
+                    <option>RH FAIRVIEW CENTERMALL 105</option>
+                    <option>RH REGALADO COMMUNITY MALL 367</option>
+                    <option>RH GAISANO CAPITAL BINANGONAN 409</option>
+                    <option>RH TANAY TOWN CENTER 418</option>
+                    <option>RH GAISANO MACTAN 197</option>
+                    <option>RH GAISANO MACTAN (ISLAND) 354</option>
+                    <option>RH GT MOLO ILOILO 326</option>
+                    <option>RH MARYMART ILOILO 184</option>
+                    <option>RH IL CENTRO CAINTA 355</option>
+                    <option>RH UP TOWN CENTER 493</option>
+                    <option>RH LUCKY GOLD PASIG 323</option>
+                    <option>RH WELCOME MERCEDES PASIG 379</option>
+                    <option>RH CHERRY FOODARAMA SHAW 361</option>
+                    <option>RH PACITA</option>
+                    <option>RH WM SAN FERNANDO 300</option>
+                    <option>RH BACOLOR 501</option>
+                    <option>RH OTIS 119</option>
+                    <option>WH BAY CITY MACAPAGAL 461</option>
+                    <option>RH METRO PLAZA MALARIA 438</option>
+                    <option>WH ALTARAZA 475</option>
+                    <option>RH SHOPWISE SUCAT 511</option>
+                    <option>WH SUCAT PARAÑAQUE 309</option>
+                    <option>RH BF PARAÑAQUE 121</option>
+                    <option>RH SHOPWISE SUCAT 511</option>
+                    <option>WH GEN TRIAS 255</option>
+                    <option>WH TRECE MARTIRES CAVITE 324</option>
+                    <option>WH BICUTAN 339</option>
+                    <option>WH MUNTINLUPA WEST 481</option>
+                    <option>HM EMALL NAGALAND 162</option>
+                    <option>RH LCC NAGA 352</option>
+                    <option>RH ALIMALL 102</option>
+                    <option>RH UP CAMPUS</option>
+                    <option>RH BAGONG SILANG CALOOCAN 535</option>
+                    <option>RH ZABARTE 449</option>
+                    <option>RH MARIKINA 399</option>
+                    <option>RH XELAND 470</option>
+                    <option>LUXENBERG MARKETING INC. (HOME ALONG) - APALIT PAMPANGA</option>
+                    <option>LUXENBERG MARKETING INC. (HOME ALONG) - MANDALUYONG</option>
+                    <option>LUXENBERG MARKETING INC. (HOME ALONG) - STA. ROSA</option>
+                    <option>LUXENBERG MARKETING INC. (HOME ALONG) - MUNTINLUPA</option>
+                    <option>LUXENBERG MARKETING INC. (HOME ALONG) - MONTALBAN</option>
+                    <option>LUXENBERG MARKETING INC. (HOME ALONG) - MALABON</option>
+                    <option>LUXENBERG MARKETING INC. (HOME ALONG) - GOV. PASCUAL (MALABON)</option>
+                    <option>PRINCE WAREHOUSE - PRINCE TANJAY</option>
+                    <option>PRINCE WAREHOUSE - DC OROQUIETTA OROQUIETTA</option>
+                    <option>APPLIANCE CENTRUM - BACOLOD</option>
+                    <option>RA ANTIPOLO</option>
+                    <option>RA ANTIQUE</option>
+                    <option>RA CAGAYAN DE ORO</option>
+                    <option>RA CAINTA</option>
+                    <option>RA DAVAO BAJADA</option>
+                    <option>RA GENSAN</option>
+                    <option>RA ILOILO</option>
+                    <option>RA MAGNOLIA</option>
+                    <option>RA MONTALBAN</option>
+                    <option>RA NORTH TACLOBAN</option>
+                    <option>RA PALAWAN</option>
+                    <option>RA POLANGUI</option>
+                    <option>RA REGALADO</option>
+                    <option>RA ROXAS</option>
+                    <option>RA TACLOBAN</option>
+                    <option>RA TAGUM</option>
+                    <option>RA TANAY</option>
+                    <option>RA TORIL DAVAO</option>
+                    <option>RA XENTROMALL VIGAN</option>
+                    <option>RA IBA ZAMBALES</option>
+                    <option>RA GINGOOG</option>
+                    <option>RA VALENCIA BUKIDNON</option>
+                    <option>RA PAGADIAN</option>
+                    <option>RA CALAPAN</option>
+                    <option>RA COTA</option>
+                    <option>RA BUTUAN</option>
+                    <option>RA BAGONG SILANG</option>
+                    <option>RA PASO DE BLAS</option>
+                    <option>RA BALIBAGO</option>
+                    <option>RA MARQUEE ANGELES</option>
+                    <option>RA BAGUIO</option>
+                    <option>RA BAGUIO CENTERPOINT PLAZA</option>
+                    <option>RA BLUEWAVE MARIKINA</option>
+                    <option>RA RIVERBANKS</option>
+                    <option>RA PANGASINAN</option>
+                    <option>RA SAN CARLOS</option>
+                    <option>RA GALLERIA SOUTH</option>
+                    <option>RA FESTIVAL MALL ALABANG</option>
+                    <option>RA GALLERIA</option>
+                    <option>RA OPUS</option>
+                    <option>SAVER'S - BATAAN 2</option>
+                    <option>SAVER'S - BARRETO</option>
+                    <option>SAVER'S - SAN FERNANDO</option>
+                    <option>SAVER'S - VISAYAS</option>
+                    <option>SAVER'S - HENSON</option>
+                    <option>SAVER'S - ANGELES (PLARIDEL)</option>
+                    <option>SAVER'S - BALIBAGO</option>
+                    <option>SAVER'S - MABALACAT</option>
+                    <option>SAVER'S - DONBONI</option>
+                    <option>SAVERS SOUTH CALOOCAN</option>
+                    <option>RA MALABON</option>
+                    <option>MG COLON (Cebu)</option>
+                    <option>MG MANDAUE (Cebu)</option>
+                    <option>MG ANGELES (Pampanga)</option>
+                    <option>MG LAPU LAPU (Cebu)</option>
+                    <option>MG LUCENA</option>
+                    <option>MG MAMBALING (Cebu)</option>
+                    <option>MG MARKET MARKET (Taguig)</option>
+                    <option>MG TAGAYTAY</option>
+                    <option>MG TOLEDO (Cebu)</option>
+                    <option>MG CARCAR</option>
+                    <option>MG METRO GAISANO (AYALA)</option>
+                    <option>MG TACLOBAN</option>
+                    <option>MG METRO SANDS (DANAO)</option>
+                    <option>MG SUPER METRO COLON</option>
+                    <option>MG HINIGARAN (NEGROS OCCIDENTAL)</option>
+                    <option>MG ANGELES TWIN GROCER</option>
+                    <option>MG BAIS NEGROS ORIENTAL</option>
+                    <option>MG ALABANG</option>
+                    <option>GAISANO GRAND FIESTA MALL (GFM) (TABUNOK)</option>
+                    <option>GAISANO GRAND BACOLOD MALL GCB CITY OF BACOLOD</option>
+                    <option>GAISANO GRAND BACOLOD MAIN (BAC)</option>
+                    <option>GAISANO GRAND KABANKALAN (KB)</option>
+                    <option>GAISANO GRAND TOLEDO (TDO)</option>
+                    <option>GAISANO GRAND CARCAR (CAR)</option>
+                    <option>GAISANO GRAND MOALBOAL (MBL)</option>
+                    <option>GAISANO GRAND NABUNTURAN (NBT)</option>
+                    <option>GAISANO GRAND CALBAYOG (CBG)</option>
+                    <option>GAISANO GRAND BALAMBAN</option>
+                    <option>GAISANO GRAND PLAZA MACTAN</option>
+                    <option>GAISANO GRAND OSLOB</option>
+                    <option>GAISANO GRAND PANABO</option>
+                    <option>GAISANO GRAND ANTIQUE</option>
+                    <option>GAISANO GRAND KALIBO</option>
+                    <option>GAISANO GRAND CARMEN</option>
+                    <option>GAISANO GRAND POLOMOLOK</option>
+                    <option>GAISANO GRAND GINGOOG</option>
+                    <option>GAISANO CAGAYAN INC.GAISANO TUBOD</option>
+                    <option>GAISANO CAGAYAN.INC CAGAYAN DE ORO CITY (CT)</option>
+                    <option>GAISANO CAGAYAN INC. ILIGAN MALL</option>
+                    <option>GAISANO MALL BAJADA (DAVAO)GSC</option>
+                    <option>GAISANO GRAND MALL TIBONGCO DAVAO</option>
+                    <option>BODEGA GLASSWARE</option>
+                    <option>HONGKONG BAZAAR -HONGKONG FITNESS AND MUSICAL GOODS TRADING</option>
+                    <option>KENLYN GENERAL MERCHANDISE - GUMACA GITNA</option>
+                    <option>KENLYN GENERAL MERCHANDISE - GUMACA (828)</option>
+                    <option>LCC - TCL MERCHANDISE BROKERAGE INC. - LEGAZPI</option>
+                    <option>LCC - TCL MERCHANDISE BROKERAGE INC. - 21102 TCL CENTRAL TABACO WHSE 2</option>
+                    <option>LCC - TCL MERCHANDISE BROKERAGE INC POLANGUI</option>
+                    <option>RIEN N' RAINY DRY GOODS & MDSE.</option>
+                    <option>ME AND CITY BALAYAN</option>
+                    <option>ME AND CITY BAUAN BATANGAS</option>
+                    <option>ME AND CITY CALAPAN</option>
+                    <option>ME AND CITY ROSARIO BATANGAS</option>
+                    <option>TRADER'S CHOICE LEBERTAD</option>
+                    <option>MS.MANELYN VALIENTE</option>
+                    <option>GMALL GENSAN [DEPT.STORE]</option>
+                    <option>MIDDLE EAST TRADING - BURGOS 2</option>
+                    <option>MIDDLE EAST TRADING - HI-WAY NUEVA ECIJA</option>
+                    <option>MIDDLE EAST TRADING - CABANATUAN CITY</option>
+                    <option>MIDDLE EAST TRADING - NE PACIFIC</option>
+                    <option>MIDDLE EAST TRADING - NUEVA ECIJA TRADING CORP. (CEMP MIDDLE EAST TRADING CORP.)</option>
+                    <option>OCAMPOS-OCAMPOS PLARIDEL ST.</option>
+                    <option>OCAMPOS DINALUPIHAN</option>
+                    <option>PRICEWISE MARKETING CORP.</option>
+                </select>
             </div>
         </div>
         
