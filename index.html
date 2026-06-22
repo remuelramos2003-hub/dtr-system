@@ -154,6 +154,8 @@
         .btn-danger:hover{background:#dc2626;}
         .btn-warning{background:var(--warning-color);color:#1a1a2e;}
         .btn-warning:hover{background:#d97706;}
+        .btn-info{background:#0ea5e9;color:white;}
+        .btn-info:hover{background:#0284c7;}
         .filter-bar{
             display:flex;
             gap:10px;
@@ -439,32 +441,21 @@
             color:var(--label-color);
             font-weight:500;
         }
-        @media(max-width:768px){
-            .two-columns{grid-template-columns:1fr;}
-            .three-columns{grid-template-columns:1fr;}
-            .four-columns{grid-template-columns:1fr;}
-            .action-buttons{flex-direction:column;}
-            .action-buttons button{width:100%;}
-            .staffer-info-card .info-row{grid-template-columns:1fr;}
-            .user-badge{padding:6px 12px;font-size:11px;}
-        }
-        .loading{text-align:center;padding:40px;color:var(--label-color);}
-        select:disabled{background-color:#e9ecef;cursor:not-allowed;}
-        body.dark-mode select:disabled{background-color:#2d3748;}
-        .hidden{display:none !important;}
-        .submission-summary{
-            display:grid;
-            grid-template-columns:1fr 1fr 1fr;
-            gap:20px;
-            margin-bottom:25px;
-            padding:20px;
-            background:var(--form-bg);
-            border-radius:12px;
-            border:1px solid var(--border-color);
-        }
-        .submission-summary .summary-item{text-align:center;}
-        .submission-summary .summary-item h3{font-size:28px;color:var(--primary-color);margin:0;}
-        .submission-summary .summary-item p{color:var(--label-color);margin:0;}
+        .dealer-tag{display:inline-block;padding:2px 10px;border-radius:20px;font-size:11px;font-weight:600;}
+        .dealer-aham{background:#dbeafe;color:#1e40af;}
+        .dealer-fbc{background:#fce7f3;color:#9d174d;}
+        body.dark-mode .dealer-aham{background:#1e3a5f;color:#93c5fd;}
+        body.dark-mode .dealer-fbc{background:#4a1a3a;color:#f9a8d4;}
+        .staffer-type-tab{display:flex;gap:10px;margin-bottom:15px;}
+        .staffer-type-tab button{width:auto;padding:8px 20px;}
+        .staffer-type-tab button.active{background:#304ff2;border:2px solid var(--primary-color);}
+        .status-badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;}
+        .status-printed{background:#d1fae5;color:#065f46;}
+        .status-pending{background:#fef3c7;color:#92400e;}
+        .status-not-sent{background:#fee2e2;color:#991b1b;}
+        body.dark-mode .status-printed{background:#064e3b;color:#6ee7b7;}
+        body.dark-mode .status-pending{background:#78350f;color:#fcd34d;}
+        body.dark-mode .status-not-sent{background:#7f1d1d;color:#fca5a5;}
         .staffer-search-result{
             cursor:pointer;
             padding:12px 15px;
@@ -480,14 +471,34 @@
         }
         .staffer-search-result .result-name{font-weight:bold;color:var(--text-color);}
         .staffer-search-result .result-store{color:var(--label-color);font-size:0.85em;}
-        .dealer-tag{display:inline-block;padding:2px 10px;border-radius:20px;font-size:11px;font-weight:600;}
-        .dealer-aham{background:#dbeafe;color:#1e40af;}
-        .dealer-fbc{background:#fce7f3;color:#9d174d;}
-        body.dark-mode .dealer-aham{background:#1e3a5f;color:#93c5fd;}
-        body.dark-mode .dealer-fbc{background:#4a1a3a;color:#f9a8d4;}
-        .staffer-type-tab{display:flex;gap:10px;margin-bottom:15px;}
-        .staffer-type-tab button{width:auto;padding:8px 20px;}
-        .staffer-type-tab button.active{background:#304ff2;border:2px solid var(--primary-color);}
+        .submission-summary{
+            display:grid;
+            grid-template-columns:1fr 1fr 1fr 1fr;
+            gap:20px;
+            margin-bottom:25px;
+            padding:20px;
+            background:var(--form-bg);
+            border-radius:12px;
+            border:1px solid var(--border-color);
+        }
+        .submission-summary .summary-item{text-align:center;}
+        .submission-summary .summary-item h3{font-size:28px;color:var(--primary-color);margin:0;}
+        .submission-summary .summary-item p{color:var(--label-color);margin:0;}
+        @media(max-width:768px){
+            .two-columns{grid-template-columns:1fr;}
+            .three-columns{grid-template-columns:1fr;}
+            .four-columns{grid-template-columns:1fr;}
+            .action-buttons{flex-direction:column;}
+            .action-buttons button{width:100%;}
+            .staffer-info-card .info-row{grid-template-columns:1fr;}
+            .user-badge{padding:6px 12px;font-size:11px;}
+            .submission-summary{grid-template-columns:1fr 1fr;gap:10px;}
+        }
+        .loading{text-align:center;padding:40px;color:var(--label-color);}
+        select:disabled{background-color:#e9ecef;cursor:not-allowed;}
+        body.dark-mode select:disabled{background-color:#2d3748;}
+        .hidden{display:none !important;}
+        .edit-mode-indicator{background:#f59e0b;color:#1a1a2e;padding:4px 12px;border-radius:20px;font-size:12px;display:inline-block;margin-bottom:10px;}
     </style>
 </head>
 <body>
@@ -534,11 +545,10 @@
     <div class="guide-box" id="guideBox">
         <i class="bi bi-info-circle"></i> <strong>Quick Guide</strong>
         <ul id="guideItems">
-            <li>🔍 <strong>Staffer Login:</strong> Search your name, click to select, then add DTR pictures</li>
-            <li>📸 <strong>Add DTR:</strong> Select multiple images, choose cutoff dates, then save</li>
-            <li>📋 <strong>View History:</strong> See all your submitted DTRs</li>
-            <li>✏️ <strong>Edit:</strong> Click Edit on any DTR to replace images</li>
-            <li>🖼️ <strong>View Images:</strong> Click any image to view fullscreen</li>
+            <li>🔍 <strong>Staffer:</strong> Search your name, view/edit DTR history, add new DTR</li>
+            <li>📊 <strong>Admin/Coordinator:</strong> Manage staffers, view DTR submissions with status</li>
+            <li>🖨️ <strong>Print Status:</strong> Track which DTRs have been printed</li>
+            <li>✏️ <strong>Edit Staffer:</strong> Click Edit on any staffer to update their info</li>
         </ul>
     </div>
 
@@ -622,19 +632,30 @@
 
         <div id="dtrTab" style="display:none;">
             <div class="submission-summary">
-                <div class="summary-item"><h3 id="totalEmployees">0</h3><p>Total Employees</p></div>
+                <div class="summary-item"><h3 id="totalStaffers">0</h3><p>Total Staffers</p></div>
                 <div class="summary-item"><h3 id="submittedCount">0</h3><p>Submitted</p></div>
-                <div class="summary-item"><h3 id="pendingCount">0</h3><p>Pending</p></div>
+                <div class="summary-item"><h3 id="notSubmittedCount">0</h3><p>Not Submitted</p></div>
+                <div class="summary-item"><h3 id="printedCount">0</h3><p>Printed</p></div>
             </div>
             
             <div class="filter-bar">
-                <div class="filter-group"><label>Search Employee (Live)</label><input type="text" id="searchEmployee" placeholder="Type to filter..." oninput="applySubmissionFilters()"></div>
+                <div class="filter-group"><label>Search Employee</label><input type="text" id="searchEmployee" placeholder="Type to filter..." oninput="applySubmissionFilters()"></div>
                 <div class="filter-group"><label>Cutoff Period</label><select id="filterCutoff" onchange="applySubmissionFilters()"><option value="all">All Cutoffs</option></select></div>
+                <div class="filter-group"><label>Status</label>
+                    <select id="filterStatus" onchange="applySubmissionFilters()">
+                        <option value="all">All Status</option>
+                        <option value="submitted">Submitted</option>
+                        <option value="not_submitted">Not Submitted</option>
+                        <option value="printed">Printed</option>
+                        <option value="not_printed">Not Printed</option>
+                    </select>
+                </div>
             </div>
             
             <div class="action-buttons">
                 <button id="selectAllBtn" style="background:#28a745;" onclick="selectAllSubmissions()"><i class="bi bi-check-all"></i> Select All</button>
                 <button id="deselectAllBtn" style="background:#6c757d;" onclick="deselectAllSubmissions()"><i class="bi bi-x-circle"></i> Deselect All</button>
+                <button id="markPrintedBtn" class="btn-info" onclick="markSelectedAsPrinted()"><i class="bi bi-printer"></i> Mark Printed</button>
                 <button id="deleteSelectedBtn" style="background:#dc3545;" onclick="deleteSelectedSubmissions()"><i class="bi bi-trash"></i> Delete (<span id="deleteCount">0</span>)</button>
                 <button id="printSelectedBtn" style="background:#17a2b8;" onclick="printSelectedSubmissions()"><i class="bi bi-printer"></i> Print (<span id="printCount">0</span>)</button>
                 <button id="downloadSelectedBtn" style="background:#8b5cf6;" onclick="downloadSelectedSubmissions()"><i class="bi bi-download"></i> ZIP (<span id="downloadCount">0</span>)</button>
@@ -648,15 +669,16 @@
 <button class="mode-toggle" id="modeToggle"><i class="bi bi-moon-stars"></i></button>
 </div>
 
-<!-- Add Staffer Modal -->
+<!-- Add/Edit Staffer Modal -->
 <div class="modal fade" id="addStafferModal" tabindex="-1">
     <div class="modal-dialog modal-xl">
         <div class="modal-content" style="background:var(--card-bg);color:var(--text-color);">
             <div class="modal-header">
-                <h5 class="modal-title">Add Staffer - <span id="modalStafferType">AHAM</span></h5>
+                <h5 class="modal-title"><span id="modalTitle">Add</span> Staffer - <span id="modalStafferType">AHAM</span></h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
+                <input type="hidden" id="editStafferId" value="">
                 <div class="staffer-type-tab">
                     <button id="modalTypeAham" class="active" onclick="switchModalType('aham')">AHAM Staffer</button>
                     <button id="modalTypeFbc" onclick="switchModalType('fbc')">FBC Staffer</button>
@@ -977,7 +999,7 @@
             </div>
             <div class="modal-footer">
                 <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button class="btn btn-success" onclick="saveStaffer()">Save Staffer</button>
+                <button class="btn btn-success" onclick="saveStaffer()"><span id="modalSaveBtnText">Save</span> Staffer</button>
             </div>
         </div>
     </div>
@@ -994,6 +1016,9 @@
     let viewerImages = [], viewerIndex = 0;
     let selectedStaffer = null;
     let modalType = 'aham';
+    let allStaffersForComparison = [];
+    let dtrRecordsAll = [];
+    let cutoffList = [];
     
     const credentials = {
         admin: 'admin123',
@@ -1115,7 +1140,7 @@
             document.getElementById('stafferView').style.display = 'none';
             document.getElementById('adminCoordinatorView').style.display = 'block';
             loadStaffers();
-            loadSubmissionSummary();
+            loadDTRSubmissions();
         }
         
         document.getElementById('status').innerHTML = '✅ Connected';
@@ -1210,14 +1235,14 @@
                 headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
             });
             const data = await res.json();
-            allEmployees = data || [];
+            dtrRecordsAll = data || [];
             renderStafferHistory();
         } catch(e) { console.error(e); }
     }
     
     function renderStafferHistory() {
         const search = document.getElementById('sHistorySearch').value.toLowerCase();
-        let filtered = allEmployees.filter(r => {
+        let filtered = dtrRecordsAll.filter(r => {
             const searchable = (r.cutoff_range || '') + (r.remarks || '');
             return searchable.toLowerCase().includes(search);
         });
@@ -1242,6 +1267,7 @@
                     <div class="date">📅 ${g.cutoff_range}</div>
                     ${g.remarks ? `<div class="date">💬 ${escapeHtml(g.remarks)}</div>` : ''}
                     <div class="batch-badge">📸 ${g.images.length} images</div>
+                    ${g.printed ? `<span class="status-badge status-printed"><i class="bi bi-check-circle"></i> Printed</span>` : `<span class="status-badge status-pending">Not Printed</span>`}
                     <button class="btn btn-warning btn-sm" style="margin-top:8px;width:100%;" onclick="editStafferDTR('${g.batch_id}')"><i class="bi bi-pencil"></i> Edit</button>
                 </div>
             </div>
@@ -1249,10 +1275,43 @@
     }
     
     function editStafferDTR(batchId) {
-        showMessage('Edit DTR', 'Select new images to replace the current ones. Click Save after selecting.', 'info');
-        document.getElementById('sSaveBtn').dataset.editId = batchId;
-        document.getElementById('sSaveBtn').innerHTML = '<i class="bi bi-pencil"></i> Update DTR';
-        document.getElementById('sSaveBtn').style.background = '#f59e0b';
+        // Find the record with this batch_id
+        const records = dtrRecordsAll.filter(r => r.batch_id === batchId || r.id == batchId);
+        if (records.length > 0) {
+            const record = records[0];
+            // Pre-fill the date fields
+            if (record.cutoff_from) document.getElementById('sFromDate').value = record.cutoff_from;
+            if (record.cutoff_to) document.getElementById('sToDate').value = record.cutoff_to;
+            if (record.remarks) document.getElementById('sRemarks').value = record.remarks;
+            
+            // Show edit indicator
+            document.getElementById('sSaveBtn').dataset.editId = batchId;
+            document.getElementById('sSaveBtn').innerHTML = '<i class="bi bi-pencil"></i> Update DTR';
+            document.getElementById('sSaveBtn').style.background = '#f59e0b';
+            
+            // Add a cancel edit button if not exists
+            let cancelBtn = document.getElementById('cancelEditBtn');
+            if (!cancelBtn) {
+                cancelBtn = document.createElement('button');
+                cancelBtn.id = 'cancelEditBtn';
+                cancelBtn.className = 'btn btn-secondary mt-2';
+                cancelBtn.style.width = '100%';
+                cancelBtn.innerHTML = '<i class="bi bi-x-circle"></i> Cancel Edit';
+                cancelBtn.onclick = function() {
+                    document.getElementById('sSaveBtn').dataset.editId = '';
+                    document.getElementById('sSaveBtn').innerHTML = '<i class="bi bi-save"></i> Save DTR';
+                    document.getElementById('sSaveBtn').style.background = '#4361ee';
+                    document.getElementById('sRemarks').value = '';
+                    this.remove();
+                    showMessage('Edit Cancelled', 'You can start over.', 'info');
+                };
+                document.getElementById('sSaveBtn').parentNode.appendChild(cancelBtn);
+            }
+            
+            showMessage('Edit Mode', 'Modify the cutoff dates or remarks, then click Update DTR.', 'info');
+        } else {
+            showMessage('Error', 'Record not found', 'error');
+        }
     }
     
     async function saveStafferDTR() {
@@ -1301,7 +1360,8 @@
                         cutoff_range: cutoffRange,
                         remarks: remarks || '',
                         image_data: imgData,
-                        batch_id: batchId
+                        batch_id: batchId,
+                        printed: false
                     })
                 });
             }
@@ -1315,6 +1375,9 @@
             document.getElementById('sSaveBtn').innerHTML = '<i class="bi bi-save"></i> Save DTR';
             document.getElementById('sSaveBtn').style.background = '#4361ee';
             delete document.getElementById('sSaveBtn').dataset.editId;
+            
+            const cancelBtn = document.getElementById('cancelEditBtn');
+            if (cancelBtn) cancelBtn.remove();
             
             const today = new Date();
             document.getElementById('sFromDate').value = new Date(today.getFullYear(), today.getMonth(), 1).toISOString().split('T')[0];
@@ -1369,7 +1432,7 @@
         document.getElementById('staffersTab').style.display = tab === 'staffers' ? 'block' : 'none';
         document.getElementById('dtrTab').style.display = tab === 'dtr' ? 'block' : 'none';
         if (tab === 'staffers') loadStaffers();
-        else loadSubmissionSummary();
+        else loadDTRSubmissions();
     }
     
     function switchStafferType(type) {
@@ -1391,18 +1454,27 @@
     
     async function loadStaffers() {
         try {
-            const dealerFilter = stafferType === 'aham' ? 'AHAM' : 'FBC';
-            const res = await fetch(`${SUPABASE_URL}/rest/v1/staffers?select=*&order=name.asc`, {
+            let url = `${SUPABASE_URL}/rest/v1/staffers?select=*&order=name.asc`;
+            const res = await fetch(url, {
                 headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
             });
-            const data = await res.json();
-            allStaffers = data || [];
-            // Filter by type
-            if (stafferType === 'aham') {
-                allStaffers = allStaffers.filter(s => s.dealer === 'AHAM OFFICE' || s.dealer?.includes('AHAM'));
+            let data = await res.json();
+            
+            // Filter based on role and type
+            if (userRole === 'coordinator') {
+                if (userAssignment === 'AHAM') {
+                    data = data.filter(s => s.dealer === 'AHAM OFFICE' || s.dealer?.includes('AHAM'));
+                } else if (userAssignment === 'FBC') {
+                    data = data.filter(s => s.dealer === 'FBC');
+                }
+            } else if (stafferType === 'aham') {
+                data = data.filter(s => s.dealer === 'AHAM OFFICE' || s.dealer?.includes('AHAM'));
             } else {
-                allStaffers = allStaffers.filter(s => s.dealer === 'FBC');
+                data = data.filter(s => s.dealer === 'FBC');
             }
+            
+            allStaffers = data || [];
+            allStaffersForComparison = data || [];
             renderStaffers();
         } catch(e) { console.error(e); }
     }
@@ -1432,14 +1504,68 @@
                     <div class="date">📞 ${escapeHtml(s.contact_number || 'N/A')}</div>
                     ${s.position ? `<div class="date">💼 ${escapeHtml(s.position)}</div>` : ''}
                     <div class="date">📅 Hired: ${s.date_hired || s.date_hired_philman || 'N/A'}</div>
-                    <button class="btn btn-danger btn-sm" style="margin-top:8px;width:100%;" onclick="deleteStaffer(${s.id})">Delete</button>
+                    <div style="display:flex;gap:8px;margin-top:10px;">
+                        <button class="btn btn-warning btn-sm" style="flex:1;" onclick="editStaffer(${s.id})"><i class="bi bi-pencil"></i> Edit</button>
+                        <button class="btn btn-danger btn-sm" style="flex:1;" onclick="deleteStaffer(${s.id})"><i class="bi bi-trash"></i> Delete</button>
+                    </div>
                 </div>
             </div>
         `).join('');
     }
     
+    function editStaffer(id) {
+        const staffer = allStaffers.find(s => s.id === id);
+        if (!staffer) return;
+        
+        document.getElementById('editStafferId').value = id;
+        document.getElementById('modalTitle').innerText = 'Edit';
+        document.getElementById('modalSaveBtnText').innerText = 'Update';
+        
+        // Determine type
+        const isAham = staffer.dealer === 'AHAM OFFICE' || staffer.dealer?.includes('AHAM');
+        if (isAham) {
+            switchModalType('aham');
+            document.getElementById('fAhamIdNo').value = staffer.id_no || '';
+            document.getElementById('fAhamSurname').value = staffer.surname || '';
+            document.getElementById('fAhamName').value = staffer.name || '';
+            document.getElementById('fAhamMiddle').value = staffer.middle || '';
+            document.getElementById('fAhamDealer').value = staffer.dealer || '';
+            document.getElementById('fAhamOutlet').value = staffer.outlet || '';
+            document.getElementById('fAhamPosition').value = staffer.position || '';
+            document.getElementById('fAhamDateHired').value = staffer.date_hired || '';
+            document.getElementById('fAhamRates').value = staffer.rates || '';
+            document.getElementById('fAhamRegion').value = staffer.region || '';
+            document.getElementById('fAhamSss').value = staffer.sss || '';
+            document.getElementById('fAhamPagibig').value = staffer.pagibig || '';
+            document.getElementById('fAhamPhilhealth').value = staffer.philhealth || '';
+            document.getElementById('fAhamContact').value = staffer.contact_number || '';
+            document.getElementById('fAhamAddress').value = staffer.address || '';
+            document.getElementById('fAhamEmail').value = staffer.email_address || '';
+            document.getElementById('fAhamPayroll').value = staffer.payroll || '';
+            document.getElementById('fAhamRemarks').value = staffer.remarks || '';
+        } else {
+            switchModalType('fbc');
+            document.getElementById('fFbcStoreCode').value = staffer.store_code || '';
+            document.getElementById('fFbcStoreName').value = staffer.store_name || '';
+            document.getElementById('fFbcPlottedDisers').value = staffer.plotted_disers || '';
+            document.getElementById('fFbcName').value = staffer.name || '';
+            document.getElementById('fFbcRegion').value = staffer.region || '';
+            document.getElementById('fFbcRate').value = staffer.rate || '';
+            document.getElementById('fFbcDateHired').value = staffer.date_hired_philman || '';
+            document.getElementById('fFbcDateStarted').value = staffer.date_started_hanabishi || '';
+            document.getElementById('fFbcContact').value = staffer.contact_number || '';
+            document.getElementById('fFbcDayOff').value = staffer.day_off || '';
+            document.getElementById('fFbcSchedule').value = staffer.schedule || '';
+            document.getElementById('fFbcRemarks').value = staffer.remarks || '';
+        }
+        
+        const modal = new bootstrap.Modal(document.getElementById('addStafferModal'));
+        modal.show();
+    }
+    
     async function saveStaffer() {
         const type = document.getElementById('modalStafferTypeHidden').value;
+        const editId = document.getElementById('editStafferId').value;
         let data = {};
         
         if (type === 'aham') {
@@ -1496,8 +1622,15 @@
         }
         
         try {
-            const res = await fetch(`${SUPABASE_URL}/rest/v1/staffers`, {
-                method: 'POST',
+            let url = `${SUPABASE_URL}/rest/v1/staffers`;
+            let method = 'POST';
+            if (editId) {
+                url += `?id=eq.${editId}`;
+                method = 'PATCH';
+            }
+            
+            const res = await fetch(url, {
+                method: method,
                 headers: { 
                     'apikey': SUPABASE_KEY, 
                     'Authorization': `Bearer ${SUPABASE_KEY}`, 
@@ -1512,35 +1645,43 @@
                 throw new Error(errorText);
             }
             
-            const result = await res.json();
-            const newStaffer = result[0];
-            
-            const username = data.name.toLowerCase().replace(/\s/g, '.');
-            try {
-                await fetch(`${SUPABASE_URL}/rest/v1/users`, {
-                    method: 'POST',
-                    headers: { 
-                        'apikey': SUPABASE_KEY, 
-                        'Authorization': `Bearer ${SUPABASE_KEY}`, 
-                        'Content-Type': 'application/json' 
-                    },
-                    body: JSON.stringify({
-                        username: username,
-                        password: 'staffer123',
-                        role: 'staffer',
-                        staffer_id: newStaffer.id
-                    })
-                });
-            } catch(userError) {
-                console.warn('User creation failed:', userError);
+            // If new staffer, create user account
+            if (!editId) {
+                const result = await res.json();
+                const newStaffer = result[0];
+                const username = data.name.toLowerCase().replace(/\s/g, '.');
+                try {
+                    await fetch(`${SUPABASE_URL}/rest/v1/users`, {
+                        method: 'POST',
+                        headers: { 
+                            'apikey': SUPABASE_KEY, 
+                            'Authorization': `Bearer ${SUPABASE_KEY}`, 
+                            'Content-Type': 'application/json' 
+                        },
+                        body: JSON.stringify({
+                            username: username,
+                            password: 'staffer123',
+                            role: 'staffer',
+                            staffer_id: newStaffer.id
+                        })
+                    });
+                } catch(userError) {
+                    console.warn('User creation failed:', userError);
+                }
+                await showMessage('Success', `Staffer added! Username: ${username}, Password: staffer123`, 'success');
+            } else {
+                await showMessage('Success', 'Staffer updated successfully!', 'success');
             }
-            
-            await showMessage('Success', `Staffer added! Username: ${username}, Password: staffer123`, 'success');
             
             const modal = bootstrap.Modal.getInstance(document.getElementById('addStafferModal'));
             if (modal) modal.hide();
             
+            document.getElementById('editStafferId').value = '';
+            document.getElementById('modalTitle').innerText = 'Add';
+            document.getElementById('modalSaveBtnText').innerText = 'Save';
+            
             loadStaffers();
+            loadDTRSubmissions();
         } catch(e) {
             console.error('Save error:', e);
             showMessage('Error', 'Failed to save staffer: ' + e.message, 'error');
@@ -1556,12 +1697,17 @@
                     headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
                 });
                 loadStaffers();
+                loadDTRSubmissions();
                 showMessage('Deleted', 'Staffer deleted', 'success');
             } catch(e) { showMessage('Error', e.message, 'error'); }
         }
     }
     
     function showAddStafferModal() {
+        document.getElementById('editStafferId').value = '';
+        document.getElementById('modalTitle').innerText = 'Add';
+        document.getElementById('modalSaveBtnText').innerText = 'Save';
+        
         document.getElementById('fAhamIdNo').value = '';
         document.getElementById('fAhamSurname').value = '';
         document.getElementById('fAhamName').value = '';
@@ -1606,55 +1752,121 @@
         modal.show();
     }
     
-    // ============ SUBMISSION SUMMARY ============
-    async function loadSubmissionSummary() {
+    // ============ DTR SUBMISSIONS (ADMIN & COORDINATOR) ============
+    async function loadDTRSubmissions() {
         try {
             const res = await fetch(`${SUPABASE_URL}/rest/v1/dtr_records?select=*&order=created_at.desc`, {
                 headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
             });
             let data = await res.json();
             
-            if (userRole === 'coordinator' && userAssignment === 'AHAM') {
-                data = data.filter(r => r.dealer === 'AHAM OFFICE' || r.dealer?.includes('AHAM'));
-            } else if (userRole === 'coordinator' && userAssignment === 'FBC') {
-                data = data.filter(r => r.dealer === 'FBC');
+            // Filter based on coordinator role
+            if (userRole === 'coordinator') {
+                if (userAssignment === 'AHAM') {
+                    data = data.filter(r => r.dealer === 'AHAM OFFICE' || r.dealer?.includes('AHAM'));
+                } else if (userAssignment === 'FBC') {
+                    data = data.filter(r => r.dealer === 'FBC');
+                }
             }
             
+            dtrRecordsAll = data || [];
+            
+            // Get all staffers for this coordinator's view
+            let staffersForView = allStaffersForComparison;
+            if (userRole === 'coordinator') {
+                if (userAssignment === 'AHAM') {
+                    staffersForView = allStaffersForComparison.filter(s => s.dealer === 'AHAM OFFICE' || s.dealer?.includes('AHAM'));
+                } else {
+                    staffersForView = allStaffersForComparison.filter(s => s.dealer === 'FBC');
+                }
+            }
+            
+            // Group by employee name
             const employeeMap = {};
             const cutoffSet = new Set();
+            
+            // First, add all staffers as "not submitted"
+            staffersForView.forEach(s => {
+                const empKey = s.name;
+                if (!employeeMap[empKey]) {
+                    employeeMap[empKey] = {
+                        name: s.name,
+                        dealer: s.dealer || 'N/A',
+                        outlet: s.outlet || s.store_name || 'N/A',
+                        store_name: s.store_name || '',
+                        staffer_id: s.id,
+                        submitted: false,
+                        printed: false,
+                        image_count: 0,
+                        cutoff: 'N/A',
+                        submitted_at: null,
+                        images: [],
+                        batch_id: null
+                    };
+                }
+            });
+            
+            // Then update with actual submissions
             data.forEach(r => {
                 const empKey = r.employee_name;
                 const cutoffKey = r.cutoff_range;
                 if (cutoffKey) cutoffSet.add(cutoffKey);
-                if (!employeeMap[empKey]) {
-                    employeeMap[empKey] = {
-                        batch_id: r.batch_id || r.id,
-                        name: r.employee_name,
-                        cutoff: cutoffKey || 'N/A',
-                        outlet: r.outlet || 'N/A',
-                        dealer: r.dealer || 'N/A',
-                        store_name: r.store_name || '',
-                        image_count: 0,
-                        submitted_at: r.created_at,
-                        images: []
-                    };
+                
+                if (employeeMap[empKey]) {
+                    employeeMap[empKey].submitted = true;
+                    employeeMap[empKey].cutoff = cutoffKey || 'N/A';
+                    employeeMap[empKey].submitted_at = r.created_at;
+                    employeeMap[empKey].batch_id = r.batch_id || r.id;
+                    employeeMap[empKey].printed = r.printed || false;
+                    employeeMap[empKey].image_count = (employeeMap[empKey].image_count || 0) + 1;
+                    employeeMap[empKey].images.push(r.image_data);
+                } else {
+                    // Staffer not in list (shouldn't happen)
+                    if (!employeeMap[empKey]) {
+                        employeeMap[empKey] = {
+                            name: r.employee_name,
+                            dealer: r.dealer || 'N/A',
+                            outlet: r.outlet || 'N/A',
+                            store_name: r.store_name || '',
+                            submitted: true,
+                            printed: r.printed || false,
+                            image_count: 1,
+                            cutoff: cutoffKey || 'N/A',
+                            submitted_at: r.created_at,
+                            images: [r.image_data],
+                            batch_id: r.batch_id || r.id
+                        };
+                    }
                 }
-                employeeMap[empKey].image_count++;
-                employeeMap[empKey].images.push(r.image_data);
             });
+            
+            // Build the cutoff list
+            cutoffList = Array.from(cutoffSet).sort();
+            
+            const cutoffSelect = document.getElementById('filterCutoff');
+            if (cutoffSelect) {
+                cutoffSelect.innerHTML = '<option value="all">All Cutoffs</option>';
+                cutoffList.forEach(c => {
+                    const opt = document.createElement('option');
+                    opt.value = c;
+                    opt.textContent = c;
+                    cutoffSelect.appendChild(opt);
+                });
+            }
             
             allEmployees = Object.values(employeeMap);
             
-            const cutoffSelect = document.getElementById('filterCutoff');
-            cutoffSelect.innerHTML = '<option value="all">All Cutoffs</option>';
-            Array.from(cutoffSet).sort().forEach(c => {
-                const opt = document.createElement('option');
-                opt.value = c; opt.textContent = c;
-                cutoffSelect.appendChild(opt);
-            });
+            // Update stats
+            const totalStaffers = allEmployees.length;
+            const submitted = allEmployees.filter(e => e.submitted).length;
+            const notSubmitted = totalStaffers - submitted;
+            const printed = allEmployees.filter(e => e.printed).length;
             
-            document.getElementById('totalEmployees').textContent = allEmployees.length;
-            document.getElementById('submittedCount').textContent = allEmployees.length;
+            document.getElementById('totalStaffers').textContent = totalStaffers;
+            document.getElementById('submittedCount').textContent = submitted;
+            document.getElementById('notSubmittedCount').textContent = notSubmitted;
+            document.getElementById('printedCount').textContent = printed;
+            
             selectedSubmissions.clear();
             applySubmissionFilters();
         } catch(e) { console.error(e); }
@@ -1663,11 +1875,18 @@
     function applySubmissionFilters() {
         const searchTerm = document.getElementById('searchEmployee')?.value.toLowerCase() || '';
         const cutoffFilter = document.getElementById('filterCutoff')?.value || 'all';
+        const statusFilter = document.getElementById('filterStatus')?.value || 'all';
+        
         let filtered = allEmployees.filter(e => {
             if (searchTerm && !e.name.toLowerCase().includes(searchTerm)) return false;
             if (cutoffFilter !== 'all' && e.cutoff !== cutoffFilter) return false;
+            if (statusFilter === 'submitted' && !e.submitted) return false;
+            if (statusFilter === 'not_submitted' && e.submitted) return false;
+            if (statusFilter === 'printed' && !e.printed) return false;
+            if (statusFilter === 'not_printed' && e.printed) return false;
             return true;
         });
+        
         renderSubmissionGrid(filtered);
         updateSelectedInfo();
     }
@@ -1675,29 +1894,37 @@
     function renderSubmissionGrid(employees) {
         const grid = document.getElementById('submissionGrid');
         if (employees.length === 0) {
-            grid.innerHTML = '<div class="loading">No employees have submitted DTRs for this cutoff.</div>';
+            grid.innerHTML = '<div class="loading">No employees found.</div>';
             return;
         }
-        grid.innerHTML = employees.map(emp => `
+        
+        grid.innerHTML = employees.map(emp => {
+            const statusClass = emp.submitted ? (emp.printed ? 'status-printed' : 'status-pending') : 'status-not-sent';
+            const statusText = emp.submitted ? (emp.printed ? '✓ Printed' : 'Pending') : '✗ Not Submitted';
+            
+            return `
             <div class="card ${selectedSubmissions.has(emp.batch_id) ? 'selected' : ''}">
-                <input type="checkbox" class="select-checkbox" data-id="${emp.batch_id}" ${selectedSubmissions.has(emp.batch_id) ? 'checked' : ''} onclick="toggleSubmissionSelect('${emp.batch_id}')">
+                ${emp.submitted ? `<input type="checkbox" class="select-checkbox" data-id="${emp.batch_id}" ${selectedSubmissions.has(emp.batch_id) ? 'checked' : ''} onclick="toggleSubmissionSelect('${emp.batch_id}')">` : ''}
                 <div class="card-body">
                     <div class="name">👤 ${escapeHtml(emp.name)}</div>
                     <div class="outlet-text">📍 ${escapeHtml(emp.outlet)}</div>
                     <div class="dealer-text">🏪 ${escapeHtml(emp.dealer)}</div>
                     ${emp.store_name ? `<div class="store-text">🏬 ${escapeHtml(emp.store_name)}</div>` : ''}
-                    <div class="date">📅 ${emp.cutoff}</div>
-                    <div class="batch-badge">📸 ${emp.image_count} images</div>
-                    ${emp.images.length > 0 ? `
+                    <div class="date">📅 ${emp.submitted ? emp.cutoff : 'No submission'}</div>
+                    ${emp.submitted ? `<div class="batch-badge">📸 ${emp.image_count} images</div>` : ''}
+                    <div style="margin-top:8px;">
+                        <span class="status-badge ${statusClass}">${statusText}</span>
+                    </div>
+                    ${emp.submitted && emp.images.length > 0 ? `
                         <div class="thumbnail-gallery" style="margin-top:8px;">
                             ${emp.images.slice(0, 4).map(img => `<img src="${img}" style="width:50px;height:50px;object-fit:cover;border-radius:4px;cursor:pointer;" onclick="event.stopPropagation(); openImageViewer(${JSON.stringify(emp.images)}, '${emp.batch_id}')">`).join('')}
                             ${emp.images.length > 4 ? `<span style="font-size:12px;color:#4361ee;cursor:pointer;" onclick="openImageViewer(${JSON.stringify(emp.images)}, '${emp.batch_id}')">+${emp.images.length - 4} more</span>` : ''}
                         </div>
                     ` : ''}
-                    <div class="submission-status" style="background:#10b981;color:white;padding:4px 8px;border-radius:20px;font-size:12px;display:inline-block;margin-top:8px;">✓ Submitted on ${new Date(emp.submitted_at).toLocaleDateString()}</div>
+                    ${emp.submitted ? `<div class="submission-status" style="background:#10b981;color:white;padding:4px 8px;border-radius:20px;font-size:12px;display:inline-block;margin-top:8px;">✓ Submitted on ${new Date(emp.submitted_at).toLocaleDateString()}</div>` : ''}
                 </div>
             </div>
-        `).join('');
+        `}).join('');
     }
     
     function toggleSubmissionSelect(batchId) {
@@ -1725,6 +1952,39 @@
         updateSelectedInfo();
     }
     
+    async function markSelectedAsPrinted() {
+        if (selectedSubmissions.size === 0) {
+            showMessage('No Selection', 'Please select records to mark as printed', 'warning');
+            return;
+        }
+        
+        const result = await Swal.fire({
+            title: 'Mark as Printed?',
+            text: `Mark ${selectedSubmissions.size} record(s) as printed?`,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, mark as printed',
+            cancelButtonText: 'Cancel'
+        });
+        
+        if (result.isConfirmed) {
+            try {
+                for (let batchId of selectedSubmissions) {
+                    await fetch(`${SUPABASE_URL}/rest/v1/dtr_records?batch_id=eq.${batchId}`, {
+                        method: 'PATCH',
+                        headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ printed: true })
+                    });
+                }
+                selectedSubmissions.clear();
+                await showMessage('Success', `${selectedSubmissions.size} record(s) marked as printed`, 'success');
+                loadDTRSubmissions();
+            } catch(e) {
+                showMessage('Error', e.message, 'error');
+            }
+        }
+    }
+    
     async function deleteSelectedSubmissions() {
         if (selectedSubmissions.size === 0) { showMessage('No Selection', 'Please select records to delete', 'warning'); return; }
         if (userRole !== 'admin') { showMessage('Access Denied', 'Only Admin can delete', 'error'); return; }
@@ -1737,7 +1997,7 @@
                 });
             }
             selectedSubmissions.clear();
-            loadSubmissionSummary();
+            loadDTRSubmissions();
             showMessage('Deleted', 'Records deleted', 'success');
         }
     }
@@ -1745,7 +2005,9 @@
     async function printSelectedSubmissions() {
         const toPrint = [];
         allEmployees.forEach(emp => {
-            if (selectedSubmissions.has(emp.batch_id)) emp.images.forEach(img => toPrint.push(img));
+            if (selectedSubmissions.has(emp.batch_id)) {
+                emp.images.forEach(img => toPrint.push(img));
+            }
         });
         if (toPrint.length === 0) { showMessage('No Selection', 'Select records to print', 'warning'); return; }
         const win = window.open('', '_blank');
@@ -1756,7 +2018,9 @@
     async function downloadSelectedSubmissions() {
         const toDownload = [];
         allEmployees.forEach(emp => {
-            if (selectedSubmissions.has(emp.batch_id)) emp.images.forEach(img => toDownload.push(img));
+            if (selectedSubmissions.has(emp.batch_id)) {
+                emp.images.forEach(img => toDownload.push(img));
+            }
         });
         if (toDownload.length === 0) { showMessage('No Selection', 'Select records to download', 'warning'); return; }
         const btn = document.getElementById('downloadSelectedBtn');
@@ -1807,8 +2071,20 @@
     document.getElementById('logoutBtn').addEventListener('click', logout);
     document.getElementById('searchEmployee').addEventListener('input', applySubmissionFilters);
     document.getElementById('filterCutoff').addEventListener('change', applySubmissionFilters);
+    document.getElementById('filterStatus').addEventListener('change', applySubmissionFilters);
     document.getElementById('stafferSearch').addEventListener('input', renderStaffers);
     document.getElementById('passwordInput').addEventListener('keypress', (e) => { if (e.key === 'Enter') login(); });
+    
+    // Load staffers for coordinator view initially
+    async function initStaffersForCoordinator() {
+        if (userRole === 'coordinator') {
+            const res = await fetch(`${SUPABASE_URL}/rest/v1/staffers?select=*&order=name.asc`, {
+                headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+            });
+            const data = await res.json();
+            allStaffersForComparison = data || [];
+        }
+    }
     
     checkSession();
 </script>
