@@ -525,6 +525,21 @@
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
+        .dtr-count-badge {
+            display:inline-block;
+            background:var(--primary-color);
+            color:white;
+            padding:2px 10px;
+            border-radius:20px;
+            font-size:11px;
+            margin-left:5px;
+        }
+        .no-records {
+            text-align:center;
+            padding:40px;
+            color:var(--label-color);
+            font-size:16px;
+        }
     </style>
 </head>
 <body>
@@ -622,7 +637,7 @@
                 <button id="sSaveBtn">Save to Database</button>
             </div>
 
-            <h5><i class="bi bi-clock-history"></i> My DTR History</h5>
+            <h5><i class="bi bi-clock-history"></i> My DTR History <span id="historyCount" class="dtr-count-badge">0</span></h5>
             <div class="filter-bar">
                 <div class="filter-group">
                     <label>Search History</label>
@@ -1157,7 +1172,8 @@
     function updateLastUpdated(elementId) {
         const now = new Date();
         const timeStr = now.toLocaleTimeString();
-        document.getElementById(elementId).textContent = `Last updated: ${timeStr}`;
+        const el = document.getElementById(elementId);
+        if (el) el.textContent = `Last updated: ${timeStr}`;
     }
 
     // ============ LOGIN ============
@@ -1217,10 +1233,8 @@
         } else {
             document.getElementById('stafferView').style.display = 'none';
             document.getElementById('adminCoordinatorView').style.display = 'block';
-            // Initial load
             loadStaffers();
             loadDTRSubmissions();
-            // Start auto-refresh every 10 seconds
             if (refreshInterval) clearInterval(refreshInterval);
             refreshInterval = setInterval(() => {
                 if (adminTab === 'staffers') {
@@ -1228,7 +1242,7 @@
                 } else {
                     loadDTRSubmissions();
                 }
-            }, 10000);
+            }, 15000);
         }
         
         document.getElementById('status').innerHTML = '✅ Connected';
@@ -1326,29 +1340,41 @@
     
     async function loadStafferDTRHistory() {
         try {
-            if (!currentStafferId) return;
+            if (!currentStafferId) {
+                document.getElementById('sHistoryGrid').innerHTML = '<div class="loading">No staffer selected.</div>';
+                return;
+            }
+            
             const res = await fetch(`${SUPABASE_URL}/rest/v1/dtr_records?select=*&staffer_id=eq.${currentStafferId}&order=created_at.desc`, {
                 headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
             });
             const data = await res.json();
             dtrRecordsAll = data || [];
+            
+            // Update count
+            document.getElementById('historyCount').textContent = dtrRecordsAll.length;
+            
             renderStafferHistory();
-        } catch(e) { console.error(e); }
+        } catch(e) { 
+            console.error(e);
+            document.getElementById('sHistoryGrid').innerHTML = '<div class="loading">Error loading history. Please refresh.</div>';
+        }
     }
     
     function renderStafferHistory() {
         const search = document.getElementById('sHistorySearch').value.toLowerCase();
         let filtered = dtrRecordsAll.filter(r => {
-            const searchable = (r.cutoff_range || '') + (r.remarks || '');
+            const searchable = (r.cutoff_range || '') + (r.remarks || '') + (r.employee_name || '');
             return searchable.toLowerCase().includes(search);
         });
         
         const grid = document.getElementById('sHistoryGrid');
         if (filtered.length === 0) {
-            grid.innerHTML = '<div class="loading">No DTR history found for this staffer.</div>';
+            grid.innerHTML = '<div class="no-records">📭 No DTR records found. Submit your first DTR above!</div>';
             return;
         }
         
+        // Group by batch_id
         const grouped = {};
         filtered.forEach(r => {
             const key = r.batch_id || r.id;
@@ -1356,14 +1382,19 @@
             grouped[key].images.push(r.image_data);
         });
         
-        grid.innerHTML = Object.values(grouped).map(g => `
+        grid.innerHTML = Object.values(grouped).map((g, index) => `
             <div class="card">
-                <img src="${g.images[0]}" class="card-img" onclick="openImageViewer(${JSON.stringify(g.images)}, '${g.batch_id}')">
+                <img src="${g.images[0]}" class="card-img" onclick="openImageViewer(${JSON.stringify(g.images)}, '${g.batch_id}')" alt="DTR Image">
                 <div class="card-body">
-                    <div class="date">📅 ${g.cutoff_range}</div>
+                    <div class="name">📅 ${g.cutoff_range || 'N/A'}</div>
+                    <div class="outlet-text">🏢 ${escapeHtml(g.outlet || g.store_name || 'N/A')}</div>
+                    ${g.dealer ? `<div class="dealer-text">📋 ${escapeHtml(g.dealer)}</div>` : ''}
                     ${g.remarks ? `<div class="date">💬 ${escapeHtml(g.remarks)}</div>` : ''}
-                    <div class="batch-badge">📸 ${g.images.length} images</div>
-                    ${g.printed ? `<span class="status-badge status-printed"><i class="bi bi-check-circle"></i> Printed</span>` : `<span class="status-badge status-pending">Not Printed</span>`}
+                    <div class="batch-badge">📸 ${g.images.length} image${g.images.length > 1 ? 's' : ''}</div>
+                    <div style="margin-top:6px;">
+                        ${g.printed ? `<span class="status-badge status-printed"><i class="bi bi-check-circle"></i> Printed</span>` : `<span class="status-badge status-pending">Not Printed</span>`}
+                    </div>
+                    <div class="date" style="margin-top:6px;">📅 ${new Date(g.created_at).toLocaleDateString()}</div>
                     <button class="btn btn-warning btn-sm" style="margin-top:8px;width:100%;" onclick="editStafferDTR('${g.batch_id}')"><i class="bi bi-pencil"></i> Edit</button>
                 </div>
             </div>
@@ -1555,7 +1586,6 @@
             });
             let data = await res.json();
             
-            // Filter based on role
             if (userRole === 'coordinator') {
                 if (userAssignment === 'AHAM') {
                     data = data.filter(s => s.dealer === 'AHAM OFFICE' || s.dealer?.includes('AHAM'));
@@ -1590,7 +1620,7 @@
         
         const grid = document.getElementById('staffersGrid');
         if (filtered.length === 0) {
-            grid.innerHTML = '<div class="loading">No staffers found. Add your first staffer!</div>';
+            grid.innerHTML = '<div class="no-records">📭 No staffers found. Click "Add Staffer" to get started!</div>';
             return;
         }
         
@@ -1987,7 +2017,7 @@
     function renderSubmissionGrid(employees) {
         const grid = document.getElementById('submissionGrid');
         if (employees.length === 0) {
-            grid.innerHTML = '<div class="loading">No employees found.</div>';
+            grid.innerHTML = '<div class="no-records">📭 No employees found matching your filters.</div>';
             return;
         }
         
@@ -2004,7 +2034,7 @@
                     <div class="dealer-text">🏪 ${escapeHtml(emp.dealer)}</div>
                     ${emp.store_name ? `<div class="store-text">🏬 ${escapeHtml(emp.store_name)}</div>` : ''}
                     <div class="date">📅 ${emp.submitted ? emp.cutoff : 'No submission'}</div>
-                    ${emp.submitted ? `<div class="batch-badge">📸 ${emp.image_count} images</div>` : ''}
+                    ${emp.submitted ? `<div class="batch-badge">📸 ${emp.image_count} image${emp.image_count > 1 ? 's' : ''}</div>` : ''}
                     <div style="margin-top:8px;">
                         <span class="status-badge ${statusClass}">${statusText}</span>
                     </div>
