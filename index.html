@@ -425,6 +425,14 @@
             background:#304ff2;
             border:2px solid var(--primary-color);
         }
+        .staffer-select-card{
+            cursor:pointer;
+            transition:all 0.2s;
+        }
+        .staffer-select-card:hover{
+            transform:translateY(-3px);
+            border-color:var(--primary-color);
+        }
         @media(max-width:768px){
             .two-columns{grid-template-columns:1fr;}
             .three-columns{grid-template-columns:1fr;}
@@ -450,6 +458,21 @@
         .submission-summary .summary-item{text-align:center;}
         .submission-summary .summary-item h3{font-size:28px;color:var(--primary-color);margin:0;}
         .submission-summary .summary-item p{color:var(--label-color);margin:0;}
+        .staffer-search-result{
+            cursor:pointer;
+            padding:12px 15px;
+            border:1px solid var(--border-color);
+            border-radius:8px;
+            margin-bottom:8px;
+            transition:all 0.2s;
+            background:var(--card-bg);
+        }
+        .staffer-search-result:hover{
+            border-color:var(--primary-color);
+            transform:translateX(5px);
+        }
+        .staffer-search-result .result-name{font-weight:bold;color:var(--text-color);}
+        .staffer-search-result .result-store{color:var(--label-color);font-size:0.85em;}
     </style>
 </head>
 <body>
@@ -473,9 +496,9 @@
             <option value="admin">Admin</option>
             <option value="coordinator_aham">Coordinator - AHAM</option>
             <option value="coordinator_fbc">Coordinator - FBC</option>
-            <option value="staffer">Staffer</option>
+            <option value="staffer_aham">Staffer - AHAM</option>
+            <option value="staffer_fbc">Staffer - FBC</option>
         </select>
-        <input type="text" id="usernameInput" placeholder="Username" style="width:100%;padding:10px;margin-bottom:10px;border:1px solid var(--border-color);border-radius:8px;background:var(--input-bg);color:var(--text-color);">
         <input type="password" id="passwordInput" placeholder="Enter Password" style="width:100%;padding:10px;border:1px solid var(--border-color);border-radius:8px;background:var(--input-bg);color:var(--text-color);">
         <button id="loginBtn" style="width:100%;padding:10px;margin-top:10px;">Login</button>
     </div>
@@ -493,61 +516,73 @@
     <h1>Philman Power Center INC - DTR System</h1>
     <div id="status" class="status info">🔄 Connecting...</div>
 
-    <div class="guide-box">
+    <div class="guide-box" id="guideBox">
         <i class="bi bi-info-circle"></i> <strong>Quick Guide</strong>
         <ul id="guideItems">
-            <li>📸 Select multiple images - each DTR picture saves as a separate record</li>
-            <li>🔍 Use live filters to search</li>
-            <li>🖼️ Click on any image to view in fullscreen</li>
+            <li>🔍 <strong>Staffer Login:</strong> Search your name, click to select, then add DTR pictures</li>
+            <li>📸 <strong>Add DTR:</strong> Select multiple images, choose cutoff dates, then save</li>
+            <li>📋 <strong>View History:</strong> See all your submitted DTRs</li>
+            <li>✏️ <strong>Edit:</strong> Click Edit on any DTR to replace images</li>
+            <li>🖼️ <strong>View Images:</strong> Click any image to view fullscreen</li>
         </ul>
     </div>
 
     <!-- STAFFER VIEW -->
     <div id="stafferView">
-        <!-- Staffer Info Display -->
-        <div class="staffer-info-card" id="stafferInfoCard">
-            <h5><i class="bi bi-person-badge"></i> My Information</h5>
-            <div id="stafferInfoContent" class="info-row">
-                <div class="info-item"><strong>Name:</strong> <span id="sName">-</span></div>
-                <div class="info-item"><strong>Staff Code:</strong> <span id="sCode">-</span></div>
-                <div class="info-item"><strong>Store:</strong> <span id="sStore">-</span></div>
-                <div class="info-item"><strong>Region:</strong> <span id="sRegion">-</span></div>
-                <div class="info-item"><strong>Rate:</strong> <span id="sRate">-</span></div>
-                <div class="info-item"><strong>Contact:</strong> <span id="sContact">-</span></div>
-                <div class="info-item"><strong>Schedule:</strong> <span id="sSchedule">-</span></div>
-                <div class="info-item"><strong>Day Off:</strong> <span id="sDayOff">-</span></div>
-            </div>
-        </div>
-
-        <!-- Add DTR Form -->
+        <!-- Staffer Search -->
         <div class="form-area">
-            <h4><i class="bi bi-plus-circle"></i> Add DTR Record</h4>
-            <div class="date-label-group">
-                <label><i class="bi bi-calendar-plus"></i> From Date</label>
-                <label><i class="bi bi-calendar-minus"></i> To Date</label>
-            </div>
-            <div style="display:flex;gap:10px;align-items:center;margin:10px 0;">
-                <input type="date" id="sFromDate" style="flex:1">
-                <span style="color:var(--text-color);">→</span>
-                <input type="date" id="sToDate" style="flex:1">
-            </div>
-            <textarea id="sRemarks" rows="2" placeholder="Remarks (optional)"></textarea>
-            <label style="font-size:12px;color:var(--label-color);">DTR Pictures * (Select multiple images)</label>
-            <input type="file" id="sImageFiles" accept="image/*" multiple>
-            <div id="sPreviewContainer" class="preview-container"></div>
-            <button id="sSaveBtn">Save to Database</button>
+            <h4><i class="bi bi-search"></i> Find Your Record</h4>
+            <p class="text-muted" style="font-size:13px;">Search your name to view and manage your DTR records.</p>
+            <input type="text" id="stafferSearchInput" placeholder="Search by your name..." oninput="searchStaffer()">
+            <div id="stafferSearchResults" style="margin-top:10px;"></div>
         </div>
 
-        <!-- DTR History -->
-        <h5><i class="bi bi-clock-history"></i> My DTR History</h5>
-        <div class="filter-bar">
-            <div class="filter-group">
-                <label>Search</label>
-                <input type="text" id="sHistorySearch" placeholder="Search..." oninput="renderStafferHistory()">
+        <!-- Selected Staffer Info -->
+        <div id="selectedStafferInfo" style="display:none;">
+            <div class="staffer-info-card">
+                <h5><i class="bi bi-person-badge"></i> My Information</h5>
+                <div id="stafferInfoContent" class="info-row">
+                    <div class="info-item"><strong>Name:</strong> <span id="sName">-</span></div>
+                    <div class="info-item"><strong>Staff Code:</strong> <span id="sCode">-</span></div>
+                    <div class="info-item"><strong>Store:</strong> <span id="sStore">-</span></div>
+                    <div class="info-item"><strong>Region:</strong> <span id="sRegion">-</span></div>
+                    <div class="info-item"><strong>Rate:</strong> <span id="sRate">-</span></div>
+                    <div class="info-item"><strong>Contact:</strong> <span id="sContact">-</span></div>
+                    <div class="info-item"><strong>Schedule:</strong> <span id="sSchedule">-</span></div>
+                    <div class="info-item"><strong>Day Off:</strong> <span id="sDayOff">-</span></div>
+                </div>
             </div>
-            <button id="sRefreshHistory" class="btn-success" style="width:auto;padding:8px 16px;" onclick="loadStafferDTRHistory()"><i class="bi bi-arrow-repeat"></i> Refresh</button>
+
+            <!-- Add DTR Form -->
+            <div class="form-area">
+                <h4><i class="bi bi-plus-circle"></i> Add DTR Record</h4>
+                <div class="date-label-group">
+                    <label><i class="bi bi-calendar-plus"></i> From Date</label>
+                    <label><i class="bi bi-calendar-minus"></i> To Date</label>
+                </div>
+                <div style="display:flex;gap:10px;align-items:center;margin:10px 0;">
+                    <input type="date" id="sFromDate" style="flex:1">
+                    <span style="color:var(--text-color);">→</span>
+                    <input type="date" id="sToDate" style="flex:1">
+                </div>
+                <textarea id="sRemarks" rows="2" placeholder="Remarks (optional)"></textarea>
+                <label style="font-size:12px;color:var(--label-color);">DTR Pictures * (Select multiple images)</label>
+                <input type="file" id="sImageFiles" accept="image/*" multiple>
+                <div id="sPreviewContainer" class="preview-container"></div>
+                <button id="sSaveBtn">Save to Database</button>
+            </div>
+
+            <!-- DTR History -->
+            <h5><i class="bi bi-clock-history"></i> My DTR History</h5>
+            <div class="filter-bar">
+                <div class="filter-group">
+                    <label>Search History</label>
+                    <input type="text" id="sHistorySearch" placeholder="Search..." oninput="renderStafferHistory()">
+                </div>
+                <button id="sRefreshHistory" class="btn-success" style="width:auto;padding:8px 16px;" onclick="loadStafferDTRHistory()"><i class="bi bi-arrow-repeat"></i> Refresh</button>
+            </div>
+            <div id="sHistoryGrid" class="grid"><div class="loading">Select your name above to see DTR history.</div></div>
         </div>
-        <div id="sHistoryGrid" class="grid"><div class="loading">No DTR history found.</div></div>
     </div>
 
     <!-- ADMIN & COORDINATOR VIEW -->
@@ -647,12 +682,15 @@
     let allStaffers = [], allEmployees = [], selectedSubmissions = new Set();
     let currentImages = [], adminTab = 'staffers';
     let viewerImages = [], viewerIndex = 0;
+    let selectedStaffer = null;
     
+    // Login credentials
     const credentials = {
-        admin: {username: 'admin', password: 'admin123', role: 'admin'},
-        coordinator_aham: {username: 'coordinator_aham', password: 'coordaham123', role: 'coordinator_aham'},
-        coordinator_fbc: {username: 'coordinator_fbc', password: 'coordfbc123', role: 'coordinator_fbc'},
-        staffer: {username: 'john.santos', password: 'staffer123', role: 'staffer'}
+        admin: 'admin123',
+        coordinator_aham: 'coordaham123',
+        coordinator_fbc: 'coordfbc123',
+        staffer_aham: 'aham123',
+        staffer_fbc: 'fbc123'
     };
     
     async function showMessage(title, message, type) {
@@ -724,34 +762,21 @@
     // ============ LOGIN ============
     function login() {
         const role = document.getElementById('roleSelect').value;
-        const username = document.getElementById('usernameInput').value.trim();
         const password = document.getElementById('passwordInput').value;
         
-        // Check credentials
-        if (role === 'admin' && username === 'admin' && password === 'admin123') {
-            currentUser = 'admin'; userRole = 'admin'; userAssignment = null;
-        } else if (role === 'coordinator_aham' && username === 'coordinator_aham' && password === 'coordaham123') {
-            currentUser = 'coordinator_aham'; userRole = 'coordinator'; userAssignment = 'AHAM';
-        } else if (role === 'coordinator_fbc' && username === 'coordinator_fbc' && password === 'coordfbc123') {
-            currentUser = 'coordinator_fbc'; userRole = 'coordinator'; userAssignment = 'FBC';
-        } else if (role === 'staffer') {
-            // Check staffer credentials
-            const stafferCred = Object.values(credentials).find(c => c.role === 'staffer' && c.username === username && c.password === password);
-            if (stafferCred) {
-                currentUser = username; userRole = 'staffer'; userAssignment = null;
-                // Find staffer ID
-                const staffer = allStaffers.find(s => s.name === username.replace('.', ' '));
-                if (staffer) currentStafferId = staffer.id;
-            }
-        }
-        
-        if (currentUser) {
+        if (credentials[role] === password) {
+            currentUser = role;
             localStorage.setItem('dtrUser', currentUser);
-            localStorage.setItem('dtrRole', userRole);
-            localStorage.setItem('dtrAssignment', userAssignment || '');
+            
+            if (role === 'admin') { userRole = 'admin'; userAssignment = null; }
+            else if (role === 'coordinator_aham') { userRole = 'coordinator'; userAssignment = 'AHAM'; }
+            else if (role === 'coordinator_fbc') { userRole = 'coordinator'; userAssignment = 'FBC'; }
+            else if (role === 'staffer_aham') { userRole = 'staffer'; userAssignment = 'AHAM'; }
+            else if (role === 'staffer_fbc') { userRole = 'staffer'; userAssignment = 'FBC'; }
+            
             showApp();
         } else {
-            showMessage('Login Failed', 'Invalid username or password', 'error');
+            showMessage('Login Failed', 'Invalid password', 'error');
         }
     }
     
@@ -767,7 +792,7 @@
         let displayName = '', assignText = '';
         if (userRole === 'admin') { displayName = 'Admin'; assignText = 'Full Access'; }
         else if (userRole === 'coordinator') { displayName = 'Coordinator'; assignText = userAssignment; }
-        else { displayName = 'Staffer'; assignText = currentUser || ''; }
+        else { displayName = 'Staffer'; assignText = userAssignment || ''; }
         
         document.getElementById('userRoleDisplay').innerText = displayName;
         document.getElementById('assignBadge').innerText = assignText;
@@ -775,8 +800,8 @@
         if (userRole === 'staffer') {
             document.getElementById('stafferView').style.display = 'block';
             document.getElementById('adminCoordinatorView').style.display = 'none';
-            loadStafferInfo();
-            loadStafferDTRHistory();
+            // Load staffers for search
+            loadStaffersForSearch();
         } else {
             document.getElementById('stafferView').style.display = 'none';
             document.getElementById('adminCoordinatorView').style.display = 'block';
@@ -790,41 +815,91 @@
     
     function checkSession() {
         const savedUser = localStorage.getItem('dtrUser');
-        const savedRole = localStorage.getItem('dtrRole');
-        const savedAssignment = localStorage.getItem('dtrAssignment');
-        if (savedUser && savedRole) {
+        if (savedUser && credentials[savedUser]) {
             currentUser = savedUser;
-            userRole = savedRole;
-            userAssignment = savedAssignment || null;
+            if (currentUser === 'admin') { userRole = 'admin'; userAssignment = null; }
+            else if (currentUser === 'coordinator_aham') { userRole = 'coordinator'; userAssignment = 'AHAM'; }
+            else if (currentUser === 'coordinator_fbc') { userRole = 'coordinator'; userAssignment = 'FBC'; }
+            else if (currentUser === 'staffer_aham') { userRole = 'staffer'; userAssignment = 'AHAM'; }
+            else if (currentUser === 'staffer_fbc') { userRole = 'staffer'; userAssignment = 'FBC'; }
             showApp();
         }
     }
-    
+
     // ============ STAFFER FUNCTIONS ============
-    async function loadStafferInfo() {
+    async function loadStaffersForSearch() {
         try {
-            const res = await fetch(`${SUPABASE_URL}/rest/v1/staffers?select=*&name=eq.${currentUser.replace('.', ' ')}`, {
+            const res = await fetch(`${SUPABASE_URL}/rest/v1/staffers?select=*&order=name.asc`, {
                 headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
             });
             const data = await res.json();
-            if (data && data.length > 0) {
-                const s = data[0];
-                currentStafferId = s.id;
-                document.getElementById('sName').innerText = s.name || '-';
-                document.getElementById('sCode').innerText = s.staff_code || '-';
-                document.getElementById('sStore').innerText = s.store_name || '-';
-                document.getElementById('sRegion').innerText = s.region || '-';
-                document.getElementById('sRate').innerText = s.rate ? '₱' + Number(s.rate).toFixed(2) : '-';
-                document.getElementById('sContact').innerText = s.contact_number || '-';
-                document.getElementById('sSchedule').innerText = s.schedule || '-';
-                document.getElementById('sDayOff').innerText = s.day_off || '-';
-            }
+            allStaffers = data || [];
         } catch(e) { console.error(e); }
+    }
+    
+    function searchStaffer() {
+        const searchTerm = document.getElementById('stafferSearchInput').value.toLowerCase();
+        const resultsDiv = document.getElementById('stafferSearchResults');
+        
+        if (!searchTerm) {
+            resultsDiv.innerHTML = '';
+            document.getElementById('selectedStafferInfo').style.display = 'none';
+            return;
+        }
+        
+        // Filter by name only (for staffer search)
+        let filtered = allStaffers.filter(s => 
+            (s.name || '').toLowerCase().includes(searchTerm)
+        );
+        
+        if (filtered.length === 0) {
+            resultsDiv.innerHTML = '<div class="text-muted">No staffer found with that name.</div>';
+            document.getElementById('selectedStafferInfo').style.display = 'none';
+            return;
+        }
+        
+        resultsDiv.innerHTML = filtered.map(s => `
+            <div class="staffer-search-result" onclick="selectStaffer(${s.id})">
+                <div class="result-name">👤 ${escapeHtml(s.name)}</div>
+                <div class="result-store">🏢 ${escapeHtml(s.store_name || 'N/A')} | 📋 ${escapeHtml(s.plotted_disers || 'N/A')}</div>
+            </div>
+        `).join('');
+        
+        // Auto-select if only one result
+        if (filtered.length === 1) {
+            selectStaffer(filtered[0].id);
+        }
+    }
+    
+    function selectStaffer(stafferId) {
+        const staffer = allStaffers.find(s => s.id === stafferId);
+        if (!staffer) return;
+        
+        selectedStaffer = staffer;
+        currentStafferId = stafferId;
+        
+        document.getElementById('selectedStafferInfo').style.display = 'block';
+        document.getElementById('stafferSearchResults').innerHTML = '';
+        document.getElementById('stafferSearchInput').value = staffer.name;
+        
+        // Display staffer info
+        document.getElementById('sName').innerText = staffer.name || '-';
+        document.getElementById('sCode').innerText = staffer.staff_code || '-';
+        document.getElementById('sStore').innerText = staffer.store_name || '-';
+        document.getElementById('sRegion').innerText = staffer.region || '-';
+        document.getElementById('sRate').innerText = staffer.rate ? '₱' + Number(staffer.rate).toFixed(2) : '-';
+        document.getElementById('sContact').innerText = staffer.contact_number || '-';
+        document.getElementById('sSchedule').innerText = staffer.schedule || '-';
+        document.getElementById('sDayOff').innerText = staffer.day_off || '-';
+        
+        // Load DTR history
+        loadStafferDTRHistory();
     }
     
     // Staffer DTR History
     async function loadStafferDTRHistory() {
         try {
+            if (!currentStafferId) return;
             const res = await fetch(`${SUPABASE_URL}/rest/v1/dtr_records?select=*&staffer_id=eq.${currentStafferId}&order=created_at.desc`, {
                 headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
             });
@@ -843,7 +918,7 @@
         
         const grid = document.getElementById('sHistoryGrid');
         if (filtered.length === 0) {
-            grid.innerHTML = '<div class="loading">No DTR history found.</div>';
+            grid.innerHTML = '<div class="loading">No DTR history found for this staffer.</div>';
             return;
         }
         
@@ -914,7 +989,10 @@
                     headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         staffer_id: currentStafferId,
-                        employee_name: document.getElementById('sName').innerText,
+                        employee_name: selectedStaffer ? selectedStaffer.name : document.getElementById('sName').innerText,
+                        outlet: selectedStaffer ? selectedStaffer.plotted_disers || 'N/A' : 'N/A',
+                        dealer: userAssignment || 'N/A',
+                        store_name: selectedStaffer ? selectedStaffer.store_name || '' : '',
                         cutoff_from: fromDate,
                         cutoff_to: toDate,
                         cutoff_range: cutoffRange,
@@ -1035,22 +1113,22 @@
         `).join('');
     }
     
-    // Save Staffer
+    // Save Staffer - FIXED with better error handling
     async function saveStaffer() {
         const data = {
-            staff_code: document.getElementById('fStaffCode').value,
-            store_code: document.getElementById('fStoreCode').value,
-            store_name: document.getElementById('fStoreName').value,
-            plotted_disers: document.getElementById('fPlottedDisers').value,
-            name: document.getElementById('fName').value,
-            region: document.getElementById('fRegion').value,
+            staff_code: document.getElementById('fStaffCode').value.trim(),
+            store_code: document.getElementById('fStoreCode').value.trim(),
+            store_name: document.getElementById('fStoreName').value.trim(),
+            plotted_disers: document.getElementById('fPlottedDisers').value.trim(),
+            name: document.getElementById('fName').value.trim(),
+            region: document.getElementById('fRegion').value.trim(),
             rate: parseFloat(document.getElementById('fRate').value) || null,
             date_hired_philman: document.getElementById('fDateHired').value || null,
             date_started_hanabishi: document.getElementById('fDateStarted').value || null,
-            contact_number: document.getElementById('fContact').value,
-            day_off: document.getElementById('fDayOff').value,
-            schedule: document.getElementById('fSchedule').value,
-            remarks: document.getElementById('fRemarks').value
+            contact_number: document.getElementById('fContact').value.trim(),
+            day_off: document.getElementById('fDayOff').value.trim(),
+            schedule: document.getElementById('fSchedule').value.trim(),
+            remarks: document.getElementById('fRemarks').value.trim()
         };
         
         if (!data.staff_code || !data.store_name || !data.name) {
@@ -1061,29 +1139,54 @@
         try {
             const res = await fetch(`${SUPABASE_URL}/rest/v1/staffers`, {
                 method: 'POST',
-                headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json' },
+                headers: { 
+                    'apikey': SUPABASE_KEY, 
+                    'Authorization': `Bearer ${SUPABASE_KEY}`, 
+                    'Content-Type': 'application/json',
+                    'Prefer': 'return=representation'
+                },
                 body: JSON.stringify(data)
             });
-            if (!res.ok) throw new Error(await res.text());
+            
+            if (!res.ok) {
+                const errorText = await res.text();
+                throw new Error(errorText);
+            }
+            
+            const result = await res.json();
+            const newStaffer = result[0];
             
             // Create user account for staffer
             const username = data.name.toLowerCase().replace(/\s/g, '.');
-            await fetch(`${SUPABASE_URL}/rest/v1/users`, {
-                method: 'POST',
-                headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    username: username,
-                    password: 'staffer123',
-                    role: 'staffer',
-                    staffer_id: (await res.json()).id
-                })
-            });
+            try {
+                await fetch(`${SUPABASE_URL}/rest/v1/users`, {
+                    method: 'POST',
+                    headers: { 
+                        'apikey': SUPABASE_KEY, 
+                        'Authorization': `Bearer ${SUPABASE_KEY}`, 
+                        'Content-Type': 'application/json' 
+                    },
+                    body: JSON.stringify({
+                        username: username,
+                        password: 'staffer123',
+                        role: 'staffer',
+                        staffer_id: newStaffer.id
+                    })
+                });
+            } catch(userError) {
+                console.warn('User creation failed:', userError);
+            }
             
-            await showMessage('Success', 'Staffer added! Username: ' + username + ', Password: staffer123', 'success');
-            document.querySelector('#addStafferModal .btn-close').click();
+            await showMessage('Success', `Staffer added! Username: ${username}, Password: staffer123`, 'success');
+            
+            // Close modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('addStafferModal'));
+            if (modal) modal.hide();
+            
             loadStaffers();
         } catch(e) {
-            showMessage('Error', e.message, 'error');
+            console.error('Save error:', e);
+            showMessage('Error', 'Failed to save staffer: ' + e.message, 'error');
         }
     }
     
@@ -1328,7 +1431,6 @@
     
     // Enter key for login
     document.getElementById('passwordInput').addEventListener('keypress', (e) => { if (e.key === 'Enter') login(); });
-    document.getElementById('usernameInput').addEventListener('keypress', (e) => { if (e.key === 'Enter') login(); });
     
     // Check session
     checkSession();
