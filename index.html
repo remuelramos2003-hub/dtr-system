@@ -484,6 +484,20 @@
         .submission-summary .summary-item{text-align:center;}
         .submission-summary .summary-item h3{font-size:28px;color:var(--primary-color);margin:0;}
         .submission-summary .summary-item p{color:var(--label-color);margin:0;}
+        .auto-refresh-badge {
+            display:inline-block;
+            background:#10b981;
+            color:white;
+            padding:2px 10px;
+            border-radius:20px;
+            font-size:11px;
+            margin-left:10px;
+        }
+        .last-updated {
+            color:var(--label-color);
+            font-size:12px;
+            margin-left:10px;
+        }
         @media(max-width:768px){
             .two-columns{grid-template-columns:1fr;}
             .three-columns{grid-template-columns:1fr;}
@@ -499,6 +513,18 @@
         body.dark-mode select:disabled{background-color:#2d3748;}
         .hidden{display:none !important;}
         .edit-mode-indicator{background:#f59e0b;color:#1a1a2e;padding:4px 12px;border-radius:20px;font-size:12px;display:inline-block;margin-bottom:10px;}
+        .refresh-spinner {
+            display:inline-block;
+            width:16px;
+            height:16px;
+            border:2px solid #fff;
+            border-radius:50%;
+            border-top-color: transparent;
+            animation: spin 0.6s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body>
@@ -616,7 +642,6 @@
         </div>
 
         <div id="staffersTab">
-            <!-- Only show AHAM/FBC tabs for Admin, not for Coordinators -->
             <div id="stafferTypeTabs" class="staffer-type-tab">
                 <button id="typeAham" class="active" onclick="switchStafferType('aham')">AHAM Staffers</button>
                 <button id="typeFbc" onclick="switchStafferType('fbc')">FBC Staffers</button>
@@ -624,6 +649,8 @@
             <div class="action-buttons">
                 <button id="addStafferBtn" class="btn-success" onclick="showAddStafferModal()"><i class="bi bi-plus-circle"></i> Add Staffer</button>
                 <button id="refreshStaffersBtn" onclick="loadStaffers()"><i class="bi bi-arrow-repeat"></i> Refresh</button>
+                <span id="stafferLastUpdated" class="last-updated">Last updated: Just now</span>
+                <span class="auto-refresh-badge"><i class="bi bi-arrow-repeat"></i> Auto-refresh</span>
             </div>
             <div class="filter-bar">
                 <div class="filter-group"><label>Search Staffer</label><input type="text" id="stafferSearch" placeholder="Search by name or code..." oninput="renderStaffers()"></div>
@@ -661,6 +688,7 @@
                 <button id="printSelectedBtn" style="background:#17a2b8;" onclick="printSelectedSubmissions()"><i class="bi bi-printer"></i> Print (<span id="printCount">0</span>)</button>
                 <button id="downloadSelectedBtn" style="background:#8b5cf6;" onclick="downloadSelectedSubmissions()"><i class="bi bi-download"></i> ZIP (<span id="downloadCount">0</span>)</button>
                 <span class="selected-count" id="selectedInfo">0 selected</span>
+                <span id="dtrLastUpdated" class="last-updated">Last updated: Just now</span>
             </div>
             
             <div id="submissionGrid" class="grid"><div class="loading">Loading submissions...</div></div>
@@ -1050,6 +1078,7 @@
     let allStaffersForComparison = [];
     let dtrRecordsAll = [];
     let cutoffList = [];
+    let refreshInterval = null;
     
     const credentials = {
         admin: 'admin123',
@@ -1125,6 +1154,12 @@
     document.getElementById('modeToggle').addEventListener('click', toggleDarkMode);
     checkDarkMode();
 
+    function updateLastUpdated(elementId) {
+        const now = new Date();
+        const timeStr = now.toLocaleTimeString();
+        document.getElementById(elementId).textContent = `Last updated: ${timeStr}`;
+    }
+
     // ============ LOGIN ============
     function login() {
         const role = document.getElementById('roleSelect').value;
@@ -1147,6 +1182,10 @@
     }
     
     function logout() {
+        if (refreshInterval) {
+            clearInterval(refreshInterval);
+            refreshInterval = null;
+        }
         Swal.fire({ title: 'Logout', text: 'Are you sure?', icon: 'question', showCancelButton: true, confirmButtonColor: '#dc3545' })
             .then(r => { if (r.isConfirmed) { localStorage.clear(); location.reload(); } });
     }
@@ -1163,10 +1202,8 @@
         document.getElementById('userRoleDisplay').innerText = displayName;
         document.getElementById('assignBadge').innerText = assignText;
         
-        // For Coordinators: Hide AHAM/FBC type tabs in staffers management
         if (userRole === 'coordinator') {
             document.getElementById('stafferTypeTabs').style.display = 'none';
-            // Also hide modal type tabs for coordinators
             document.getElementById('modalTypeTabs').style.display = 'none';
         } else {
             document.getElementById('stafferTypeTabs').style.display = 'flex';
@@ -1180,8 +1217,18 @@
         } else {
             document.getElementById('stafferView').style.display = 'none';
             document.getElementById('adminCoordinatorView').style.display = 'block';
+            // Initial load
             loadStaffers();
             loadDTRSubmissions();
+            // Start auto-refresh every 10 seconds
+            if (refreshInterval) clearInterval(refreshInterval);
+            refreshInterval = setInterval(() => {
+                if (adminTab === 'staffers') {
+                    loadStaffers();
+                } else {
+                    loadDTRSubmissions();
+                }
+            }, 10000);
         }
         
         document.getElementById('status').innerHTML = '✅ Connected';
@@ -1205,7 +1252,6 @@
     async function loadStaffersForSearch() {
         try {
             let url = `${SUPABASE_URL}/rest/v1/staffers?select=*&order=name.asc`;
-            // If staffer, filter by their assigned dealer
             if (userRole === 'staffer') {
                 if (userAssignment === 'AHAM') {
                     url += `&dealer=ilike.*AHAM*`;
@@ -1325,21 +1371,17 @@
     }
     
     function editStafferDTR(batchId) {
-        // Find the record with this batch_id
         const records = dtrRecordsAll.filter(r => r.batch_id === batchId || r.id == batchId);
         if (records.length > 0) {
             const record = records[0];
-            // Pre-fill the date fields
             if (record.cutoff_from) document.getElementById('sFromDate').value = record.cutoff_from;
             if (record.cutoff_to) document.getElementById('sToDate').value = record.cutoff_to;
             if (record.remarks) document.getElementById('sRemarks').value = record.remarks;
             
-            // Show edit indicator
             document.getElementById('sSaveBtn').dataset.editId = batchId;
             document.getElementById('sSaveBtn').innerHTML = '<i class="bi bi-pencil"></i> Update DTR';
             document.getElementById('sSaveBtn').style.background = '#f59e0b';
             
-            // Add a cancel edit button if not exists
             let cancelBtn = document.getElementById('cancelEditBtn');
             if (!cancelBtn) {
                 cancelBtn = document.createElement('button');
@@ -1481,8 +1523,11 @@
         document.getElementById('tabDTR').classList.toggle('active', tab === 'dtr');
         document.getElementById('staffersTab').style.display = tab === 'staffers' ? 'block' : 'none';
         document.getElementById('dtrTab').style.display = tab === 'dtr' ? 'block' : 'none';
-        if (tab === 'staffers') loadStaffers();
-        else loadDTRSubmissions();
+        if (tab === 'staffers') {
+            loadStaffers();
+        } else {
+            loadDTRSubmissions();
+        }
     }
     
     function switchStafferType(type) {
@@ -1505,12 +1550,10 @@
     async function loadStaffers() {
         try {
             let url = `${SUPABASE_URL}/rest/v1/staffers?select=*&order=name.asc`;
-            let data = [];
-            
             const res = await fetch(url, {
                 headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
             });
-            data = await res.json();
+            let data = await res.json();
             
             // Filter based on role
             if (userRole === 'coordinator') {
@@ -1519,7 +1562,6 @@
                 } else if (userAssignment === 'FBC') {
                     data = data.filter(s => s.dealer === 'FBC');
                 }
-                // Coordinators see only their assigned type
             } else if (userRole === 'admin') {
                 if (stafferType === 'aham') {
                     data = data.filter(s => s.dealer === 'AHAM OFFICE' || s.dealer?.includes('AHAM'));
@@ -1531,6 +1573,7 @@
             allStaffers = data || [];
             allStaffersForComparison = data || [];
             renderStaffers();
+            updateLastUpdated('stafferLastUpdated');
         } catch(e) { 
             console.error(e);
             document.getElementById('staffersGrid').innerHTML = '<div class="loading">Error loading staffers. Please refresh.</div>';
@@ -1579,7 +1622,6 @@
         document.getElementById('modalTitle').innerText = 'Edit';
         document.getElementById('modalSaveBtnText').innerText = 'Update';
         
-        // Determine type
         const isAham = staffer.dealer === 'AHAM OFFICE' || staffer.dealer?.includes('AHAM');
         if (isAham) {
             switchModalType('aham');
@@ -1704,7 +1746,6 @@
                 throw new Error(errorText);
             }
             
-            // If new staffer, create user account
             if (!editId) {
                 const result = await res.json();
                 const newStaffer = result[0];
@@ -1767,7 +1808,6 @@
         document.getElementById('modalTitle').innerText = 'Add';
         document.getElementById('modalSaveBtnText').innerText = 'Save';
         
-        // Clear AHAM form
         document.getElementById('fAhamIdNo').value = '';
         document.getElementById('fAhamSurname').value = '';
         document.getElementById('fAhamName').value = '';
@@ -1787,7 +1827,6 @@
         document.getElementById('fAhamPayroll').value = '';
         document.getElementById('fAhamRemarks').value = '';
         
-        // Clear FBC form
         document.getElementById('fFbcStoreCode').value = '';
         document.getElementById('fFbcStoreName').value = '';
         document.getElementById('fFbcPlottedDisers').value = '';
@@ -1821,7 +1860,6 @@
             });
             let data = await res.json();
             
-            // Filter based on coordinator role
             if (userRole === 'coordinator') {
                 if (userAssignment === 'AHAM') {
                     data = data.filter(r => r.dealer === 'AHAM OFFICE' || r.dealer?.includes('AHAM'));
@@ -1832,7 +1870,6 @@
             
             dtrRecordsAll = data || [];
             
-            // Get all staffers for this coordinator's view
             let staffersForView = allStaffersForComparison;
             if (userRole === 'coordinator') {
                 if (userAssignment === 'AHAM') {
@@ -1842,11 +1879,9 @@
                 }
             }
             
-            // Group by employee name
             const employeeMap = {};
             const cutoffSet = new Set();
             
-            // First, add all staffers as "not submitted"
             staffersForView.forEach(s => {
                 const empKey = s.name;
                 if (!employeeMap[empKey]) {
@@ -1867,7 +1902,6 @@
                 }
             });
             
-            // Then update with actual submissions
             data.forEach(r => {
                 const empKey = r.employee_name;
                 const cutoffKey = r.cutoff_range;
@@ -1882,7 +1916,6 @@
                     employeeMap[empKey].image_count = (employeeMap[empKey].image_count || 0) + 1;
                     employeeMap[empKey].images.push(r.image_data);
                 } else {
-                    // Staffer not in list (shouldn't happen)
                     if (!employeeMap[empKey]) {
                         employeeMap[empKey] = {
                             name: r.employee_name,
@@ -1901,7 +1934,6 @@
                 }
             });
             
-            // Build the cutoff list
             cutoffList = Array.from(cutoffSet).sort();
             
             const cutoffSelect = document.getElementById('filterCutoff');
@@ -1917,7 +1949,6 @@
             
             allEmployees = Object.values(employeeMap);
             
-            // Update stats
             const totalStaffers = allEmployees.length;
             const submitted = allEmployees.filter(e => e.submitted).length;
             const notSubmitted = totalStaffers - submitted;
@@ -1930,6 +1961,7 @@
             
             selectedSubmissions.clear();
             applySubmissionFilters();
+            updateLastUpdated('dtrLastUpdated');
         } catch(e) { console.error(e); }
     }
     
@@ -2135,17 +2167,6 @@
     document.getElementById('filterStatus').addEventListener('change', applySubmissionFilters);
     document.getElementById('stafferSearch').addEventListener('input', renderStaffers);
     document.getElementById('passwordInput').addEventListener('keypress', (e) => { if (e.key === 'Enter') login(); });
-    
-    // Load staffers for coordinator view initially
-    async function initStaffersForCoordinator() {
-        if (userRole === 'coordinator') {
-            const res = await fetch(`${SUPABASE_URL}/rest/v1/staffers?select=*&order=name.asc`, {
-                headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
-            });
-            const data = await res.json();
-            allStaffersForComparison = data || [];
-        }
-    }
     
     checkSession();
 </script>
