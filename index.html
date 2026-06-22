@@ -24,6 +24,10 @@
             --card-shadow: rgba(0,0,0,0.05);
             --label-color: #666;
             --select-bg: #ffffff;
+            --primary-color: #4361ee;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
         }
         
         body.dark-mode {
@@ -47,7 +51,7 @@
             background: var(--bg-color);
             padding: 20px;
             font-family: 'Segoe UI', sans-serif;
-            transition: background 0.3s ease, color 0.3s ease;
+            transition: all 0.3s ease;
             color: var(--text-color);
             min-height: 100vh;
         }
@@ -58,7 +62,7 @@
             border-radius:20px;
             padding:20px;
             box-shadow:0 1px 3px var(--card-shadow);
-            transition: background 0.3s ease;
+            transition: all 0.3s ease;
         }
         h1{
             text-align:center;
@@ -79,7 +83,7 @@
             position:fixed;
             top:20px;
             right:20px;
-            background:linear-gradient(135deg, #4361ee, #3b82f6);
+            background:linear-gradient(135deg, var(--primary-color), #3b82f6);
             color:white;
             padding:10px 20px;
             border-radius:50px;
@@ -91,7 +95,7 @@
             box-shadow:0 2px 8px rgba(0,0,0,0.2);
         }
         .logout-btn{
-            background:#dc3545;
+            background:var(--danger-color);
             border:none;
             padding:6px 14px;
             border-radius:30px;
@@ -124,16 +128,16 @@
             border-radius:8px;
             background:var(--input-bg);
             color:var(--text-color);
-            transition: background 0.3s ease, color 0.3s ease;
+            transition: all 0.3s ease;
         }
         input:focus,select:focus,textarea:focus{
             outline:none;
-            border-color:#4361ee;
+            border-color:var(--primary-color);
             box-shadow:0 0 0 2px rgba(67,97,238,0.2);
         }
         select option{background:var(--select-bg);color:var(--text-color);}
         button{
-            background:#4361ee;
+            background:var(--primary-color);
             color:white;
             padding:10px 20px;
             border:none;
@@ -144,6 +148,12 @@
             transition:all 0.2s;
         }
         button:hover{background:#304ff2;}
+        .btn-success{background:var(--success-color);}
+        .btn-success:hover{background:#059669;}
+        .btn-danger{background:var(--danger-color);}
+        .btn-danger:hover{background:#dc2626;}
+        .btn-warning{background:var(--warning-color);color:#1a1a2e;}
+        .btn-warning:hover{background:#d97706;}
         .filter-bar{
             display:flex;
             gap:10px;
@@ -165,17 +175,14 @@
             background:var(--input-bg);
             color:var(--text-color);
         }
-        .print-bar{
+        .action-buttons{
             display:flex;
             gap:10px;
             margin-bottom:20px;
             flex-wrap:wrap;
             align-items:center;
         }
-        .print-bar button{
-            width:auto;
-            padding:8px 16px;
-        }
+        .action-buttons button{width:auto;padding:8px 16px;}
         .grid{
             display:grid;
             grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
@@ -190,15 +197,15 @@
             border-radius:12px;
             overflow:hidden;
             position:relative;
-            transition: all 0.3s ease;
+            transition:all 0.3s ease;
         }
         .card:hover{
             transform:translateY(-4px);
             box-shadow:0 8px 20px var(--hover-shadow);
-            border-color:#4361ee;
+            border-color:var(--primary-color);
         }
         .card.selected{
-            border:3px solid #4361ee;
+            border:3px solid var(--primary-color);
             background:rgba(67,97,238,0.05);
         }
         .card-img{
@@ -209,28 +216,18 @@
         }
         .card-body{padding:15px;}
         .name{font-weight:bold;color:var(--text-color);}
-        .outlet-text{color:#10b981;font-size:0.85em;margin:3px 0;}
-        .dealer-text{color:#f59e0b;font-size:0.85em;}
+        .outlet-text{color:var(--success-color);font-size:0.85em;margin:3px 0;}
+        .dealer-text{color:var(--warning-color);font-size:0.85em;}
         .store-text{color:#8b5cf6;font-size:0.85em;margin:3px 0;}
         .date{color:var(--label-color);font-size:0.8em;}
         .batch-badge{
-            background:#4361ee;
+            background:var(--primary-color);
             color:white;
             padding:2px 8px;
             border-radius:20px;
             font-size:10px;
             display:inline-block;
             margin-top:5px;
-        }
-        .delete-btn{
-            background:#dc3545;
-            color:white;
-            border:none;
-            padding:6px;
-            border-radius:6px;
-            margin-top:10px;
-            width:100%;
-            cursor:pointer;
         }
         .select-checkbox{
             position:absolute;
@@ -242,6 +239,7 @@
             z-index:10;
         }
         .two-columns{display:grid;grid-template-columns:1fr 1fr;gap:15px;}
+        .three-columns{display:grid;grid-template-columns:1fr 1fr 1fr;gap:15px;}
         .preview-container{
             display:flex;
             flex-wrap:wrap;
@@ -263,7 +261,7 @@
             position:absolute;
             top:-5px;
             right:-5px;
-            background:#dc3545;
+            background:var(--danger-color);
             color:white;
             border-radius:50%;
             width:20px;
@@ -281,7 +279,7 @@
             margin-bottom:20px;
             font-size:14px;
             border-left:4px solid var(--guide-border);
-            transition: background 0.3s ease;
+            transition:background 0.3s ease;
             color:var(--text-color);
         }
         .mode-toggle{
@@ -291,7 +289,7 @@
             width:50px;
             height:50px;
             border-radius:50%;
-            background:#4361ee;
+            background:var(--primary-color);
             color:white;
             border:none;
             font-size:24px;
@@ -314,13 +312,13 @@
             border-radius:4px;
             cursor:pointer;
             border:1px solid var(--border-color);
-            transition: transform 0.2s;
+            transition:transform 0.2s;
         }
         .thumbnail-gallery img:hover{
             transform:scale(1.1);
-            border-color:#4361ee;
+            border-color:var(--primary-color);
         }
-        .image-viewer {
+        .image-viewer{
             display:none;
             position:fixed;
             top:0;
@@ -333,13 +331,13 @@
             align-items:center;
             flex-direction:column;
         }
-        .image-viewer.active {display:flex;}
-        .image-viewer img {max-width:90%;max-height:85vh;object-fit:contain;border-radius:8px;}
-        .image-viewer .viewer-close-btn {
+        .image-viewer.active{display:flex;}
+        .image-viewer img{max-width:90%;max-height:85vh;object-fit:contain;border-radius:8px;}
+        .image-viewer .viewer-close-btn{
             position:absolute;
             top:20px;
             right:30px;
-            background:#dc3545;
+            background:var(--danger-color);
             color:white;
             border:none;
             padding:8px 16px;
@@ -348,14 +346,14 @@
             font-size:16px;
             width:auto;
         }
-        .image-viewer .viewer-close-btn:hover {background:#c82333;}
-        .image-viewer .nav-controls {
+        .image-viewer .viewer-close-btn:hover{background:#c82333;}
+        .image-viewer .nav-controls{
             display:flex;
             gap:20px;
             margin-top:20px;
             align-items:center;
         }
-        .image-viewer .nav-controls button {
+        .image-viewer .nav-controls button{
             background:rgba(255,255,255,0.2);
             color:white;
             border:1px solid rgba(255,255,255,0.3);
@@ -366,69 +364,40 @@
             width:auto;
             transition:all 0.3s;
         }
-        .image-viewer .nav-controls button:hover {background:rgba(255,255,255,0.4);}
-        .image-viewer .image-counter {color:white;font-size:16px;}
-        @media(max-width:768px){
-            .two-columns{grid-template-columns:1fr;}
-            .print-bar{flex-direction:column;}
-            .print-bar button{width:100%;}
+        .image-viewer .nav-controls button:hover{background:rgba(255,255,255,0.4);}
+        .image-viewer .image-counter{color:white;font-size:16px;}
+        .admin-tabs{
+            display:flex;
+            gap:10px;
+            margin-bottom:20px;
+            flex-wrap:wrap;
         }
-        .loading{text-align:center;padding:40px;color:var(--label-color);}
-        select:disabled{background-color:#e9ecef;cursor:not-allowed;}
-        body.dark-mode select:disabled{background-color:#2d3748;}
-        .admin-selector{display:flex;gap:10px;margin-bottom:15px;}
-        .admin-selector button{width:auto;padding:8px 20px;}
-        .admin-selector button.active{background:#304ff2;border:2px solid #4361ee;}
-        .hidden{display:none !important;}
-        .submission-summary {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 20px;
-            margin-bottom: 25px;
-            padding: 20px;
-            background: var(--form-bg);
-            border-radius: 12px;
-            border: 1px solid var(--border-color);
+        .admin-tabs button{
+            width:auto;
+            padding:8px 20px;
         }
-        .submission-summary .summary-item {
-            text-align: center;
+        .admin-tabs button.active{
+            background:#304ff2;
+            border:2px solid var(--primary-color);
         }
-        .submission-summary .summary-item h3 {
-            font-size: 28px;
-            color: #4361ee;
-            margin: 0;
+        .staffer-info-card{
+            background:var(--form-bg);
+            padding:20px;
+            border-radius:12px;
+            border:1px solid var(--border-color);
+            margin-bottom:20px;
         }
-        .submission-summary .summary-item p {
-            color: var(--label-color);
-            margin: 0;
+        .staffer-info-card .info-row{
+            display:grid;
+            grid-template-columns:1fr 1fr;
+            gap:10px;
         }
-        .admin-dealer-tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
+        .staffer-info-card .info-item{
+            padding:5px 10px;
+            border-bottom:1px solid var(--border-color);
         }
-        .admin-dealer-tabs button {
-            width: auto;
-            padding: 8px 20px;
-        }
-        .admin-dealer-tabs button.active {
-            background: #304ff2;
-            border: 2px solid #4361ee;
-        }
-        .action-buttons {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-            align-items: center;
-        }
-        .action-buttons button {
-            width: auto;
-            padding: 8px 16px;
-        }
-        .action-buttons .selected-count {
-            color: var(--label-color);
-            font-size: 14px;
+        .staffer-info-card .info-item strong{
+            color:var(--primary-color);
         }
         .date-label-group {
             display: flex;
@@ -442,25 +411,45 @@
             margin-bottom: 0;
             font-weight: 500;
         }
-        /* Store Name combobox - same size as employee name textbox */
-        #storeName {
-            height: 42px;
-            font-size: 14px;
-            padding: 8px 10px;
-            width: 100%;
+        .section-tabs{
+            display:flex;
+            gap:10px;
+            margin-bottom:20px;
+            flex-wrap:wrap;
+        }
+        .section-tabs button{
+            width:auto;
+            padding:8px 20px;
+        }
+        .section-tabs button.active{
+            background:#304ff2;
+            border:2px solid var(--primary-color);
         }
         @media(max-width:768px){
-            .submission-summary {
-                grid-template-columns: 1fr 1fr;
-                gap: 15px;
-            }
-            .action-buttons {
-                flex-direction: column;
-            }
-            .action-buttons button {
-                width: 100%;
-            }
+            .two-columns{grid-template-columns:1fr;}
+            .three-columns{grid-template-columns:1fr;}
+            .action-buttons{flex-direction:column;}
+            .action-buttons button{width:100%;}
+            .staffer-info-card .info-row{grid-template-columns:1fr;}
+            .user-badge{padding:6px 12px;font-size:11px;}
         }
+        .loading{text-align:center;padding:40px;color:var(--label-color);}
+        select:disabled{background-color:#e9ecef;cursor:not-allowed;}
+        body.dark-mode select:disabled{background-color:#2d3748;}
+        .hidden{display:none !important;}
+        .submission-summary{
+            display:grid;
+            grid-template-columns:1fr 1fr 1fr;
+            gap:20px;
+            margin-bottom:25px;
+            padding:20px;
+            background:var(--form-bg);
+            border-radius:12px;
+            border:1px solid var(--border-color);
+        }
+        .submission-summary .summary-item{text-align:center;}
+        .submission-summary .summary-item h3{font-size:28px;color:var(--primary-color);margin:0;}
+        .submission-summary .summary-item p{color:var(--label-color);margin:0;}
     </style>
 </head>
 <body>
@@ -484,11 +473,11 @@
             <option value="admin">Admin</option>
             <option value="coordinator_aham">Coordinator - AHAM</option>
             <option value="coordinator_fbc">Coordinator - FBC</option>
-            <option value="staffer_aham">Staffer - AHAM</option>
-            <option value="staffer_fbc">Staffer - FBC</option>
+            <option value="staffer">Staffer</option>
         </select>
+        <input type="text" id="usernameInput" placeholder="Username" style="width:100%;padding:10px;margin-bottom:10px;border:1px solid var(--border-color);border-radius:8px;background:var(--input-bg);color:var(--text-color);">
         <input type="password" id="passwordInput" placeholder="Enter Password" style="width:100%;padding:10px;border:1px solid var(--border-color);border-radius:8px;background:var(--input-bg);color:var(--text-color);">
-        <button id="loginBtn" style="width:100%;padding:10px;">Login</button>
+        <button id="loginBtn" style="width:100%;padding:10px;margin-top:10px;">Login</button>
     </div>
 </div>
 
@@ -506,391 +495,164 @@
 
     <div class="guide-box">
         <i class="bi bi-info-circle"></i> <strong>Quick Guide</strong>
-        <ul>
+        <ul id="guideItems">
             <li>📸 Select multiple images - each DTR picture saves as a separate record</li>
-            <li>🔍 Use live filters to search by name or cutoff period</li>
-            <li>✅ Select checkboxes to batch delete, print, or download</li>
-            <li>🖼️ Click on any image to view in fullscreen with navigation</li>
+            <li>🔍 Use live filters to search</li>
+            <li>🖼️ Click on any image to view in fullscreen</li>
         </ul>
     </div>
 
-    <!-- Staffer Form -->
-    <div class="form-area" id="stafferForm">
-        <h4>Add DTR Record</h4>
-        
-        <!-- Admin Selector: Choose AHAM or FBC -->
-        <div id="adminSelector" class="admin-selector hidden">
-            <button id="btnAham" class="active" onclick="selectDealerType('AHAM')">AHAM</button>
-            <button id="btnFbc" onclick="selectDealerType('FBC')">FBC</button>
-        </div>
-        
-        <input type="text" id="empName" placeholder="Employee Name *">
-        
-        <!-- AHAM Fields -->
-        <div id="ahamFields">
-            <div class="two-columns">
-                <div id="outletContainer">
-                    <label style="font-size:12px;color:var(--label-color);">Outlet *</label>
-                    <select id="outlet">
-                        <option value="">-- Select Outlet --</option>
-                        <option>MARILAO,BULACAN</option><option>MORATO AVE.</option><option>GENERAL SANTOS</option>
-                        <option>CEBU CITY</option><option>ROSALES,PANGASINAN</option><option>BOHOL</option>
-                        <option>STA.ROSA,LAGUNA</option><option>NAIC,CAVITE</option><option>BANKAL/BAJADA</option>
-                        <option>ILLUSTRE</option><option>ETON QC,</option><option>EMPORIUM,MAKATI CITY</option>
-                        <option>ROXAS</option><option>CLARK,PAMPANGA</option><option>CAMILING</option>
-                        <option>warehouse</option><option>SAN PABLO,LAGUNA</option><option>NOVALICHES,QC</option>
-                    </select>
-                </div>
-                <div id="dealerContainer">
-                    <label style="font-size:12px;color:var(--label-color);">Dealer *</label>
-                    <select id="dealer">
-                        <option value="">-- Select Dealer --</option>
-                        <option>SACI</option><option>AHAM OFFICE</option><option>SVI</option><option>S&R</option>
-                        <option>BOHOL QUALITY</option><option>SSM</option><option>GAISANO GRAND</option>
-                        <option>ANSONS</option><option>GAISANO MALL</option><option>MEGASAVER</option>
-                        <option>ALSONS</option><option>METRO</option><option>CSI</option>
-                    </select>
-                </div>
+    <!-- STAFFER VIEW -->
+    <div id="stafferView">
+        <!-- Staffer Info Display -->
+        <div class="staffer-info-card" id="stafferInfoCard">
+            <h5><i class="bi bi-person-badge"></i> My Information</h5>
+            <div id="stafferInfoContent" class="info-row">
+                <div class="info-item"><strong>Name:</strong> <span id="sName">-</span></div>
+                <div class="info-item"><strong>Staff Code:</strong> <span id="sCode">-</span></div>
+                <div class="info-item"><strong>Store:</strong> <span id="sStore">-</span></div>
+                <div class="info-item"><strong>Region:</strong> <span id="sRegion">-</span></div>
+                <div class="info-item"><strong>Rate:</strong> <span id="sRate">-</span></div>
+                <div class="info-item"><strong>Contact:</strong> <span id="sContact">-</span></div>
+                <div class="info-item"><strong>Schedule:</strong> <span id="sSchedule">-</span></div>
+                <div class="info-item"><strong>Day Off:</strong> <span id="sDayOff">-</span></div>
             </div>
         </div>
-        
-        <!-- FBC Fields - Only Store Name -->
-        <div id="fbcFields" style="display:none;">
-            <div class="form-group">
-                <label style="font-size:12px;color:var(--label-color);">Store Name *</label>
-                <select id="storeName">
-                    <option value="">-- Select Store --</option>
-                    <option>MABCES NEW STORE</option>
-                    <option>JACKMAN MUNOZ</option>
-                    <option>RH ERMITA 103</option>
-                    <option>RH ANTIQUE 373</option>
-                    <option>RH CAGAYAN DE ORO (CDO) 183</option>
-                    <option>RH CALAPAN ORIENTAL MINDORO</option>
-                    <option>RH DASMARINAS 157</option>
-                    <option>RH GAISANO DIGOS 378</option>
-                    <option>RH GAISANO GRAND MALL CALBAYOG (SAMAR) 408</option>
-                    <option>RH GAISANO KALIBO 302</option>
-                    <option>RH PANABO 196</option>
-                    <option>RH GAISANO ROXAS 186</option>
-                    <option>RH GALLERIA LUISA BOHOL (TAGBILARAN) 340</option>
-                    <option>RH GALLERIA 101</option>
-                    <option>RH ILOCOS NORTE 169</option>
-                    <option>RH LUCKY CHINA TOWN 401</option>
-                    <option>RH RP MALABON 332</option>
-                    <option>RH MONTALBAN TOWN CENTER 125</option>
-                    <option>RH NE MALL BALER AURORA 406</option>
-                    <option>RH NORTH TACLOBAN 411</option>
-                    <option>RH NOVALICHES 109</option>
-                    <option>RH PUREGOLD PASO DE BLAS 390</option>
-                    <option>RH RIVERBANKS MARIKINA 108</option>
-                    <option>RH SANTIAGO ISABELA 334</option>
-                    <option>RH TANDANG SORA 311</option>
-                    <option>RH XENTRO ROXAS ISABELA 368</option>
-                    <option>RH WILSAM BORONGAN UPTOWN MALL 458</option>
-                    <option>RH BULUA 472</option>
-                    <option>RH SIARGAO TOWN CENTER 469</option>
-                    <option>RH STATION B MALL BORACAY 491</option>
-                    <option>RH GAISANO CAPITAL KAPATAGAN 482</option>
-                    <option>RH SANJOSE TOWN MALL 495</option>
-                    <option>RH PRIMARK NOVELETA 496</option>
-                    <option>RH LIPA TOWN CENTER 494</option>
-                    <option>RH GAISANO GRANDMALL BALAMBAN 499</option>
-                    <option>RH MEGA MAGALANG 506</option>
-                    <option>RH KABANKALAN 531</option>
-                    <option>RH STA LUCIA DAVAO 521</option>
-                    <option>RH VIRAC</option>
-                    <option>RH SAN CARLOS TOWN CENTER</option>
-                    <option>RH LEMERY BATANGAS 343</option>
-                    <option>HEM GRAND MALL MAASIM 437</option>
-                    <option>WH GUIGUINTO 322</option>
-                    <option>RH NUCITI BATANGAS 321</option>
-                    <option>RH CALINAN DAVAO 512</option>
-                    <option>RH PUREGOLD BAYAWAN 443</option>
-                    <option>RH PANGASINAN 307</option>
-                    <option>WH TAGAYTAY 375</option>
-                    <option>WH CARMONA</option>
-                    <option>HEM LCC POLANGUI 434</option>
-                    <option>RH PALAWAN 308</option>
-                    <option>RH CEBU 182</option>
-                    <option>RH TAGAYTAY 375</option>
-                    <option>RH ANTIPOLO 465</option>
-                    <option>RH GAPAN478/GAPAN NUEVA ECIJA</option>
-                    <option>RH GAISANO GRAND LILOAN CEBU/RH PARK MALL</option>
-                    <option>RH BACOLOD 181</option>
-                    <option>RH GAISANO GRAND MALL SILAY BACOLOD 412</option>
-                    <option>RH BAGUIO CENTERMALL 153</option>
-                    <option>RH CENTERPOINTE BAGUIO 362</option>
-                    <option>RH NEPOMALL DAGUPAN 161</option>
-                    <option>RH CENTERPOINT DAGUPAN 468</option>
-                    <option>RH EMALL CEBU 189</option>
-                    <option>RH SOUTH TOWN CENTER CEBU 363</option>
-                    <option>RH FAIRVIEW CENTERMALL 105</option>
-                    <option>RH REGALADO COMMUNITY MALL 367</option>
-                    <option>RH GAISANO CAPITAL BINANGONAN 409</option>
-                    <option>RH TANAY TOWN CENTER 418</option>
-                    <option>RH GAISANO MACTAN 197</option>
-                    <option>RH GAISANO MACTAN (ISLAND) 354</option>
-                    <option>RH GT MOLO ILOILO 326</option>
-                    <option>RH MARYMART ILOILO 184</option>
-                    <option>RH IL CENTRO CAINTA 355</option>
-                    <option>RH UP TOWN CENTER 493</option>
-                    <option>RH LUCKY GOLD PASIG 323</option>
-                    <option>RH WELCOME MERCEDES PASIG 379</option>
-                    <option>RH CHERRY FOODARAMA SHAW 361</option>
-                    <option>RH PACITA</option>
-                    <option>RH WM SAN FERNANDO 300</option>
-                    <option>RH BACOLOR 501</option>
-                    <option>RH OTIS 119</option>
-                    <option>WH BAY CITY MACAPAGAL 461</option>
-                    <option>RH METRO PLAZA MALARIA 438</option>
-                    <option>WH ALTARAZA 475</option>
-                    <option>RH SHOPWISE SUCAT 511</option>
-                    <option>WH SUCAT PARAÑAQUE 309</option>
-                    <option>RH BF PARAÑAQUE 121</option>
-                    <option>RH SHOPWISE SUCAT 511</option>
-                    <option>WH GEN TRIAS 255</option>
-                    <option>WH TRECE MARTIRES CAVITE 324</option>
-                    <option>WH BICUTAN 339</option>
-                    <option>WH MUNTINLUPA WEST 481</option>
-                    <option>HM EMALL NAGALAND 162</option>
-                    <option>RH LCC NAGA 352</option>
-                    <option>RH ALIMALL 102</option>
-                    <option>RH UP CAMPUS</option>
-                    <option>RH BAGONG SILANG CALOOCAN 535</option>
-                    <option>RH ZABARTE 449</option>
-                    <option>RH MARIKINA 399</option>
-                    <option>RH XELAND 470</option>
-                    <option>LUXENBERG MARKETING INC. (HOME ALONG) - APALIT PAMPANGA</option>
-                    <option>LUXENBERG MARKETING INC. (HOME ALONG) - MANDALUYONG</option>
-                    <option>LUXENBERG MARKETING INC. (HOME ALONG) - STA. ROSA</option>
-                    <option>LUXENBERG MARKETING INC. (HOME ALONG) - MUNTINLUPA</option>
-                    <option>LUXENBERG MARKETING INC. (HOME ALONG) - MONTALBAN</option>
-                    <option>LUXENBERG MARKETING INC. (HOME ALONG) - MALABON</option>
-                    <option>LUXENBERG MARKETING INC. (HOME ALONG) - GOV. PASCUAL (MALABON)</option>
-                    <option>PRINCE WAREHOUSE - PRINCE TANJAY</option>
-                    <option>PRINCE WAREHOUSE - DC OROQUIETTA OROQUIETTA</option>
-                    <option>APPLIANCE CENTRUM - BACOLOD</option>
-                    <option>RA ANTIPOLO</option>
-                    <option>RA ANTIQUE</option>
-                    <option>RA CAGAYAN DE ORO</option>
-                    <option>RA CAINTA</option>
-                    <option>RA DAVAO BAJADA</option>
-                    <option>RA GENSAN</option>
-                    <option>RA ILOILO</option>
-                    <option>RA MAGNOLIA</option>
-                    <option>RA MONTALBAN</option>
-                    <option>RA NORTH TACLOBAN</option>
-                    <option>RA PALAWAN</option>
-                    <option>RA POLANGUI</option>
-                    <option>RA REGALADO</option>
-                    <option>RA ROXAS</option>
-                    <option>RA TACLOBAN</option>
-                    <option>RA TAGUM</option>
-                    <option>RA TANAY</option>
-                    <option>RA TORIL DAVAO</option>
-                    <option>RA XENTROMALL VIGAN</option>
-                    <option>RA IBA ZAMBALES</option>
-                    <option>RA GINGOOG</option>
-                    <option>RA VALENCIA BUKIDNON</option>
-                    <option>RA PAGADIAN</option>
-                    <option>RA CALAPAN</option>
-                    <option>RA COTA</option>
-                    <option>RA BUTUAN</option>
-                    <option>RA BAGONG SILANG</option>
-                    <option>RA PASO DE BLAS</option>
-                    <option>RA BALIBAGO</option>
-                    <option>RA MARQUEE ANGELES</option>
-                    <option>RA BAGUIO</option>
-                    <option>RA BAGUIO CENTERPOINT PLAZA</option>
-                    <option>RA BLUEWAVE MARIKINA</option>
-                    <option>RA RIVERBANKS</option>
-                    <option>RA PANGASINAN</option>
-                    <option>RA SAN CARLOS</option>
-                    <option>RA GALLERIA SOUTH</option>
-                    <option>RA FESTIVAL MALL ALABANG</option>
-                    <option>RA GALLERIA</option>
-                    <option>RA OPUS</option>
-                    <option>SAVER'S - BATAAN 2</option>
-                    <option>SAVER'S - BARRETO</option>
-                    <option>SAVER'S - SAN FERNANDO</option>
-                    <option>SAVER'S - VISAYAS</option>
-                    <option>SAVER'S - HENSON</option>
-                    <option>SAVER'S - ANGELES (PLARIDEL)</option>
-                    <option>SAVER'S - BALIBAGO</option>
-                    <option>SAVER'S - MABALACAT</option>
-                    <option>SAVER'S - DONBONI</option>
-                    <option>SAVERS SOUTH CALOOCAN</option>
-                    <option>RA MALABON</option>
-                    <option>MG COLON (Cebu)</option>
-                    <option>MG MANDAUE (Cebu)</option>
-                    <option>MG ANGELES (Pampanga)</option>
-                    <option>MG LAPU LAPU (Cebu)</option>
-                    <option>MG LUCENA</option>
-                    <option>MG MAMBALING (Cebu)</option>
-                    <option>MG MARKET MARKET (Taguig)</option>
-                    <option>MG TAGAYTAY</option>
-                    <option>MG TOLEDO (Cebu)</option>
-                    <option>MG CARCAR</option>
-                    <option>MG METRO GAISANO (AYALA)</option>
-                    <option>MG TACLOBAN</option>
-                    <option>MG METRO SANDS (DANAO)</option>
-                    <option>MG SUPER METRO COLON</option>
-                    <option>MG HINIGARAN (NEGROS OCCIDENTAL)</option>
-                    <option>MG ANGELES TWIN GROCER</option>
-                    <option>MG BAIS NEGROS ORIENTAL</option>
-                    <option>MG ALABANG</option>
-                    <option>GAISANO GRAND FIESTA MALL (GFM) (TABUNOK)</option>
-                    <option>GAISANO GRAND BACOLOD MALL GCB CITY OF BACOLOD</option>
-                    <option>GAISANO GRAND BACOLOD MAIN (BAC)</option>
-                    <option>GAISANO GRAND KABANKALAN (KB)</option>
-                    <option>GAISANO GRAND TOLEDO (TDO)</option>
-                    <option>GAISANO GRAND CARCAR (CAR)</option>
-                    <option>GAISANO GRAND MOALBOAL (MBL)</option>
-                    <option>GAISANO GRAND NABUNTURAN (NBT)</option>
-                    <option>GAISANO GRAND CALBAYOG (CBG)</option>
-                    <option>GAISANO GRAND BALAMBAN</option>
-                    <option>GAISANO GRAND PLAZA MACTAN</option>
-                    <option>GAISANO GRAND OSLOB</option>
-                    <option>GAISANO GRAND PANABO</option>
-                    <option>GAISANO GRAND ANTIQUE</option>
-                    <option>GAISANO GRAND KALIBO</option>
-                    <option>GAISANO GRAND CARMEN</option>
-                    <option>GAISANO GRAND POLOMOLOK</option>
-                    <option>GAISANO GRAND GINGOOG</option>
-                    <option>GAISANO CAGAYAN INC.GAISANO TUBOD</option>
-                    <option>GAISANO CAGAYAN.INC CAGAYAN DE ORO CITY (CT)</option>
-                    <option>GAISANO CAGAYAN INC. ILIGAN MALL</option>
-                    <option>GAISANO MALL BAJADA (DAVAO)GSC</option>
-                    <option>GAISANO GRAND MALL TIBONGCO DAVAO</option>
-                    <option>BODEGA GLASSWARE</option>
-                    <option>HONGKONG BAZAAR -HONGKONG FITNESS AND MUSICAL GOODS TRADING</option>
-                    <option>KENLYN GENERAL MERCHANDISE - GUMACA GITNA</option>
-                    <option>KENLYN GENERAL MERCHANDISE - GUMACA (828)</option>
-                    <option>LCC - TCL MERCHANDISE BROKERAGE INC. - LEGAZPI</option>
-                    <option>LCC - TCL MERCHANDISE BROKERAGE INC. - 21102 TCL CENTRAL TABACO WHSE 2</option>
-                    <option>LCC - TCL MERCHANDISE BROKERAGE INC POLANGUI</option>
-                    <option>RIEN N' RAINY DRY GOODS & MDSE.</option>
-                    <option>ME AND CITY BALAYAN</option>
-                    <option>ME AND CITY BAUAN BATANGAS</option>
-                    <option>ME AND CITY CALAPAN</option>
-                    <option>ME AND CITY ROSARIO BATANGAS</option>
-                    <option>TRADER'S CHOICE LEBERTAD</option>
-                    <option>MS.MANELYN VALIENTE</option>
-                    <option>GMALL GENSAN [DEPT.STORE]</option>
-                    <option>MIDDLE EAST TRADING - BURGOS 2</option>
-                    <option>MIDDLE EAST TRADING - HI-WAY NUEVA ECIJA</option>
-                    <option>MIDDLE EAST TRADING - CABANATUAN CITY</option>
-                    <option>MIDDLE EAST TRADING - NE PACIFIC</option>
-                    <option>MIDDLE EAST TRADING - NUEVA ECIJA TRADING CORP. (CEMP MIDDLE EAST TRADING CORP.)</option>
-                    <option>OCAMPOS-OCAMPOS PLARIDEL ST.</option>
-                    <option>OCAMPOS DINALUPIHAN</option>
-                    <option>PRICEWISE MARKETING CORP.</option>
-                </select>
-            </div>
-        </div>
-        
-        <div class="date-label-group">
-            <label><i class="bi bi-calendar-plus"></i> From Date</label>
-            <label><i class="bi bi-calendar-minus"></i> To Date</label>
-        </div>
-        <div style="display:flex;gap:10px;align-items:center;margin:10px 0;">
-            <input type="date" id="fromDate" style="flex:1">
-            <span style="color:var(--text-color);">→</span>
-            <input type="date" id="toDate" style="flex:1">
-        </div>
-        <textarea id="remarks" rows="2" placeholder="Remarks (optional)"></textarea>
-        
-        <label style="font-size:12px;color:var(--label-color);">DTR Pictures * (Select multiple images)</label>
-        <input type="file" id="imageFiles" accept="image/*" multiple>
-        <div id="previewContainer" class="preview-container"></div>
-        
-        <button id="saveBtn">Save to Database</button>
-    </div>
 
-    <!-- Submission View (Admin & Coordinator) -->
-    <div id="submissionView">
-        <!-- Admin Dealer Tabs -->
-        <div id="adminDealerTabs" class="admin-dealer-tabs hidden">
-            <button id="tabAham" class="active" onclick="switchAdminTab('AHAM')">AHAM</button>
-            <button id="tabFbc" onclick="switchAdminTab('FBC')">FBC</button>
-            <button id="tabAll" onclick="switchAdminTab('ALL')">All</button>
+        <!-- Add DTR Form -->
+        <div class="form-area">
+            <h4><i class="bi bi-plus-circle"></i> Add DTR Record</h4>
+            <div class="date-label-group">
+                <label><i class="bi bi-calendar-plus"></i> From Date</label>
+                <label><i class="bi bi-calendar-minus"></i> To Date</label>
+            </div>
+            <div style="display:flex;gap:10px;align-items:center;margin:10px 0;">
+                <input type="date" id="sFromDate" style="flex:1">
+                <span style="color:var(--text-color);">→</span>
+                <input type="date" id="sToDate" style="flex:1">
+            </div>
+            <textarea id="sRemarks" rows="2" placeholder="Remarks (optional)"></textarea>
+            <label style="font-size:12px;color:var(--label-color);">DTR Pictures * (Select multiple images)</label>
+            <input type="file" id="sImageFiles" accept="image/*" multiple>
+            <div id="sPreviewContainer" class="preview-container"></div>
+            <button id="sSaveBtn">Save to Database</button>
         </div>
-        
-        <div class="submission-summary">
-            <div class="summary-item">
-                <h3 id="totalEmployees">0</h3>
-                <p>Total Employees</p>
-            </div>
-            <div class="summary-item">
-                <h3 id="submittedCount">0</h3>
-                <p>Submitted</p>
-            </div>
-            <div class="summary-item">
-                <h3 id="pendingCount">0</h3>
-                <p>Pending</p>
-            </div>
-        </div>
-        
-        <!-- Live Filters -->
+
+        <!-- DTR History -->
+        <h5><i class="bi bi-clock-history"></i> My DTR History</h5>
         <div class="filter-bar">
             <div class="filter-group">
-                <label><i class="bi bi-search"></i> Search Employee (Live)</label>
-                <input type="text" id="searchEmployee" placeholder="Type to filter..." oninput="applySubmissionFilters()">
+                <label>Search</label>
+                <input type="text" id="sHistorySearch" placeholder="Search..." oninput="renderStafferHistory()">
             </div>
-            <div class="filter-group">
-                <label><i class="bi bi-calendar"></i> Cutoff Period</label>
-                <select id="filterCutoff" onchange="applySubmissionFilters()">
-                    <option value="all">All Cutoffs</option>
-                </select>
+            <button id="sRefreshHistory" class="btn-success" style="width:auto;padding:8px 16px;" onclick="loadStafferDTRHistory()"><i class="bi bi-arrow-repeat"></i> Refresh</button>
+        </div>
+        <div id="sHistoryGrid" class="grid"><div class="loading">No DTR history found.</div></div>
+    </div>
+
+    <!-- ADMIN & COORDINATOR VIEW -->
+    <div id="adminCoordinatorView" style="display:none;">
+        <!-- Tabs -->
+        <div class="section-tabs">
+            <button id="tabStaffers" class="active" onclick="switchAdminTab('staffers')">Staffers Management</button>
+            <button id="tabDTR" onclick="switchAdminTab('dtr')">DTR Submissions</button>
+        </div>
+
+        <!-- Staffers Management -->
+        <div id="staffersTab">
+            <div class="action-buttons">
+                <button id="addStafferBtn" class="btn-success" onclick="showAddStafferModal()"><i class="bi bi-plus-circle"></i> Add Staffer</button>
+                <button id="refreshStaffersBtn" onclick="loadStaffers()"><i class="bi bi-arrow-repeat"></i> Refresh</button>
             </div>
+            <div class="filter-bar">
+                <div class="filter-group"><label>Search Staffer</label><input type="text" id="stafferSearch" placeholder="Search by name or code..." oninput="renderStaffers()"></div>
+            </div>
+            <div id="staffersGrid" class="grid"><div class="loading">Loading staffers...</div></div>
         </div>
-        
-        <!-- Action Buttons - Batch Operations -->
-        <div class="action-buttons" id="actionButtons">
-            <button id="selectAllBtn" style="background:#28a745;" onclick="selectAllSubmissions()">
-                <i class="bi bi-check-all"></i> Select All
-            </button>
-            <button id="deselectAllBtn" style="background:#6c757d;" onclick="deselectAllSubmissions()">
-                <i class="bi bi-x-circle"></i> Deselect All
-            </button>
-            <button id="deleteSelectedBtn" style="background:#dc3545;" onclick="deleteSelectedSubmissions()">
-                <i class="bi bi-trash"></i> Delete Selected (<span id="deleteCount">0</span>)
-            </button>
-            <button id="printSelectedBtn" style="background:#17a2b8;" onclick="printSelectedSubmissions()">
-                <i class="bi bi-printer"></i> Print Selected (<span id="printCount">0</span>)
-            </button>
-            <button id="downloadSelectedBtn" style="background:#8b5cf6;" onclick="downloadSelectedSubmissions()">
-                <i class="bi bi-download"></i> Download ZIP (<span id="downloadCount">0</span>)
-            </button>
-            <span class="selected-count" id="selectedInfo">0 selected</span>
+
+        <!-- DTR Submissions -->
+        <div id="dtrTab" style="display:none;">
+            <div class="submission-summary">
+                <div class="summary-item"><h3 id="totalEmployees">0</h3><p>Total Employees</p></div>
+                <div class="summary-item"><h3 id="submittedCount">0</h3><p>Submitted</p></div>
+                <div class="summary-item"><h3 id="pendingCount">0</h3><p>Pending</p></div>
+            </div>
+            
+            <div class="filter-bar">
+                <div class="filter-group"><label>Search Employee (Live)</label><input type="text" id="searchEmployee" placeholder="Type to filter..." oninput="applySubmissionFilters()"></div>
+                <div class="filter-group"><label>Cutoff Period</label><select id="filterCutoff" onchange="applySubmissionFilters()"><option value="all">All Cutoffs</option></select></div>
+            </div>
+            
+            <div class="action-buttons">
+                <button id="selectAllBtn" style="background:#28a745;" onclick="selectAllSubmissions()"><i class="bi bi-check-all"></i> Select All</button>
+                <button id="deselectAllBtn" style="background:#6c757d;" onclick="deselectAllSubmissions()"><i class="bi bi-x-circle"></i> Deselect All</button>
+                <button id="deleteSelectedBtn" style="background:#dc3545;" onclick="deleteSelectedSubmissions()"><i class="bi bi-trash"></i> Delete (<span id="deleteCount">0</span>)</button>
+                <button id="printSelectedBtn" style="background:#17a2b8;" onclick="printSelectedSubmissions()"><i class="bi bi-printer"></i> Print (<span id="printCount">0</span>)</button>
+                <button id="downloadSelectedBtn" style="background:#8b5cf6;" onclick="downloadSelectedSubmissions()"><i class="bi bi-download"></i> ZIP (<span id="downloadCount">0</span>)</button>
+                <span class="selected-count" id="selectedInfo">0 selected</span>
+            </div>
+            
+            <div id="submissionGrid" class="grid"><div class="loading">Loading submissions...</div></div>
         </div>
-        
-        <div id="submissionGrid" class="grid"><div class="loading">Loading submissions...</div></div>
     </div>
 </div>
 <button class="mode-toggle" id="modeToggle"><i class="bi bi-moon-stars"></i></button>
 </div>
 
+<!-- Add Staffer Modal -->
+<div class="modal fade" id="addStafferModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content" style="background:var(--card-bg);color:var(--text-color);">
+            <div class="modal-header">
+                <h5 class="modal-title">Add Staffer</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="three-columns">
+                    <div><label style="font-size:12px;">Staff Code *</label><input type="text" id="fStaffCode" placeholder="EMP001"></div>
+                    <div><label style="font-size:12px;">Store Code</label><input type="text" id="fStoreCode" placeholder="ST001"></div>
+                    <div><label style="font-size:12px;">Store Name *</label><input type="text" id="fStoreName" placeholder="Store Name"></div>
+                </div>
+                <div class="three-columns">
+                    <div><label style="font-size:12px;">Plotted Disers</label><input type="text" id="fPlottedDisers" placeholder="AHAM/FBC"></div>
+                    <div><label style="font-size:12px;">Name *</label><input type="text" id="fName" placeholder="Full Name"></div>
+                    <div><label style="font-size:12px;">Region</label><input type="text" id="fRegion" placeholder="NCR"></div>
+                </div>
+                <div class="three-columns">
+                    <div><label style="font-size:12px;">Rate</label><input type="number" id="fRate" placeholder="500.00" step="0.01"></div>
+                    <div><label style="font-size:12px;">Date Hired Philman</label><input type="date" id="fDateHired"></div>
+                    <div><label style="font-size:12px;">Date Started Hanabishi</label><input type="date" id="fDateStarted"></div>
+                </div>
+                <div class="three-columns">
+                    <div><label style="font-size:12px;">Contact Number</label><input type="text" id="fContact" placeholder="09123456789"></div>
+                    <div><label style="font-size:12px;">Day Off</label><input type="text" id="fDayOff" placeholder="Sunday"></div>
+                    <div><label style="font-size:12px;">Schedule</label><input type="text" id="fSchedule" placeholder="8:00 AM - 5:00 PM"></div>
+                </div>
+                <div><label style="font-size:12px;">Remarks</label><textarea id="fRemarks" rows="2"></textarea></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button class="btn btn-success" onclick="saveStaffer()">Save Staffer</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
     const SUPABASE_URL = "https://oioamrxxcgwejaaglvbg.supabase.co";
     const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9pb2Ftcnh4Y2d3ZWphYWdsdmJnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE0NjUxNzYsImV4cCI6MjA5NzA0MTE3Nn0.NrprjEB1cNHCqgYCerhcX3_79UvEBjhmu-ueGl1dlew";
     
-    let currentUser = null, userRole = null, userAssignment = null;
-    let allEmployees = [];
-    let adminTab = 'ALL';
-    let selectedSubmissions = new Set();
-    let currentImages = [];
-    let adminDealerType = 'AHAM';
-    let viewerImages = [];
-    let viewerIndex = 0;
-    let viewerBatchId = null;
+    let currentUser = null, userRole = null, userAssignment = null, currentStafferId = null;
+    let allStaffers = [], allEmployees = [], selectedSubmissions = new Set();
+    let currentImages = [], adminTab = 'staffers';
+    let viewerImages = [], viewerIndex = 0;
     
     const credentials = {
-        admin: 'admin123',
-        coordinator_aham: 'coordaham123',
-        coordinator_fbc: 'coordfbc123',
-        staffer_aham: 'aham123',
-        staffer_fbc: 'fbc123'
+        admin: {username: 'admin', password: 'admin123', role: 'admin'},
+        coordinator_aham: {username: 'coordinator_aham', password: 'coordaham123', role: 'coordinator_aham'},
+        coordinator_fbc: {username: 'coordinator_fbc', password: 'coordfbc123', role: 'coordinator_fbc'},
+        staffer: {username: 'john.santos', password: 'staffer123', role: 'staffer'}
     };
     
     async function showMessage(title, message, type) {
@@ -901,7 +663,6 @@
         if (!images || images.length === 0) return;
         viewerImages = images;
         viewerIndex = 0;
-        viewerBatchId = batchId;
         const viewer = document.getElementById('imageViewer');
         const img = document.getElementById('viewerImage');
         const counter = document.getElementById('imageCounter');
@@ -957,56 +718,46 @@
             document.getElementById('modeToggle').innerHTML = '<i class="bi bi-moon-stars"></i>';
         }
     }
-    
-    function selectDealerType(type) {
-        adminDealerType = type;
-        document.getElementById('btnAham').classList.remove('active');
-        document.getElementById('btnFbc').classList.remove('active');
-        
-        if (type === 'AHAM') {
-            document.getElementById('btnAham').classList.add('active');
-            document.getElementById('ahamFields').style.display = 'block';
-            document.getElementById('fbcFields').style.display = 'none';
-            document.getElementById('outletContainer').style.display = 'block';
-            document.getElementById('dealerContainer').style.display = 'block';
-        } else {
-            document.getElementById('btnFbc').classList.add('active');
-            document.getElementById('ahamFields').style.display = 'none';
-            document.getElementById('fbcFields').style.display = 'block';
-            document.getElementById('outletContainer').style.display = 'none';
-            document.getElementById('dealerContainer').style.display = 'none';
-        }
-    }
-    
-    function switchAdminTab(tab) {
-        adminTab = tab;
-        document.getElementById('tabAham').classList.remove('active');
-        document.getElementById('tabFbc').classList.remove('active');
-        document.getElementById('tabAll').classList.remove('active');
-        if (tab === 'AHAM') document.getElementById('tabAham').classList.add('active');
-        else if (tab === 'FBC') document.getElementById('tabFbc').classList.add('active');
-        else document.getElementById('tabAll').classList.add('active');
-        loadSubmissionSummary();
-    }
-    
+    document.getElementById('modeToggle').addEventListener('click', toggleDarkMode);
+    checkDarkMode();
+
+    // ============ LOGIN ============
     function login() {
         const role = document.getElementById('roleSelect').value;
-        const pass = document.getElementById('passwordInput').value;
-        if (credentials[role] === pass) {
-            currentUser = role;
+        const username = document.getElementById('usernameInput').value.trim();
+        const password = document.getElementById('passwordInput').value;
+        
+        // Check credentials
+        if (role === 'admin' && username === 'admin' && password === 'admin123') {
+            currentUser = 'admin'; userRole = 'admin'; userAssignment = null;
+        } else if (role === 'coordinator_aham' && username === 'coordinator_aham' && password === 'coordaham123') {
+            currentUser = 'coordinator_aham'; userRole = 'coordinator'; userAssignment = 'AHAM';
+        } else if (role === 'coordinator_fbc' && username === 'coordinator_fbc' && password === 'coordfbc123') {
+            currentUser = 'coordinator_fbc'; userRole = 'coordinator'; userAssignment = 'FBC';
+        } else if (role === 'staffer') {
+            // Check staffer credentials
+            const stafferCred = Object.values(credentials).find(c => c.role === 'staffer' && c.username === username && c.password === password);
+            if (stafferCred) {
+                currentUser = username; userRole = 'staffer'; userAssignment = null;
+                // Find staffer ID
+                const staffer = allStaffers.find(s => s.name === username.replace('.', ' '));
+                if (staffer) currentStafferId = staffer.id;
+            }
+        }
+        
+        if (currentUser) {
             localStorage.setItem('dtrUser', currentUser);
-            if (role === 'admin') { userRole = 'admin'; userAssignment = null; }
-            else if (role === 'coordinator_aham') { userRole = 'coordinator'; userAssignment = 'AHAM'; }
-            else if (role === 'coordinator_fbc') { userRole = 'coordinator'; userAssignment = 'FBC'; }
-            else if (role === 'staffer_aham') { userRole = 'staffer'; userAssignment = 'AHAM'; }
-            else if (role === 'staffer_fbc') { userRole = 'staffer'; userAssignment = 'FBC'; }
+            localStorage.setItem('dtrRole', userRole);
+            localStorage.setItem('dtrAssignment', userAssignment || '');
             showApp();
-        } else showMessage('Login Failed', 'Invalid password', 'error');
+        } else {
+            showMessage('Login Failed', 'Invalid username or password', 'error');
+        }
     }
     
     function logout() {
         Swal.fire({ title: 'Logout', text: 'Are you sure?', icon: 'question', showCancelButton: true, confirmButtonColor: '#dc3545' })
-            .then(r => { if (r.isConfirmed) { localStorage.removeItem('dtrUser'); location.reload(); } });
+            .then(r => { if (r.isConfirmed) { localStorage.clear(); location.reload(); } });
     }
     
     function showApp() {
@@ -1016,77 +767,193 @@
         let displayName = '', assignText = '';
         if (userRole === 'admin') { displayName = 'Admin'; assignText = 'Full Access'; }
         else if (userRole === 'coordinator') { displayName = 'Coordinator'; assignText = userAssignment; }
-        else { displayName = 'Staffer'; assignText = userAssignment; }
+        else { displayName = 'Staffer'; assignText = currentUser || ''; }
         
         document.getElementById('userRoleDisplay').innerText = displayName;
         document.getElementById('assignBadge').innerText = assignText;
         
-        const dealerSelect = document.getElementById('dealer');
-        const outletSelect = document.getElementById('outlet');
-        const adminSelector = document.getElementById('adminSelector');
-        const adminTabs = document.getElementById('adminDealerTabs');
-        const stafferForm = document.getElementById('stafferForm');
-        const actionButtons = document.getElementById('actionButtons');
-        const storeNameSelect = document.getElementById('storeName');
-        
-        if (userRole === 'admin') {
-            adminSelector.classList.remove('hidden');
-            selectDealerType('AHAM');
-            dealerSelect.disabled = false;
-            outletSelect.disabled = false;
-            storeNameSelect.disabled = false;
-            stafferForm.style.display = 'block';
-            adminTabs.classList.remove('hidden');
-            actionButtons.style.display = 'flex';
-        } else if (userRole === 'staffer') {
-            adminSelector.classList.add('hidden');
-            adminTabs.classList.add('hidden');
-            actionButtons.style.display = 'none';
-            
-            if (userAssignment === 'AHAM') {
-                document.getElementById('ahamFields').style.display = 'block';
-                document.getElementById('fbcFields').style.display = 'none';
-                dealerSelect.disabled = false;
-                outletSelect.disabled = false;
-                document.getElementById('outletContainer').style.display = 'block';
-                document.getElementById('dealerContainer').style.display = 'block';
-            } else if (userAssignment === 'FBC') {
-                document.getElementById('ahamFields').style.display = 'none';
-                document.getElementById('fbcFields').style.display = 'block';
-                document.getElementById('outletContainer').style.display = 'none';
-                document.getElementById('dealerContainer').style.display = 'none';
-                storeNameSelect.disabled = false;
-            }
-            stafferForm.style.display = 'block';
-        } else if (userRole === 'coordinator') {
-            adminSelector.classList.add('hidden');
-            adminTabs.classList.add('hidden');
-            actionButtons.style.display = 'flex';
-            stafferForm.style.display = 'none';
+        if (userRole === 'staffer') {
+            document.getElementById('stafferView').style.display = 'block';
+            document.getElementById('adminCoordinatorView').style.display = 'none';
+            loadStafferInfo();
+            loadStafferDTRHistory();
+        } else {
+            document.getElementById('stafferView').style.display = 'none';
+            document.getElementById('adminCoordinatorView').style.display = 'block';
+            loadStaffers();
+            loadSubmissionSummary();
         }
         
-        checkDarkMode();
-        loadSubmissionSummary();
+        document.getElementById('status').innerHTML = '✅ Connected';
+        document.getElementById('status').className = 'status success';
     }
     
     function checkSession() {
-        const saved = localStorage.getItem('dtrUser');
-        if (saved) {
-            currentUser = saved;
-            if (currentUser === 'admin') { userRole = 'admin'; }
-            else if (currentUser === 'coordinator_aham') { userRole = 'coordinator'; userAssignment = 'AHAM'; }
-            else if (currentUser === 'coordinator_fbc') { userRole = 'coordinator'; userAssignment = 'FBC'; }
-            else if (currentUser === 'staffer_aham') { userRole = 'staffer'; userAssignment = 'AHAM'; }
-            else if (currentUser === 'staffer_fbc') { userRole = 'staffer'; userAssignment = 'FBC'; }
+        const savedUser = localStorage.getItem('dtrUser');
+        const savedRole = localStorage.getItem('dtrRole');
+        const savedAssignment = localStorage.getItem('dtrAssignment');
+        if (savedUser && savedRole) {
+            currentUser = savedUser;
+            userRole = savedRole;
+            userAssignment = savedAssignment || null;
             showApp();
         }
     }
     
-    document.getElementById('modeToggle').addEventListener('click', toggleDarkMode);
+    // ============ STAFFER FUNCTIONS ============
+    async function loadStafferInfo() {
+        try {
+            const res = await fetch(`${SUPABASE_URL}/rest/v1/staffers?select=*&name=eq.${currentUser.replace('.', ' ')}`, {
+                headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+            });
+            const data = await res.json();
+            if (data && data.length > 0) {
+                const s = data[0];
+                currentStafferId = s.id;
+                document.getElementById('sName').innerText = s.name || '-';
+                document.getElementById('sCode').innerText = s.staff_code || '-';
+                document.getElementById('sStore').innerText = s.store_name || '-';
+                document.getElementById('sRegion').innerText = s.region || '-';
+                document.getElementById('sRate').innerText = s.rate ? '₱' + Number(s.rate).toFixed(2) : '-';
+                document.getElementById('sContact').innerText = s.contact_number || '-';
+                document.getElementById('sSchedule').innerText = s.schedule || '-';
+                document.getElementById('sDayOff').innerText = s.day_off || '-';
+            }
+        } catch(e) { console.error(e); }
+    }
     
-    document.getElementById('imageFiles').addEventListener('change', function(e) {
+    // Staffer DTR History
+    async function loadStafferDTRHistory() {
+        try {
+            const res = await fetch(`${SUPABASE_URL}/rest/v1/dtr_records?select=*&staffer_id=eq.${currentStafferId}&order=created_at.desc`, {
+                headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+            });
+            const data = await res.json();
+            allEmployees = data || [];
+            renderStafferHistory();
+        } catch(e) { console.error(e); }
+    }
+    
+    function renderStafferHistory() {
+        const search = document.getElementById('sHistorySearch').value.toLowerCase();
+        let filtered = allEmployees.filter(r => {
+            const searchable = (r.cutoff_range || '') + (r.remarks || '');
+            return searchable.toLowerCase().includes(search);
+        });
+        
+        const grid = document.getElementById('sHistoryGrid');
+        if (filtered.length === 0) {
+            grid.innerHTML = '<div class="loading">No DTR history found.</div>';
+            return;
+        }
+        
+        // Group by batch_id
+        const grouped = {};
+        filtered.forEach(r => {
+            const key = r.batch_id || r.id;
+            if (!grouped[key]) grouped[key] = { ...r, images: [] };
+            grouped[key].images.push(r.image_data);
+        });
+        
+        grid.innerHTML = Object.values(grouped).map(g => `
+            <div class="card">
+                <img src="${g.images[0]}" class="card-img" onclick="openImageViewer(${JSON.stringify(g.images)}, '${g.batch_id}')">
+                <div class="card-body">
+                    <div class="date">📅 ${g.cutoff_range}</div>
+                    ${g.remarks ? `<div class="date">💬 ${escapeHtml(g.remarks)}</div>` : ''}
+                    <div class="batch-badge">📸 ${g.images.length} images</div>
+                    <button class="btn btn-warning btn-sm" style="margin-top:8px;width:100%;" onclick="editStafferDTR('${g.batch_id}')"><i class="bi bi-pencil"></i> Edit</button>
+                </div>
+            </div>
+        `).join('');
+    }
+    
+    function editStafferDTR(batchId) {
+        showMessage('Edit DTR', 'Select new images to replace the current ones. Click Save after selecting.', 'info');
+        document.getElementById('sSaveBtn').dataset.editId = batchId;
+        document.getElementById('sSaveBtn').innerHTML = '<i class="bi bi-pencil"></i> Update DTR';
+        document.getElementById('sSaveBtn').style.background = '#f59e0b';
+    }
+    
+    async function saveStafferDTR() {
+        const fromDate = document.getElementById('sFromDate').value;
+        const toDate = document.getElementById('sToDate').value;
+        const remarks = document.getElementById('sRemarks').value;
+        const editId = document.getElementById('sSaveBtn').dataset.editId;
+        
+        if (!fromDate || !toDate) {
+            showMessage('Error', 'Please select cutoff dates', 'error');
+            return;
+        }
+        if (currentImages.length === 0 && !editId) {
+            showMessage('Error', 'Please select at least one image', 'error');
+            return;
+        }
+        
+        const cutoffRange = `${fromDate} to ${toDate}`;
+        const batchId = editId || Date.now().toString();
+        const saveBtn = document.getElementById('sSaveBtn');
+        const originalText = saveBtn.innerHTML;
+        saveBtn.innerHTML = 'Saving...';
+        saveBtn.disabled = true;
+        
+        try {
+            // If editing, delete old records first
+            if (editId) {
+                await fetch(`${SUPABASE_URL}/rest/v1/dtr_records?batch_id=eq.${editId}`, {
+                    method: 'DELETE',
+                    headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+                });
+            }
+            
+            // Insert new records
+            for (let img of currentImages) {
+                const imgData = await readFileAsBase64(img);
+                await fetch(`${SUPABASE_URL}/rest/v1/dtr_records`, {
+                    method: 'POST',
+                    headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        staffer_id: currentStafferId,
+                        employee_name: document.getElementById('sName').innerText,
+                        cutoff_from: fromDate,
+                        cutoff_to: toDate,
+                        cutoff_range: cutoffRange,
+                        remarks: remarks || '',
+                        image_data: imgData,
+                        batch_id: batchId
+                    })
+                });
+            }
+            
+            await showMessage('Success!', currentImages.length > 0 ? `${currentImages.length} image(s) saved!` : 'Record updated!', 'success');
+            
+            // Reset form
+            document.getElementById('sRemarks').value = '';
+            document.getElementById('sImageFiles').value = '';
+            document.getElementById('sPreviewContainer').innerHTML = '';
+            currentImages = [];
+            document.getElementById('sSaveBtn').innerHTML = '<i class="bi bi-save"></i> Save DTR';
+            document.getElementById('sSaveBtn').style.background = '#4361ee';
+            delete document.getElementById('sSaveBtn').dataset.editId;
+            
+            const today = new Date();
+            document.getElementById('sFromDate').value = new Date(today.getFullYear(), today.getMonth(), 1).toISOString().split('T')[0];
+            document.getElementById('sToDate').value = new Date(today.getFullYear(), today.getMonth() + 1, 0).toISOString().split('T')[0];
+            
+            loadStafferDTRHistory();
+        } catch(e) {
+            console.error(e);
+            showMessage('Error', e.message, 'error');
+        } finally {
+            saveBtn.innerHTML = originalText;
+            saveBtn.disabled = false;
+        }
+    }
+    
+    // Staffer image preview
+    document.getElementById('sImageFiles').addEventListener('change', function(e) {
         currentImages = Array.from(e.target.files);
-        const container = document.getElementById('previewContainer');
+        const container = document.getElementById('sPreviewContainer');
         container.innerHTML = '';
         currentImages.forEach((file, idx) => {
             const reader = new FileReader();
@@ -1100,205 +967,181 @@
         });
     });
     
-    document.getElementById('previewContainer').addEventListener('click', (e) => {
+    document.getElementById('sPreviewContainer').addEventListener('click', (e) => {
         if (e.target.classList.contains('remove-img')) {
             const idx = parseInt(e.target.dataset.idx);
             currentImages.splice(idx, 1);
             const dt = new DataTransfer();
             currentImages.forEach(f => dt.items.add(f));
-            document.getElementById('imageFiles').files = dt.files;
-            document.getElementById('imageFiles').dispatchEvent(new Event('change'));
+            document.getElementById('sImageFiles').files = dt.files;
+            document.getElementById('sImageFiles').dispatchEvent(new Event('change'));
         }
     });
     
-    function readFileAsBase64(file) {
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onload = () => resolve(reader.result);
-            reader.onerror = reject;
-            reader.readAsDataURL(file);
-        });
+    document.getElementById('sSaveBtn').addEventListener('click', saveStafferDTR);
+    document.getElementById('sRefreshHistory').addEventListener('click', loadStafferDTRHistory);
+    document.getElementById('sHistorySearch').addEventListener('input', renderStafferHistory);
+    
+    // ============ ADMIN/COORDINATOR FUNCTIONS ============
+    function switchAdminTab(tab) {
+        adminTab = tab;
+        document.getElementById('tabStaffers').classList.toggle('active', tab === 'staffers');
+        document.getElementById('tabDTR').classList.toggle('active', tab === 'dtr');
+        document.getElementById('staffersTab').style.display = tab === 'staffers' ? 'block' : 'none';
+        document.getElementById('dtrTab').style.display = tab === 'dtr' ? 'block' : 'none';
+        if (tab === 'staffers') loadStaffers();
+        else loadSubmissionSummary();
     }
     
-    async function saveRecord() {
-        const name = document.getElementById('empName').value.trim();
-        let outlet = document.getElementById('outlet').value;
-        let dealer = document.getElementById('dealer').value;
-        let storeName = document.getElementById('storeName').value;
-        const fromDate = document.getElementById('fromDate').value;
-        const toDate = document.getElementById('toDate').value;
-        const remarks = document.getElementById('remarks').value;
+    // Load Staffers
+    async function loadStaffers() {
+        try {
+            const res = await fetch(`${SUPABASE_URL}/rest/v1/staffers?select=*&order=name.asc`, {
+                headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+            });
+            const data = await res.json();
+            allStaffers = data || [];
+            renderStaffers();
+        } catch(e) { console.error(e); }
+    }
+    
+    function renderStaffers() {
+        const search = document.getElementById('stafferSearch').value.toLowerCase();
+        let filtered = allStaffers.filter(s => 
+            (s.name || '').toLowerCase().includes(search) || 
+            (s.staff_code || '').toLowerCase().includes(search) ||
+            (s.store_name || '').toLowerCase().includes(search)
+        );
         
-        if (userRole === 'admin') {
-            if (adminDealerType === 'AHAM') {
-                if (!dealer || dealer === '') dealer = 'AHAM OFFICE';
-                if (!outlet || outlet === '') {
-                    showMessage('Error', 'Please select an outlet for AHAM', 'error');
-                    return;
-                }
-                storeName = '';
-            } else {
-                dealer = 'FBC';
-                outlet = 'N/A';
-                if (!storeName) {
-                    showMessage('Error', 'Please select a store name for FBC', 'error');
-                    return;
-                }
-            }
-        } else if (userRole === 'staffer') {
-            if (userAssignment === 'AHAM') {
-                if (!dealer || dealer === '') {
-                    showMessage('Error', 'Please select a dealer', 'error');
-                    return;
-                }
-                if (!outlet || outlet === '') {
-                    showMessage('Error', 'Please select an outlet', 'error');
-                    return;
-                }
-                storeName = '';
-            } else if (userAssignment === 'FBC') {
-                dealer = 'FBC';
-                outlet = 'N/A';
-                if (!storeName) {
-                    showMessage('Error', 'Please select a store name', 'error');
-                    return;
-                }
-            }
-        }
-        
-        if (!name) {
-            showMessage('Error', 'Please enter employee name', 'error');
-            return;
-        }
-        if (!dealer || dealer === '') {
-            showMessage('Error', 'Please select a dealer', 'error');
-            return;
-        }
-        if (!fromDate || !toDate) {
-            showMessage('Error', 'Please select cutoff dates', 'error');
-            return;
-        }
-        if (currentImages.length === 0) {
-            showMessage('Error', 'Please select at least one image', 'error');
+        const grid = document.getElementById('staffersGrid');
+        if (filtered.length === 0) {
+            grid.innerHTML = '<div class="loading">No staffers found. Add your first staffer!</div>';
             return;
         }
         
-        const cutoffRange = `${fromDate} to ${toDate}`;
-        const batchId = Date.now().toString();
-        let successCount = 0;
+        grid.innerHTML = filtered.map(s => `
+            <div class="card">
+                <div class="card-body">
+                    <div class="name">👤 ${escapeHtml(s.name)}</div>
+                    <div class="outlet-text">🏢 ${escapeHtml(s.store_name || 'N/A')}</div>
+                    <div class="dealer-text">📋 ${escapeHtml(s.plotted_disers || 'N/A')}</div>
+                    <div class="date">🔑 ${escapeHtml(s.staff_code || 'N/A')}</div>
+                    <div class="date">📍 ${escapeHtml(s.region || 'N/A')}</div>
+                    <div class="date">📞 ${escapeHtml(s.contact_number || 'N/A')}</div>
+                    <div class="date">📅 Hired: ${s.date_hired_philman || 'N/A'}</div>
+                    <button class="btn btn-danger btn-sm" style="margin-top:8px;width:100%;" onclick="deleteStaffer(${s.id})">Delete</button>
+                </div>
+            </div>
+        `).join('');
+    }
+    
+    // Save Staffer
+    async function saveStaffer() {
+        const data = {
+            staff_code: document.getElementById('fStaffCode').value,
+            store_code: document.getElementById('fStoreCode').value,
+            store_name: document.getElementById('fStoreName').value,
+            plotted_disers: document.getElementById('fPlottedDisers').value,
+            name: document.getElementById('fName').value,
+            region: document.getElementById('fRegion').value,
+            rate: parseFloat(document.getElementById('fRate').value) || null,
+            date_hired_philman: document.getElementById('fDateHired').value || null,
+            date_started_hanabishi: document.getElementById('fDateStarted').value || null,
+            contact_number: document.getElementById('fContact').value,
+            day_off: document.getElementById('fDayOff').value,
+            schedule: document.getElementById('fSchedule').value,
+            remarks: document.getElementById('fRemarks').value
+        };
         
-        const saveBtn = document.getElementById('saveBtn');
-        const originalText = saveBtn.innerHTML;
-        saveBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Saving...';
-        saveBtn.disabled = true;
+        if (!data.staff_code || !data.store_name || !data.name) {
+            showMessage('Error', 'Please fill in Staff Code, Store Name, and Name', 'error');
+            return;
+        }
         
         try {
-            for (let i = 0; i < currentImages.length; i++) {
-                const img = currentImages[i];
-                const imgData = await readFileAsBase64(img);
-                
-                const recordData = {
-                    employee_name: name,
-                    outlet: outlet,
-                    dealer: dealer,
-                    store_name: storeName || '',
-                    cutoff_from: fromDate,
-                    cutoff_to: toDate,
-                    cutoff_range: cutoffRange,
-                    remarks: remarks || '',
-                    image_data: imgData,
-                    batch_id: batchId,
-                    created_at: new Date().toISOString()
-                };
-                
-                const response = await fetch(`${SUPABASE_URL}/rest/v1/dtr_records`, {
-                    method: 'POST',
-                    headers: {
-                        'apikey': SUPABASE_KEY,
-                        'Authorization': `Bearer ${SUPABASE_KEY}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(recordData)
-                });
-                
-                if (response.ok) {
-                    successCount++;
-                } else {
-                    const errorText = await response.text();
-                    console.error('Server error:', errorText);
-                    throw new Error(errorText);
-                }
-            }
+            const res = await fetch(`${SUPABASE_URL}/rest/v1/staffers`, {
+                method: 'POST',
+                headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            if (!res.ok) throw new Error(await res.text());
             
-            if (successCount > 0) {
-                await showMessage('Success!', `${successCount} image(s) saved successfully!`, 'success');
-                
-                document.getElementById('empName').value = '';
-                document.getElementById('remarks').value = '';
-                document.getElementById('imageFiles').value = '';
-                document.getElementById('previewContainer').innerHTML = '';
-                document.getElementById('outlet').value = '';
-                document.getElementById('storeName').value = '';
-                if (userRole !== 'staffer' || userAssignment !== 'FBC') {
-                    document.getElementById('dealer').value = '';
-                }
-                currentImages = [];
-                
-                const today = new Date();
-                document.getElementById('fromDate').value = new Date(today.getFullYear(), today.getMonth(), 1).toISOString().split('T')[0];
-                document.getElementById('toDate').value = new Date(today.getFullYear(), today.getMonth() + 1, 0).toISOString().split('T')[0];
-                
-                loadSubmissionSummary();
-            }
+            // Create user account for staffer
+            const username = data.name.toLowerCase().replace(/\s/g, '.');
+            await fetch(`${SUPABASE_URL}/rest/v1/users`, {
+                method: 'POST',
+                headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    username: username,
+                    password: 'staffer123',
+                    role: 'staffer',
+                    staffer_id: (await res.json()).id
+                })
+            });
+            
+            await showMessage('Success', 'Staffer added! Username: ' + username + ', Password: staffer123', 'success');
+            document.querySelector('#addStafferModal .btn-close').click();
+            loadStaffers();
         } catch(e) {
-            console.error('Save error:', e);
             showMessage('Error', e.message, 'error');
-        } finally {
-            saveBtn.innerHTML = originalText;
-            saveBtn.disabled = false;
         }
     }
     
-    // ============ SUBMISSION SUMMARY (Admin & Coordinator) ============
+    async function deleteStaffer(id) {
+        const result = await Swal.fire({ title: 'Delete Staffer?', text: 'This will also delete all their DTR records!', icon: 'warning', showCancelButton: true, confirmButtonColor: '#dc3545' });
+        if (result.isConfirmed) {
+            try {
+                await fetch(`${SUPABASE_URL}/rest/v1/staffers?id=eq.${id}`, {
+                    method: 'DELETE',
+                    headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+                });
+                loadStaffers();
+                showMessage('Deleted', 'Staffer deleted', 'success');
+            } catch(e) { showMessage('Error', e.message, 'error'); }
+        }
+    }
+    
+    // Show Add Staffer Modal
+    function showAddStafferModal() {
+        document.getElementById('fStaffCode').value = '';
+        document.getElementById('fStoreCode').value = '';
+        document.getElementById('fStoreName').value = '';
+        document.getElementById('fPlottedDisers').value = '';
+        document.getElementById('fName').value = '';
+        document.getElementById('fRegion').value = '';
+        document.getElementById('fRate').value = '';
+        document.getElementById('fDateHired').value = '';
+        document.getElementById('fDateStarted').value = '';
+        document.getElementById('fContact').value = '';
+        document.getElementById('fDayOff').value = '';
+        document.getElementById('fSchedule').value = '';
+        document.getElementById('fRemarks').value = '';
+        const modal = new bootstrap.Modal(document.getElementById('addStafferModal'));
+        modal.show();
+    }
+    
+    // ============ SUBMISSION SUMMARY ============
     async function loadSubmissionSummary() {
         try {
-            document.getElementById('status').innerHTML = '🔄 Loading submissions...';
-            document.getElementById('status').className = 'status info';
-            
             const res = await fetch(`${SUPABASE_URL}/rest/v1/dtr_records?select=*&order=created_at.desc`, {
                 headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
             });
-            
-            if (!res.ok) throw new Error('Failed to fetch data');
-            
             let data = await res.json();
             
-            if (userRole === 'admin') {
-                if (adminTab === 'AHAM') {
-                    data = data.filter(r => r.dealer === 'AHAM OFFICE' || r.dealer?.includes('AHAM'));
-                } else if (adminTab === 'FBC') {
-                    data = data.filter(r => r.dealer === 'FBC');
-                }
-            } else if (userRole === 'coordinator') {
-                if (userAssignment === 'AHAM') {
-                    data = data.filter(r => r.dealer === 'AHAM OFFICE' || r.dealer?.includes('AHAM'));
-                } else if (userAssignment === 'FBC') {
-                    data = data.filter(r => r.dealer === 'FBC');
-                }
+            if (userRole === 'coordinator' && userAssignment === 'AHAM') {
+                data = data.filter(r => r.dealer === 'AHAM OFFICE' || r.dealer?.includes('AHAM'));
+            } else if (userRole === 'coordinator' && userAssignment === 'FBC') {
+                data = data.filter(r => r.dealer === 'FBC');
             }
             
             const employeeMap = {};
             const cutoffSet = new Set();
-            
             data.forEach(r => {
                 const empKey = r.employee_name;
                 const cutoffKey = r.cutoff_range;
-                
                 if (cutoffKey) cutoffSet.add(cutoffKey);
-                
                 if (!employeeMap[empKey]) {
                     employeeMap[empKey] = {
-                        id: r.id,
                         batch_id: r.batch_id || r.id,
                         name: r.employee_name,
                         cutoff: cutoffKey || 'N/A',
@@ -1317,59 +1160,38 @@
             allEmployees = Object.values(employeeMap);
             
             const cutoffSelect = document.getElementById('filterCutoff');
-            if (cutoffSelect) {
-                cutoffSelect.innerHTML = '<option value="all">All Cutoffs</option>';
-                const sortedCutoffs = Array.from(cutoffSet).sort();
-                sortedCutoffs.forEach(c => {
-                    const opt = document.createElement('option');
-                    opt.value = c;
-                    opt.textContent = c;
-                    cutoffSelect.appendChild(opt);
-                });
-            }
+            cutoffSelect.innerHTML = '<option value="all">All Cutoffs</option>';
+            Array.from(cutoffSet).sort().forEach(c => {
+                const opt = document.createElement('option');
+                opt.value = c; opt.textContent = c;
+                cutoffSelect.appendChild(opt);
+            });
             
             document.getElementById('totalEmployees').textContent = allEmployees.length;
             document.getElementById('submittedCount').textContent = allEmployees.length;
-            
             selectedSubmissions.clear();
             applySubmissionFilters();
-            
-            document.getElementById('status').innerHTML = '✅ Connected';
-            document.getElementById('status').className = 'status success';
-            
-        } catch(e) {
-            console.error('Error loading submissions:', e);
-            document.getElementById('status').innerHTML = '❌ Error loading data';
-            document.getElementById('status').className = 'status error';
-            document.getElementById('submissionGrid').innerHTML = '<div class="loading">Error loading submissions. Please refresh.</div>';
-        }
+        } catch(e) { console.error(e); }
     }
     
     function applySubmissionFilters() {
         const searchTerm = document.getElementById('searchEmployee')?.value.toLowerCase() || '';
         const cutoffFilter = document.getElementById('filterCutoff')?.value || 'all';
-        
-        let filtered = allEmployees;
-        
-        if (searchTerm) {
-            filtered = filtered.filter(e => e.name.toLowerCase().includes(searchTerm));
-        }
-        if (cutoffFilter !== 'all') {
-            filtered = filtered.filter(e => e.cutoff === cutoffFilter);
-        }
-        
+        let filtered = allEmployees.filter(e => {
+            if (searchTerm && !e.name.toLowerCase().includes(searchTerm)) return false;
+            if (cutoffFilter !== 'all' && e.cutoff !== cutoffFilter) return false;
+            return true;
+        });
         renderSubmissionGrid(filtered);
         updateSelectedInfo();
     }
     
     function renderSubmissionGrid(employees) {
         const grid = document.getElementById('submissionGrid');
-        
         if (employees.length === 0) {
             grid.innerHTML = '<div class="loading">No employees have submitted DTRs for this cutoff.</div>';
             return;
         }
-        
         grid.innerHTML = employees.map(emp => `
             <div class="card ${selectedSubmissions.has(emp.batch_id) ? 'selected' : ''}">
                 <input type="checkbox" class="select-checkbox" data-id="${emp.batch_id}" ${selectedSubmissions.has(emp.batch_id) ? 'checked' : ''} onclick="toggleSubmissionSelect('${emp.batch_id}')">
@@ -1393,114 +1215,68 @@
     }
     
     function toggleSubmissionSelect(batchId) {
-        if (selectedSubmissions.has(batchId)) {
-            selectedSubmissions.delete(batchId);
-        } else {
-            selectedSubmissions.add(batchId);
-        }
+        if (selectedSubmissions.has(batchId)) selectedSubmissions.delete(batchId);
+        else selectedSubmissions.add(batchId);
         applySubmissionFilters();
     }
     
     function selectAllSubmissions() {
-        const visibleCards = document.querySelectorAll('#submissionGrid .card');
-        visibleCards.forEach(card => {
-            const checkbox = card.querySelector('.select-checkbox');
-            if (checkbox) {
-                const id = checkbox.dataset.id;
-                selectedSubmissions.add(id);
-                card.classList.add('selected');
-                checkbox.checked = true;
-            }
+        document.querySelectorAll('#submissionGrid .select-checkbox').forEach(cb => {
+            const id = cb.dataset.id;
+            selectedSubmissions.add(id);
+            cb.checked = true;
+            cb.closest('.card').classList.add('selected');
         });
         updateSelectedInfo();
     }
     
     function deselectAllSubmissions() {
         selectedSubmissions.clear();
-        document.querySelectorAll('#submissionGrid .card').forEach(card => {
-            card.classList.remove('selected');
-            const checkbox = card.querySelector('.select-checkbox');
-            if (checkbox) checkbox.checked = false;
+        document.querySelectorAll('#submissionGrid .select-checkbox').forEach(cb => {
+            cb.checked = false;
+            cb.closest('.card').classList.remove('selected');
         });
         updateSelectedInfo();
     }
     
     async function deleteSelectedSubmissions() {
-        if (selectedSubmissions.size === 0) {
-            showMessage('No Selection', 'Please select records to delete', 'warning');
-            return;
-        }
-        
-        if (userRole !== 'admin') {
-            showMessage('Access Denied', 'Only Admin can delete records', 'error');
-            return;
-        }
-        
-        const result = await Swal.fire({
-            title: 'Delete Selected Records?',
-            text: `You are about to delete ${selectedSubmissions.size} batch(es). This cannot be undone!`,
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#dc3545',
-            confirmButtonText: 'Yes, delete them!',
-            cancelButtonText: 'Cancel'
-        });
-        
+        if (selectedSubmissions.size === 0) { showMessage('No Selection', 'Please select records to delete', 'warning'); return; }
+        if (userRole !== 'admin') { showMessage('Access Denied', 'Only Admin can delete', 'error'); return; }
+        const result = await Swal.fire({ title: 'Delete Selected?', text: `Delete ${selectedSubmissions.size} batch(es)?`, icon: 'warning', showCancelButton: true, confirmButtonColor: '#dc3545' });
         if (result.isConfirmed) {
-            try {
-                const idsToDelete = Array.from(selectedSubmissions);
-                for (let batchId of idsToDelete) {
-                    await fetch(`${SUPABASE_URL}/rest/v1/dtr_records?batch_id=eq.${batchId}`, {
-                        method: 'DELETE',
-                        headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
-                    });
-                }
-                selectedSubmissions.clear();
-                await showMessage('Deleted!', `${idsToDelete.length} record(s) deleted.`, 'success');
-                await loadSubmissionSummary();
-            } catch(e) {
-                showMessage('Error', e.message, 'error');
+            for (let batchId of selectedSubmissions) {
+                await fetch(`${SUPABASE_URL}/rest/v1/dtr_records?batch_id=eq.${batchId}`, {
+                    method: 'DELETE',
+                    headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+                });
             }
+            selectedSubmissions.clear();
+            loadSubmissionSummary();
+            showMessage('Deleted', 'Records deleted', 'success');
         }
     }
     
     async function printSelectedSubmissions() {
         const toPrint = [];
         allEmployees.forEach(emp => {
-            if (selectedSubmissions.has(emp.batch_id)) {
-                emp.images.forEach(img => toPrint.push(img));
-            }
+            if (selectedSubmissions.has(emp.batch_id)) emp.images.forEach(img => toPrint.push(img));
         });
-        
-        if (toPrint.length === 0) {
-            showMessage('No Selection', 'Please select records to print', 'warning');
-            return;
-        }
-        
+        if (toPrint.length === 0) { showMessage('No Selection', 'Select records to print', 'warning'); return; }
         const win = window.open('', '_blank');
         win.document.write(`<html><head><title>DTR Print</title><style>.page{page-break-after:always;height:100vh;display:flex;justify-content:center;align-items:center;} img{max-width:100%;max-height:100%;object-fit:contain;}</style></head><body>${toPrint.map(img => `<div class="page"><img src="${img}"></div>`).join('')}</body></html>`);
-        win.document.close();
-        win.print();
+        win.document.close(); win.print();
     }
     
     async function downloadSelectedSubmissions() {
         const toDownload = [];
         allEmployees.forEach(emp => {
-            if (selectedSubmissions.has(emp.batch_id)) {
-                emp.images.forEach(img => toDownload.push(img));
-            }
+            if (selectedSubmissions.has(emp.batch_id)) emp.images.forEach(img => toDownload.push(img));
         });
-        
-        if (toDownload.length === 0) {
-            showMessage('No Selection', 'Please select records to download', 'warning');
-            return;
-        }
-        
+        if (toDownload.length === 0) { showMessage('No Selection', 'Select records to download', 'warning'); return; }
         const btn = document.getElementById('downloadSelectedBtn');
         const orig = btn.innerHTML;
         btn.innerHTML = 'Creating ZIP...';
         btn.disabled = true;
-        
         try {
             const zip = new JSZip();
             const folder = zip.folder('DTR_Records');
@@ -1514,12 +1290,8 @@
             const content = await zip.generateAsync({ type: 'blob' });
             saveAs(content, `DTR_Records_${Date.now()}.zip`);
             showMessage('Complete', `${toDownload.length} images downloaded`, 'success');
-        } catch(e) {
-            showMessage('Error', e.message, 'error');
-        } finally {
-            btn.innerHTML = orig;
-            btn.disabled = false;
-        }
+        } catch(e) { showMessage('Error', e.message, 'error'); }
+        finally { btn.innerHTML = orig; btn.disabled = false; }
     }
     
     function updateSelectedInfo() {
@@ -1530,18 +1302,35 @@
         document.getElementById('selectedInfo').innerText = `${count} selected`;
     }
     
+    // ============ HELPER FUNCTIONS ============
+    function readFileAsBase64(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+        });
+    }
+    
     function escapeHtml(t) { if (!t) return ''; const d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
     
-    // Event listeners
-    document.getElementById('saveBtn').addEventListener('click', saveRecord);
-    
+    // Set default dates
     const today = new Date();
-    document.getElementById('fromDate').value = new Date(today.getFullYear(), today.getMonth(), 1).toISOString().split('T')[0];
-    document.getElementById('toDate').value = new Date(today.getFullYear(), today.getMonth() + 1, 0).toISOString().split('T')[0];
+    document.getElementById('sFromDate').value = new Date(today.getFullYear(), today.getMonth(), 1).toISOString().split('T')[0];
+    document.getElementById('sToDate').value = new Date(today.getFullYear(), today.getMonth() + 1, 0).toISOString().split('T')[0];
     
+    // Event listeners
     document.getElementById('loginBtn').addEventListener('click', login);
     document.getElementById('logoutBtn').addEventListener('click', logout);
+    document.getElementById('searchEmployee').addEventListener('input', applySubmissionFilters);
+    document.getElementById('filterCutoff').addEventListener('change', applySubmissionFilters);
+    document.getElementById('stafferSearch').addEventListener('input', renderStaffers);
     
+    // Enter key for login
+    document.getElementById('passwordInput').addEventListener('keypress', (e) => { if (e.key === 'Enter') login(); });
+    document.getElementById('usernameInput').addEventListener('keypress', (e) => { if (e.key === 'Enter') login(); });
+    
+    // Check session
     checkSession();
 </script>
 </body>
