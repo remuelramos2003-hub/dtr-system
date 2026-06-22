@@ -1637,7 +1637,8 @@
                 schedule: document.getElementById('fFbcSchedule').value.trim(),
                 remarks: document.getElementById('fFbcRemarks').value.trim(),
                 staff_code: document.getElementById('fFbcStoreCode').value.trim(),
-                dealer: 'FBC'
+                dealer: 'FBC',
+                full_name: document.getElementById('fFbcName').value.trim()
             };
             
             if (!data.store_code || !data.store_name || !data.name) {
