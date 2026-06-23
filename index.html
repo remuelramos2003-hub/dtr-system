@@ -1506,42 +1506,58 @@
         saveBtn.disabled = true;
         
         try {
-            if (editId) {
-                await fetch(`${SUPABASE_URL}/rest/v1/dtr_records?batch_id=eq.${editId}`, {
-                    method: 'DELETE',
-                    headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
-                });
-            }
-            
+            // Get staffer details
             const stafferName = selectedStaffer ? selectedStaffer.name : document.getElementById('sName').innerText;
             const outlet = selectedStaffer ? selectedStaffer.outlet || selectedStaffer.store_name || 'N/A' : 'N/A';
             const dealer = selectedStaffer ? selectedStaffer.dealer || userAssignment || 'N/A' : 'N/A';
             const storeName = selectedStaffer ? selectedStaffer.store_name || '' : '';
             
+            console.log('Saving DTR for:', stafferName, 'Outlet:', outlet, 'Dealer:', dealer);
+            
+            // Save each image as a separate record
             for (let img of currentImages) {
                 const imgData = await readFileAsBase64(img);
-                await fetch(`${SUPABASE_URL}/rest/v1/dtr_records`, {
+                
+                const recordData = {
+                    staffer_id: currentStafferId,
+                    employee_name: stafferName,
+                    outlet: outlet,
+                    dealer: dealer,
+                    store_name: storeName,
+                    cutoff_from: fromDate,
+                    cutoff_to: toDate,
+                    cutoff_range: cutoffRange,
+                    remarks: remarks || '',
+                    image_data: imgData,
+                    batch_id: batchId,
+                    printed: false
+                };
+                
+                console.log('Saving record:', recordData);
+                
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/dtr_records`, {
                     method: 'POST',
-                    headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        staffer_id: currentStafferId,
-                        employee_name: stafferName,
-                        outlet: outlet,
-                        dealer: dealer,
-                        store_name: storeName,
-                        cutoff_from: fromDate,
-                        cutoff_to: toDate,
-                        cutoff_range: cutoffRange,
-                        remarks: remarks || '',
-                        image_data: imgData,
-                        batch_id: batchId,
-                        printed: false
-                    })
+                    headers: { 
+                        'apikey': SUPABASE_KEY, 
+                        'Authorization': `Bearer ${SUPABASE_KEY}`, 
+                        'Content-Type': 'application/json',
+                        'Prefer': 'return=minimal'
+                    },
+                    body: JSON.stringify(recordData)
                 });
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('Save error:', errorText);
+                    throw new Error(`Failed to save: ${errorText}`);
+                }
+                
+                console.log('Record saved successfully for image');
             }
             
-            await showMessage('Success!', currentImages.length > 0 ? `${currentImages.length} image(s) saved!` : 'Record updated!', 'success');
+            await showMessage('Success!', `${currentImages.length} image(s) saved successfully!`, 'success');
             
+            // Reset form
             document.getElementById('sRemarks').value = '';
             document.getElementById('sImageFiles').value = '';
             document.getElementById('sPreviewContainer').innerHTML = '';
@@ -1557,14 +1573,14 @@
             document.getElementById('sFromDate').value = new Date(today.getFullYear(), today.getMonth(), 1).toISOString().split('T')[0];
             document.getElementById('sToDate').value = new Date(today.getFullYear(), today.getMonth() + 1, 0).toISOString().split('T')[0];
             
-            // Force reload history after a short delay
+            // Reload history after a delay
             setTimeout(() => {
                 loadStafferDTRHistory();
-            }, 500);
+            }, 1000);
             
         } catch(e) {
             console.error('Save error:', e);
-            showMessage('Error', e.message, 'error');
+            showMessage('Error', 'Failed to save: ' + e.message, 'error');
         } finally {
             saveBtn.innerHTML = originalText;
             saveBtn.disabled = false;
@@ -1940,7 +1956,6 @@
     // ============ DTR SUBMISSIONS (ADMIN & COORDINATOR) ============
     async function loadDTRSubmissions() {
         try {
-            // Load ALL DTR records
             const res = await fetch(`${SUPABASE_URL}/rest/v1/dtr_records?select=*&order=created_at.desc`, {
                 headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
             });
@@ -1948,7 +1963,6 @@
             
             allDtrRecords = data || [];
             
-            // Filter based on coordinator role
             if (userRole === 'coordinator') {
                 if (userAssignment === 'AHAM') {
                     data = data.filter(r => r.dealer === 'AHAM OFFICE' || r.dealer?.includes('AHAM'));
@@ -1959,7 +1973,6 @@
             
             dtrRecordsAll = data || [];
             
-            // Get all staffers for this view
             let staffersForView = allStaffersForComparison;
             if (userRole === 'coordinator') {
                 if (userAssignment === 'AHAM') {
@@ -1969,11 +1982,9 @@
                 }
             }
             
-            // Group by employee name
             const employeeMap = {};
             const cutoffSet = new Set();
             
-            // Add all staffers as "not submitted"
             staffersForView.forEach(s => {
                 const empKey = s.name;
                 if (!employeeMap[empKey]) {
@@ -1994,7 +2005,6 @@
                 }
             });
             
-            // Update with actual submissions
             data.forEach(r => {
                 const empKey = r.employee_name;
                 const cutoffKey = r.cutoff_range;
@@ -2009,7 +2019,6 @@
                     employeeMap[empKey].image_count = (employeeMap[empKey].image_count || 0) + 1;
                     employeeMap[empKey].images.push(r.image_data);
                 } else {
-                    // Staffer not in the list - add them
                     if (!employeeMap[empKey]) {
                         employeeMap[empKey] = {
                             name: r.employee_name,
@@ -2058,7 +2067,6 @@
             applySubmissionFilters();
             updateLastUpdated('dtrLastUpdated');
             
-            // Also refresh staffer history if in staffer view
             if (userRole === 'staffer' && currentStafferId) {
                 loadStafferDTRHistory();
             }
