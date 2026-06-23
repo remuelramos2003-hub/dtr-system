@@ -1513,8 +1513,18 @@
             const storeName = selectedStaffer ? selectedStaffer.store_name || '' : '';
             
             console.log('Saving DTR for:', stafferName, 'Outlet:', outlet, 'Dealer:', dealer);
+            console.log('Staffer ID:', currentStafferId);
+            
+            // If editing, delete old records first
+            if (editId) {
+                await fetch(`${SUPABASE_URL}/rest/v1/dtr_records?batch_id=eq.${editId}`, {
+                    method: 'DELETE',
+                    headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+                });
+            }
             
             // Save each image as a separate record
+            let savedCount = 0;
             for (let img of currentImages) {
                 const imgData = await readFileAsBase64(img);
                 
@@ -1540,22 +1550,23 @@
                     headers: { 
                         'apikey': SUPABASE_KEY, 
                         'Authorization': `Bearer ${SUPABASE_KEY}`, 
-                        'Content-Type': 'application/json',
-                        'Prefer': 'return=minimal'
+                        'Content-Type': 'application/json'
                     },
                     body: JSON.stringify(recordData)
                 });
                 
+                const responseText = await response.text();
+                console.log('Response:', response.status, responseText);
+                
                 if (!response.ok) {
-                    const errorText = await response.text();
-                    console.error('Save error:', errorText);
-                    throw new Error(`Failed to save: ${errorText}`);
+                    throw new Error(`Failed to save: ${responseText}`);
                 }
                 
+                savedCount++;
                 console.log('Record saved successfully for image');
             }
             
-            await showMessage('Success!', `${currentImages.length} image(s) saved successfully!`, 'success');
+            await showMessage('Success!', `${savedCount} image(s) saved successfully!`, 'success');
             
             // Reset form
             document.getElementById('sRemarks').value = '';
