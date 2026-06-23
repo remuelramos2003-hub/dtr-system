@@ -568,6 +568,10 @@
             from { transform: translateX(-50%) translateY(100px); opacity:0; }
             to { transform: translateX(-50%) translateY(0); opacity:1; }
         }
+        .selected-count {
+            font-weight:bold;
+            color:var(--primary-color);
+        }
     </style>
 </head>
 <body>
@@ -2260,13 +2264,22 @@
                     const arr = new Uint8Array(bin.length);
                     for (let j = 0; j < bin.length; j++) arr[j] = bin.charCodeAt(j);
                     
+                    // Use employee name as filename
                     const filename = `${folderName}_${i+1}.png`;
                     folder.file(filename, arr);
                 }
             }
             
             const content = await zip.generateAsync({ type: 'blob' });
-            const zipName = `DTR_Records_${new Date().toISOString().slice(0,10)}.zip`;
+            
+            // Create ZIP filename with employee name if only one employee selected
+            let zipName;
+            if (selectedEmp.length === 1) {
+                zipName = `${selectedEmp[0].name.replace(/[^a-zA-Z0-9]/g, '_')}_DTR.zip`;
+            } else {
+                zipName = `DTR_Records_${new Date().toISOString().slice(0,10)}.zip`;
+            }
+            
             saveAs(content, zipName);
             showMessage('Complete', `${selectedEmp.length} employee(s) DTR images downloaded`, 'success');
         } catch(e) { 
