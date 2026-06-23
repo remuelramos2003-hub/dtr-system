@@ -2254,8 +2254,12 @@
             const zip = new JSZip();
             
             for (let emp of selectedEmp) {
-                // Create folder with employee name
-                const folderName = emp.name.replace(/[^a-zA-Z0-9]/g, '_');
+                // Get the cutoff range from the first image's record
+                const cutoffRange = emp.cutoff || 'No_Cutoff';
+                const cutoffStr = cutoffRange.replace(/\s/g, '_').replace(/to/g, '-');
+                
+                // Create folder with employee name and cutoff
+                const folderName = `${emp.name.replace(/[^a-zA-Z0-9]/g, '_')}_${cutoffStr}`;
                 const folder = zip.folder(folderName);
                 
                 for (let i = 0; i < emp.images.length; i++) {
@@ -2264,7 +2268,7 @@
                     const arr = new Uint8Array(bin.length);
                     for (let j = 0; j < bin.length; j++) arr[j] = bin.charCodeAt(j);
                     
-                    // Use employee name as filename
+                    // Use employee name + cutoff + image number as filename
                     const filename = `${folderName}_${i+1}.png`;
                     folder.file(filename, arr);
                 }
@@ -2272,10 +2276,12 @@
             
             const content = await zip.generateAsync({ type: 'blob' });
             
-            // Create ZIP filename with employee name if only one employee selected
+            // Create ZIP filename with employee name and cutoff if only one employee selected
             let zipName;
             if (selectedEmp.length === 1) {
-                zipName = `${selectedEmp[0].name.replace(/[^a-zA-Z0-9]/g, '_')}_DTR.zip`;
+                const emp = selectedEmp[0];
+                const cutoffStr = (emp.cutoff || 'No_Cutoff').replace(/\s/g, '_').replace(/to/g, '-');
+                zipName = `${emp.name.replace(/[^a-zA-Z0-9]/g, '_')}_${cutoffStr}_DTR.zip`;
             } else {
                 zipName = `DTR_Records_${new Date().toISOString().slice(0,10)}.zip`;
             }
