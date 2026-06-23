@@ -636,6 +636,60 @@
                 min-width:100px;
             }
         }
+        .staffer-search-highlight {
+            background:var(--primary-color);
+            color:white;
+            padding:2px 4px;
+            border-radius:4px;
+        }
+        .staffer-search-container {
+            position:relative;
+        }
+        .staffer-search-container .clear-search {
+            position:absolute;
+            right:12px;
+            top:50%;
+            transform:translateY(-50%);
+            background:none;
+            border:none;
+            color:var(--label-color);
+            cursor:pointer;
+            font-size:18px;
+            width:auto;
+            padding:0 5px;
+        }
+        .staffer-search-container .clear-search:hover {
+            color:var(--danger-color);
+        }
+        .staffer-search-result .result-badge {
+            display:inline-block;
+            padding:2px 8px;
+            border-radius:12px;
+            font-size:10px;
+            font-weight:600;
+            margin-left:8px;
+        }
+        .staffer-search-result .result-badge.aham {
+            background:#dbeafe;
+            color:#1e40af;
+        }
+        .staffer-search-result .result-badge.fbc {
+            background:#fce7f3;
+            color:#9d174d;
+        }
+        body.dark-mode .staffer-search-result .result-badge.aham {
+            background:#1e3a5f;
+            color:#93c5fd;
+        }
+        body.dark-mode .staffer-search-result .result-badge.fbc {
+            background:#4a1a3a;
+            color:#f9a8d4;
+        }
+        .staffer-search-result .result-arrow {
+            float:right;
+            color:var(--label-color);
+            font-size:18px;
+        }
     </style>
 </head>
 <body>
@@ -693,14 +747,27 @@
     <div id="stafferView">
         <div class="form-area">
             <h4><i class="bi bi-search"></i> Find Your Record</h4>
-            <p class="text-muted" style="font-size:13px;">Search your name to view and manage your DTR records.</p>
-            <input type="text" id="stafferSearchInput" placeholder="Search by your name..." oninput="searchStaffer()">
+            <p class="text-muted" style="font-size:13px;">Start typing your name to search, then click on your name to view your DTR records.</p>
+            <div class="staffer-search-container">
+                <input type="text" id="stafferSearchInput" placeholder="Search by your name..." oninput="searchStaffer()" autocomplete="off">
+                <button class="clear-search" id="clearSearchBtn" onclick="clearStafferSearch()" style="display:none;">✕</button>
+            </div>
             <div id="stafferSearchResults" style="margin-top:10px;"></div>
+            <div id="stafferQuickSelect" style="margin-top:10px;display:none;">
+                <button class="btn btn-secondary btn-sm" onclick="showAllStaffers()" style="width:auto;padding:5px 15px;">
+                    <i class="bi bi-arrow-left"></i> Back to search
+                </button>
+            </div>
         </div>
 
         <div id="selectedStafferInfo" style="display:none;">
             <div class="staffer-info-card">
-                <h5><i class="bi bi-person-badge"></i> My Information</h5>
+                <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;">
+                    <h5><i class="bi bi-person-badge"></i> My Information</h5>
+                    <button class="btn btn-secondary btn-sm" onclick="clearSelectedStaffer()" style="width:auto;padding:5px 15px;">
+                        <i class="bi bi-x-circle"></i> Change Staffer
+                    </button>
+                </div>
                 <div id="stafferInfoContent" class="info-row">
                     <div class="info-item"><strong>Name:</strong> <span id="sName">-</span></div>
                     <div class="info-item"><strong>Staff Code:</strong> <span id="sCode">-</span></div>
@@ -1209,6 +1276,7 @@
     let refreshInterval = null;
     let allDtrRecords = [];
     let filteredEmployeesForDownload = [];
+    let searchTimeout = null;
     
     const credentials = {
         admin: 'admin123',
@@ -1289,6 +1357,33 @@
         const timeStr = now.toLocaleTimeString();
         const el = document.getElementById(elementId);
         if (el) el.textContent = `Last updated: ${timeStr}`;
+    }
+
+    // ============ STAFFER SEARCH FUNCTIONS ============
+    function clearStafferSearch() {
+        document.getElementById('stafferSearchInput').value = '';
+        document.getElementById('stafferSearchResults').innerHTML = '';
+        document.getElementById('clearSearchBtn').style.display = 'none';
+        document.getElementById('stafferQuickSelect').style.display = 'none';
+    }
+    
+    function clearSelectedStaffer() {
+        selectedStaffer = null;
+        currentStafferId = null;
+        document.getElementById('selectedStafferInfo').style.display = 'none';
+        document.getElementById('stafferSearchInput').value = '';
+        document.getElementById('stafferSearchResults').innerHTML = '';
+        document.getElementById('clearSearchBtn').style.display = 'none';
+        document.getElementById('stafferQuickSelect').style.display = 'none';
+        document.getElementById('stafferSearchInput').focus();
+    }
+    
+    function showAllStaffers() {
+        document.getElementById('stafferSearchInput').value = '';
+        document.getElementById('stafferSearchResults').innerHTML = '';
+        document.getElementById('clearSearchBtn').style.display = 'none';
+        document.getElementById('stafferQuickSelect').style.display = 'none';
+        document.getElementById('stafferSearchInput').focus();
     }
 
     // ============ LOGIN ============
@@ -1397,35 +1492,67 @@
     }
     
     function searchStaffer() {
-        const searchTerm = document.getElementById('stafferSearchInput').value.toLowerCase();
+        const searchTerm = document.getElementById('stafferSearchInput').value.trim();
         const resultsDiv = document.getElementById('stafferSearchResults');
+        const clearBtn = document.getElementById('clearSearchBtn');
+        
+        // Show/hide clear button
+        if (searchTerm.length > 0) {
+            clearBtn.style.display = 'block';
+        } else {
+            clearBtn.style.display = 'none';
+        }
         
         if (!searchTerm) {
             resultsDiv.innerHTML = '';
-            document.getElementById('selectedStafferInfo').style.display = 'none';
+            document.getElementById('stafferQuickSelect').style.display = 'none';
             return;
         }
         
-        let filtered = allStaffers.filter(s => 
-            (s.name || '').toLowerCase().includes(searchTerm)
-        );
-        
-        if (filtered.length === 0) {
-            resultsDiv.innerHTML = '<div class="text-muted">No staffer found with that name.</div>';
-            document.getElementById('selectedStafferInfo').style.display = 'none';
-            return;
-        }
-        
-        resultsDiv.innerHTML = filtered.map(s => `
-            <div class="staffer-search-result" onclick="selectStaffer(${s.id})">
-                <div class="result-name">👤 ${escapeHtml(s.name)}</div>
-                <div class="result-store">🏢 ${escapeHtml(s.store_name || s.outlet || 'N/A')} | ${s.dealer ? `<span class="dealer-tag ${s.dealer.includes('AHAM') ? 'dealer-aham' : 'dealer-fbc'}">${escapeHtml(s.dealer)}</span>` : ''}</div>
-            </div>
-        `).join('');
-        
-        if (filtered.length === 1) {
-            selectStaffer(filtered[0].id);
-        }
+        // Debounce search
+        if (searchTimeout) clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+            let filtered = allStaffers.filter(s => 
+                (s.name || '').toLowerCase().includes(searchTerm.toLowerCase())
+            );
+            
+            if (filtered.length === 0) {
+                resultsDiv.innerHTML = `
+                    <div class="staffer-search-result" style="cursor:default;border-color:var(--danger-color);">
+                        <div class="result-name">🔍 No staffer found with that name.</div>
+                        <div style="font-size:13px;color:var(--label-color);margin-top:4px;">Try searching with a different name.</div>
+                    </div>
+                `;
+                document.getElementById('stafferQuickSelect').style.display = 'none';
+                return;
+            }
+            
+            // Show quick select hint if many results
+            if (filtered.length > 5) {
+                document.getElementById('stafferQuickSelect').style.display = 'block';
+                document.getElementById('stafferQuickSelect').innerHTML = `
+                    <span style="color:var(--label-color);font-size:13px;">
+                        <i class="bi bi-info-circle"></i> Showing ${filtered.length} results. Click on your name below.
+                    </span>
+                `;
+            } else {
+                document.getElementById('stafferQuickSelect').style.display = 'none';
+            }
+            
+            resultsDiv.innerHTML = filtered.map(s => {
+                const dealerClass = s.dealer && s.dealer.includes('AHAM') ? 'aham' : 'fbc';
+                return `
+                    <div class="staffer-search-result" onclick="selectStaffer(${s.id})">
+                        <div class="result-name">
+                            👤 ${escapeHtml(s.name)}
+                            <span class="result-badge ${dealerClass}">${escapeHtml(s.dealer || 'N/A')}</span>
+                        </div>
+                        <div class="result-store">🏢 ${escapeHtml(s.store_name || s.outlet || 'N/A')}</div>
+                        <div class="result-arrow">→</div>
+                    </div>
+                `;
+            }).join('');
+        }, 300);
     }
     
     function selectStaffer(stafferId) {
@@ -1438,6 +1565,8 @@
         document.getElementById('selectedStafferInfo').style.display = 'block';
         document.getElementById('stafferSearchResults').innerHTML = '';
         document.getElementById('stafferSearchInput').value = staffer.name;
+        document.getElementById('clearSearchBtn').style.display = 'block';
+        document.getElementById('stafferQuickSelect').style.display = 'none';
         
         document.getElementById('sName').innerText = staffer.name || '-';
         document.getElementById('sCode').innerText = staffer.staff_code || staffer.id_no || '-';
@@ -1451,6 +1580,9 @@
         document.getElementById('sDayOff').innerText = staffer.day_off || '-';
         
         loadStafferDTRHistory();
+        
+        // Scroll to the staffer info
+        document.getElementById('selectedStafferInfo').scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
     
     async function loadStafferDTRHistory() {
