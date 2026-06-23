@@ -1355,11 +1355,9 @@
                 return;
             }
             
-            // Try to get records by staffer_id first
-            let url = `${SUPABASE_URL}/rest/v1/dtr_records?select=*&order=created_at.desc`;
-            
-            // Try with staffer_id filter
-            let res = await fetch(`${SUPABASE_URL}/rest/v1/dtr_records?select=*&staffer_id=eq.${currentStafferId}&order=created_at.desc`, {
+            // First, try to get records by staffer_id
+            let url = `${SUPABASE_URL}/rest/v1/dtr_records?select=*&staffer_id=eq.${currentStafferId}&order=created_at.desc`;
+            let res = await fetch(url, {
                 headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
             });
             let data = await res.json();
@@ -1368,10 +1366,23 @@
             if (!data || data.length === 0) {
                 const stafferName = selectedStaffer ? selectedStaffer.name : '';
                 if (stafferName) {
-                    res = await fetch(`${SUPABASE_URL}/rest/v1/dtr_records?select=*&employee_name=eq.${encodeURIComponent(stafferName)}&order=created_at.desc`, {
+                    url = `${SUPABASE_URL}/rest/v1/dtr_records?select=*&employee_name=eq.${encodeURIComponent(stafferName)}&order=created_at.desc`;
+                    res = await fetch(url, {
                         headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
                     });
                     data = await res.json();
+                }
+            }
+            
+            // If still no records, try to get all records and filter by name
+            if (!data || data.length === 0) {
+                const stafferName = selectedStaffer ? selectedStaffer.name : '';
+                if (stafferName) {
+                    res = await fetch(`${SUPABASE_URL}/rest/v1/dtr_records?select=*&order=created_at.desc`, {
+                        headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+                    });
+                    const allData = await res.json();
+                    data = allData.filter(r => r.employee_name === stafferName);
                 }
             }
             
@@ -1382,7 +1393,7 @@
             
             renderStafferHistory();
         } catch(e) { 
-            console.error(e);
+            console.error('Error loading history:', e);
             document.getElementById('sHistoryGrid').innerHTML = '<div class="loading">Error loading history. Please refresh.</div>';
         }
     }
@@ -1493,6 +1504,11 @@
                 });
             }
             
+            const stafferName = selectedStaffer ? selectedStaffer.name : document.getElementById('sName').innerText;
+            const outlet = selectedStaffer ? selectedStaffer.outlet || selectedStaffer.store_name || 'N/A' : 'N/A';
+            const dealer = selectedStaffer ? selectedStaffer.dealer || userAssignment || 'N/A' : 'N/A';
+            const storeName = selectedStaffer ? selectedStaffer.store_name || '' : '';
+            
             for (let img of currentImages) {
                 const imgData = await readFileAsBase64(img);
                 await fetch(`${SUPABASE_URL}/rest/v1/dtr_records`, {
@@ -1500,10 +1516,10 @@
                     headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         staffer_id: currentStafferId,
-                        employee_name: selectedStaffer ? selectedStaffer.name : document.getElementById('sName').innerText,
-                        outlet: selectedStaffer ? selectedStaffer.outlet || selectedStaffer.store_name || 'N/A' : 'N/A',
-                        dealer: selectedStaffer ? selectedStaffer.dealer || userAssignment || 'N/A' : 'N/A',
-                        store_name: selectedStaffer ? selectedStaffer.store_name || '' : '',
+                        employee_name: stafferName,
+                        outlet: outlet,
+                        dealer: dealer,
+                        store_name: storeName,
                         cutoff_from: fromDate,
                         cutoff_to: toDate,
                         cutoff_range: cutoffRange,
@@ -1532,9 +1548,11 @@
             document.getElementById('sFromDate').value = new Date(today.getFullYear(), today.getMonth(), 1).toISOString().split('T')[0];
             document.getElementById('sToDate').value = new Date(today.getFullYear(), today.getMonth() + 1, 0).toISOString().split('T')[0];
             
-            loadStafferDTRHistory();
+            // Force reload history
+            await loadStafferDTRHistory();
+            
         } catch(e) {
-            console.error(e);
+            console.error('Save error:', e);
             showMessage('Error', e.message, 'error');
         } finally {
             saveBtn.innerHTML = originalText;
