@@ -572,6 +572,70 @@
             font-weight:bold;
             color:var(--primary-color);
         }
+        .filter-section {
+            background:var(--form-bg);
+            padding:15px;
+            border-radius:12px;
+            border:1px solid var(--border-color);
+            margin-bottom:20px;
+        }
+        .filter-section .filter-row {
+            display:flex;
+            gap:15px;
+            flex-wrap:wrap;
+            align-items:flex-end;
+        }
+        .filter-section .filter-row .filter-group {
+            flex:1;
+            min-width:180px;
+        }
+        .filter-section .filter-row .filter-group label {
+            font-size:12px;
+            color:var(--label-color);
+            display:block;
+            margin-bottom:4px;
+            font-weight:500;
+        }
+        .filter-section .filter-row .filter-group input,
+        .filter-section .filter-row .filter-group select {
+            width:100%;
+            padding:8px 12px;
+            border:1px solid var(--border-color);
+            border-radius:8px;
+            background:var(--input-bg);
+            color:var(--text-color);
+        }
+        .filter-section .filter-row .filter-group input:focus,
+        .filter-section .filter-row .filter-group select:focus {
+            outline:none;
+            border-color:var(--primary-color);
+            box-shadow:0 0 0 2px rgba(67,97,238,0.2);
+        }
+        .filter-actions {
+            display:flex;
+            gap:10px;
+            align-items:center;
+        }
+        .filter-actions button {
+            width:auto;
+            padding:8px 16px;
+            white-space:nowrap;
+        }
+        @media(max-width:768px){
+            .filter-section .filter-row {
+                flex-direction:column;
+            }
+            .filter-section .filter-row .filter-group {
+                min-width:100%;
+            }
+            .filter-actions {
+                flex-wrap:wrap;
+            }
+            .filter-actions button {
+                flex:1;
+                min-width:100px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -713,17 +777,34 @@
                 <div class="summary-item"><h3 id="printedCount">0</h3><p>Printed</p></div>
             </div>
             
-            <div class="filter-bar">
-                <div class="filter-group"><label>Search Employee</label><input type="text" id="searchEmployee" placeholder="Type to filter..." oninput="applySubmissionFilters()"></div>
-                <div class="filter-group"><label>Cutoff Period</label><select id="filterCutoff" onchange="applySubmissionFilters()"><option value="all">All Cutoffs</option></select></div>
-                <div class="filter-group"><label>Status</label>
-                    <select id="filterStatus" onchange="applySubmissionFilters()">
-                        <option value="all">All Status</option>
-                        <option value="submitted">Submitted</option>
-                        <option value="not_submitted">Not Submitted</option>
-                        <option value="printed">Printed</option>
-                        <option value="not_printed">Not Printed</option>
-                    </select>
+            <!-- Filter Section -->
+            <div class="filter-section">
+                <div class="filter-row">
+                    <div class="filter-group">
+                        <label><i class="bi bi-calendar"></i> Filter by Cutoff Period</label>
+                        <select id="filterCutoffDownload">
+                            <option value="all">All Cutoffs</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label><i class="bi bi-search"></i> Search Employee</label>
+                        <input type="text" id="searchEmployeeDownload" placeholder="Type to filter..." oninput="applyDownloadFilters()">
+                    </div>
+                    <div class="filter-group">
+                        <label><i class="bi bi-funnel"></i> Status</label>
+                        <select id="filterStatusDownload" onchange="applyDownloadFilters()">
+                            <option value="all">All Status</option>
+                            <option value="submitted">Submitted</option>
+                            <option value="not_submitted">Not Submitted</option>
+                            <option value="printed">Printed</option>
+                            <option value="not_printed">Not Printed</option>
+                        </select>
+                    </div>
+                    <div class="filter-actions">
+                        <button class="btn btn-secondary" onclick="resetDownloadFilters()" style="width:auto;padding:8px 16px;background:#6c757d;">
+                            <i class="bi bi-arrow-counterclockwise"></i> Reset
+                        </button>
+                    </div>
                 </div>
             </div>
             
@@ -1127,6 +1208,7 @@
     let cutoffList = [];
     let refreshInterval = null;
     let allDtrRecords = [];
+    let filteredEmployeesForDownload = [];
     
     const credentials = {
         admin: 'admin123',
@@ -2065,6 +2147,18 @@
                 });
             }
             
+            // Also populate the download filter dropdown
+            const cutoffDownload = document.getElementById('filterCutoffDownload');
+            if (cutoffDownload) {
+                cutoffDownload.innerHTML = '<option value="all">All Cutoffs</option>';
+                cutoffList.forEach(c => {
+                    const opt = document.createElement('option');
+                    opt.value = c;
+                    opt.textContent = c;
+                    cutoffDownload.appendChild(opt);
+                });
+            }
+            
             allEmployees = Object.values(employeeMap);
             
             const totalStaffers = allEmployees.length;
@@ -2079,6 +2173,7 @@
             
             selectedSubmissions.clear();
             applySubmissionFilters();
+            applyDownloadFilters();
             updateLastUpdated('dtrLastUpdated');
             
             if (userRole === 'staffer' && currentStafferId) {
@@ -2087,6 +2182,35 @@
         } catch(e) { 
             console.error(e);
         }
+    }
+    
+    function applyDownloadFilters() {
+        const searchTerm = document.getElementById('searchEmployeeDownload')?.value.toLowerCase() || '';
+        const cutoffFilter = document.getElementById('filterCutoffDownload')?.value || 'all';
+        const statusFilter = document.getElementById('filterStatusDownload')?.value || 'all';
+        
+        filteredEmployeesForDownload = allEmployees.filter(e => {
+            if (searchTerm && !e.name.toLowerCase().includes(searchTerm)) return false;
+            if (cutoffFilter !== 'all' && e.cutoff !== cutoffFilter) return false;
+            if (statusFilter === 'submitted' && !e.submitted) return false;
+            if (statusFilter === 'not_submitted' && e.submitted) return false;
+            if (statusFilter === 'printed' && !e.printed) return false;
+            if (statusFilter === 'not_printed' && e.printed) return false;
+            return true;
+        });
+    }
+    
+    function resetDownloadFilters() {
+        document.getElementById('searchEmployeeDownload').value = '';
+        document.getElementById('filterCutoffDownload').value = 'all';
+        document.getElementById('filterStatusDownload').value = 'all';
+        applyDownloadFilters();
+        // Also reset the main filters
+        document.getElementById('searchEmployee').value = '';
+        document.getElementById('filterCutoff').value = 'all';
+        document.getElementById('filterStatus').value = 'all';
+        applySubmissionFilters();
+        showMessage('Filters Reset', 'All filters have been cleared.', 'info');
     }
     
     function applySubmissionFilters() {
@@ -2220,23 +2344,47 @@
     }
     
     async function printSelectedSubmissions() {
+        // Use filtered employees from download filter
         const toPrint = [];
-        allEmployees.forEach(emp => {
+        filteredEmployeesForDownload.forEach(emp => {
             if (selectedSubmissions.has(emp.batch_id)) {
                 emp.images.forEach(img => toPrint.push(img));
             }
         });
-        if (toPrint.length === 0) { showMessage('No Selection', 'Select records to print', 'warning'); return; }
+        
+        // Also check allEmployees for any selected that might not be in filtered
+        allEmployees.forEach(emp => {
+            if (selectedSubmissions.has(emp.batch_id)) {
+                if (!filteredEmployeesForDownload.find(e => e.batch_id === emp.batch_id)) {
+                    emp.images.forEach(img => toPrint.push(img));
+                }
+            }
+        });
+        
+        if (toPrint.length === 0) { 
+            showMessage('No Selection', 'Select records to print', 'warning'); 
+            return; 
+        }
         const win = window.open('', '_blank');
         win.document.write(`<html><head><title>DTR Print</title><style>.page{page-break-after:always;height:100vh;display:flex;justify-content:center;align-items:center;} img{max-width:100%;max-height:100%;object-fit:contain;}</style></head><body>${toPrint.map(img => `<div class="page"><img src="${img}"></div>`).join('')}</body></html>`);
         win.document.close(); win.print();
     }
     
     async function downloadSelectedSubmissions() {
+        // Use filtered employees from download filter
         const selectedEmp = [];
-        allEmployees.forEach(emp => {
+        filteredEmployeesForDownload.forEach(emp => {
             if (selectedSubmissions.has(emp.batch_id)) {
                 selectedEmp.push(emp);
+            }
+        });
+        
+        // Also check allEmployees for any selected that might not be in filtered
+        allEmployees.forEach(emp => {
+            if (selectedSubmissions.has(emp.batch_id)) {
+                if (!selectedEmp.find(e => e.batch_id === emp.batch_id)) {
+                    selectedEmp.push(emp);
+                }
             }
         });
         
@@ -2254,7 +2402,7 @@
             const zip = new JSZip();
             
             for (let emp of selectedEmp) {
-                // Get the cutoff range from the first image's record
+                // Get the cutoff range
                 const cutoffRange = emp.cutoff || 'No_Cutoff';
                 const cutoffStr = cutoffRange.replace(/\s/g, '_').replace(/to/g, '-');
                 
@@ -2324,6 +2472,9 @@
     document.getElementById('searchEmployee').addEventListener('input', applySubmissionFilters);
     document.getElementById('filterCutoff').addEventListener('change', applySubmissionFilters);
     document.getElementById('filterStatus').addEventListener('change', applySubmissionFilters);
+    document.getElementById('searchEmployeeDownload').addEventListener('input', applyDownloadFilters);
+    document.getElementById('filterCutoffDownload').addEventListener('change', applyDownloadFilters);
+    document.getElementById('filterStatusDownload').addEventListener('change', applyDownloadFilters);
     document.getElementById('stafferSearch').addEventListener('input', renderStaffers);
     document.getElementById('passwordInput').addEventListener('keypress', (e) => { if (e.key === 'Enter') login(); });
     
