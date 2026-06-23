@@ -548,6 +548,25 @@
             color:var(--label-color);
             margin-top:10px;
             border:1px dashed var(--border-color);
+            display:none;
+        }
+        .success-toast {
+            position:fixed;
+            bottom:20px;
+            left:50%;
+            transform:translateX(-50%);
+            background:var(--success-color);
+            color:white;
+            padding:12px 24px;
+            border-radius:8px;
+            font-weight:bold;
+            z-index:9999;
+            box-shadow:0 4px 12px rgba(0,0,0,0.2);
+            animation: slideUp 0.3s ease;
+        }
+        @keyframes slideUp {
+            from { transform: translateX(-50%) translateY(100px); opacity:0; }
+            to { transform: translateX(-50%) translateY(0); opacity:1; }
         }
     </style>
 </head>
@@ -1355,36 +1374,26 @@
                 return;
             }
             
-            // First, try to get records by staffer_id
-            let url = `${SUPABASE_URL}/rest/v1/dtr_records?select=*&staffer_id=eq.${currentStafferId}&order=created_at.desc`;
-            let res = await fetch(url, {
+            // Get ALL DTR records first
+            const res = await fetch(`${SUPABASE_URL}/rest/v1/dtr_records?select=*&order=created_at.desc`, {
                 headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
             });
-            let data = await res.json();
+            const allData = await res.json();
             
-            // If no records found with staffer_id, try by employee_name
-            if (!data || data.length === 0) {
-                const stafferName = selectedStaffer ? selectedStaffer.name : '';
-                if (stafferName) {
-                    url = `${SUPABASE_URL}/rest/v1/dtr_records?select=*&employee_name=eq.${encodeURIComponent(stafferName)}&order=created_at.desc`;
-                    res = await fetch(url, {
-                        headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
-                    });
-                    data = await res.json();
-                }
-            }
+            // Filter records that match this staffer by name or ID
+            const stafferName = selectedStaffer ? selectedStaffer.name : '';
+            const stafferId = currentStafferId;
             
-            // If still no records, try to get all records and filter by name
-            if (!data || data.length === 0) {
-                const stafferName = selectedStaffer ? selectedStaffer.name : '';
-                if (stafferName) {
-                    res = await fetch(`${SUPABASE_URL}/rest/v1/dtr_records?select=*&order=created_at.desc`, {
-                        headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
-                    });
-                    const allData = await res.json();
-                    data = allData.filter(r => r.employee_name === stafferName);
-                }
-            }
+            let data = allData.filter(r => {
+                // Match by staffer_id if available
+                if (r.staffer_id === stafferId) return true;
+                // Match by employee_name
+                if (r.employee_name === stafferName) return true;
+                // Also try case-insensitive match
+                if (r.employee_name && stafferName && 
+                    r.employee_name.toLowerCase().trim() === stafferName.toLowerCase().trim()) return true;
+                return false;
+            });
             
             dtrRecordsAll = data || [];
             
@@ -1548,8 +1557,10 @@
             document.getElementById('sFromDate').value = new Date(today.getFullYear(), today.getMonth(), 1).toISOString().split('T')[0];
             document.getElementById('sToDate').value = new Date(today.getFullYear(), today.getMonth() + 1, 0).toISOString().split('T')[0];
             
-            // Force reload history
-            await loadStafferDTRHistory();
+            // Force reload history after a short delay
+            setTimeout(() => {
+                loadStafferDTRHistory();
+            }, 500);
             
         } catch(e) {
             console.error('Save error:', e);
@@ -1929,7 +1940,7 @@
     // ============ DTR SUBMISSIONS (ADMIN & COORDINATOR) ============
     async function loadDTRSubmissions() {
         try {
-            // Load ALL DTR records without filtering by staffer_id
+            // Load ALL DTR records
             const res = await fetch(`${SUPABASE_URL}/rest/v1/dtr_records?select=*&order=created_at.desc`, {
                 headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
             });
