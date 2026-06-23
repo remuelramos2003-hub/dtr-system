@@ -1523,7 +1523,7 @@
                 });
             }
             
-            // Save each image as a separate record
+            // Save each image as a separate record - WITHOUT the 'printed' field
             let savedCount = 0;
             for (let img of currentImages) {
                 const imgData = await readFileAsBase64(img);
@@ -1539,8 +1539,8 @@
                     cutoff_range: cutoffRange,
                     remarks: remarks || '',
                     image_data: imgData,
-                    batch_id: batchId,
-                    printed: false
+                    batch_id: batchId
+                    // 'printed' field removed - it doesn't exist in the database
                 };
                 
                 console.log('Saving record:', recordData);
