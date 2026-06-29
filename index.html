@@ -693,7 +693,7 @@
         <i class="bi bi-person-circle"></i>
         <span id="userRoleDisplay"></span>
         <span id="assignBadge" style="background:rgba(255,255,255,0.2);padding:4px 12px;border-radius:30px;"></span>
-        <span id="driveStatus" class="drive-status disconnected">⬇️ Checking Drive...</span>
+        <span id="driveStatus" class="drive-status disconnected">⬇️ Connecting Drive...</span>
         <button id="logoutBtn" class="logout-btn">Logout</button>
     </div>
     
@@ -1230,18 +1230,17 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
     // ============================================================
-    // GOOGLE DRIVE CREDENTIALS - REPLACE WITH YOUR OWN
+    // GOOGLE DRIVE CREDENTIALS - YOUR VALUES ARE ALREADY FILLED IN!
     // ============================================================
     const GOOGLE_DRIVE_CONFIG = {
-    // You still need to get your Folder ID from Google Drive
-    FOLDER_ID: 'YOUR_FOLDER_ID_HERE',  // ← You need to get this from your Google Drive folder URL
-    
-    // From your JSON file - client_email
-    CLIENT_EMAIL: 'dtr-storage@dtr-system-500901.iam.gserviceaccount.com',
-    
-    // From your JSON file - private_key (the ENTIRE thing)
-    PRIVATE_KEY: '-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDRSjh74YE9S0SE\nBgzEPXJZ9rNZzyGFPrYFUPNW+fNWfxMt5/dzsswT1rVV3Kl7ChYyfgkz+j1S4KMD\nf9rLpPii0+kQe4i0dvAPU9mxnCkDlnqSMn/WDn4YuUxHL+o3wOpfcRBBI3Cz1FCz\nE3LUH9Lv9VW9/4jko1oxWHKzWVavHQsDt/VsVpwN+5B1SOJq2BlQuPsKmNyNSf6l\nn8XWEj0Y7GOcsiLQsIr5LrHut8MDpKC0L2VY17LxIpscWvFyZdRHWYEOugFtR1ew\n9eCCH6yeuq2tgZ33Kp99hVRCl4LrYgPCTWq+HCq0UtFVSt2z8VtzDk/BXcZrf0fe\n+pHbzlY7AgMBAAECggEAFEA07Ee1qaikHeI3+gUNZjG+HkKHNngK724VyE9cgadq\nGQGzqo5Hu45a8s6XLOtHmpB3c4ATJEx4JC6K4omOmrLGf8HJnddPAyyp3nWtwkXH\n4RLh1mSF7v5+/aRf6rp6ncw4Nmqnd78OJUW3Jq9YSb+uEY8C6pyjwtfmwVPeVLMz\nKljYkvh7SJFgCDnwvPzm9asOrbN5MlEyFXrE9qGjjdacQ8Fu47pMNZmbdRxqPFhy\ndphk7x0UShNGobBinXMuzNah4RojmTZDrcA0wmKjcc6FkXePB42iAyEwUNFVac5e\nd7AuPbTh9lOaqFJlmKymioVah+8e1OvGQaogUv7VAQKBgQD250NXaBMM0AlYQ11k\nMhBsf4THW27X5vC3+1cAAvu+q7WESLYEHc/sW7mOuhgUwkbqJtg5nsUuQ7QOaNFA\nrkq/aJBmOin5UCfkDSEA12WgRrcFRt3ffloQ2ItDbRqxPAq50Ah8dKC/4/Dr/Gf0\nPNkLohPVp4dsGbTmr3TXf2BMswKBgQDZADIvTWz4DdowRYp1VG89ZlSJqzOk0doR\nNwG7AK6FH0siTPj/s5VDwniKLI4NSFzmY5AxPK6xmmUMLYyH8fKKNjI58/FgQRyQ\nHRubvZcmAE4SVRm2U3xqqErh0OZIg+ldFFejcgyMKifwRutkmr7Gl3EfWdMQvJXS\n+JqIT4ukWQKBgAx/Ffx1iwlJ+j8aYb6xff1P0vOYIBsTWDmnofahMAatgClq2LOK\norxuxAyCRLfAQYCWaLk53PcDfDiCe5zPdX8MlsplxTwWH36+X15AiKc9DQRaWt51\n8a8KlrnZ6tDvngdbjSJncL9llQsMomJNNhsNn/1fVk5VWr+WP86sZr5bAoGBAJr0\nJuHcOenPinRZ1AsAZgbEIa3E0LXrG/qa+uNcE0MAG5i8ujltNTMTlRulwTH+8Eeb\n5QUjveMYyvstM2KIBJdpJ+h2J3CCTjEid+p4MYxzP0yb9CZb60YGMqKZlzdE6skK\nk6Ik+IzGNYrAOaq3TW9mCONIMw2KfLoPx9l6Y87RAoGBAMopU6VgpnIh4qndf/J/\nAYALAsDxT2bif/9tdGqQnG+XQ7EkH3vDtct5SwvlDLa4E0NIhqdTOTZP5O891eO5\nY8mJJWwb99wVhI/agnunzTNXNLn5Fzegf+JKUhyheYNl8V7JbGk5TfH61E6VYchJ\nrDlAPEoSyhlV2CLCTZtig9FQ\n-----END PRIVATE KEY-----\n'
-};
+        // ⚠️ IMPORTANT: Replace this with your actual Google Drive Folder ID
+        // Go to drive.google.com, open your DTR_Images folder, copy the folder ID from the URL
+        FOLDER_ID: '1ubwtrTYnmxac31Il0GArmMsJkWn1CEvI',
+         
+        // Your Service Account credentials (from your JSON file)
+        CLIENT_EMAIL: 'dtr-storage@dtr-system-500901.iam.gserviceaccount.com',
+        PRIVATE_KEY: '-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDRSjh74YE9S0SE\nBgzEPXJZ9rNZzyGFPrYFUPNW+fNWfxMt5/dzsswT1rVV3Kl7ChYyfgkz+j1S4KMD\nf9rLpPii0+kQe4i0dvAPU9mxnCkDlnqSMn/WDn4YuUxHL+o3wOpfcRBBI3Cz1FCz\nE3LUH9Lv9VW9/4jko1oxWHKzWVavHQsDt/VsVpwN+5B1SOJq2BlQuPsKmNyNSf6l\nn8XWEj0Y7GOcsiLQsIr5LrHut8MDpKC0L2VY17LxIpscWvFyZdRHWYEOugFtR1ew\n9eCCH6yeuq2tgZ33Kp99hVRCl4LrYgPCTWq+HCq0UtFVSt2z8VtzDk/BXcZrf0fe\n+pHbzlY7AgMBAAECggEAFEA07Ee1qaikHeI3+gUNZjG+HkKHNngK724VyE9cgadq\nGQGzqo5Hu45a8s6XLOtHmpB3c4ATJEx4JC6K4omOmrLGf8HJnddPAyyp3nWtwkXH\n4RLh1mSF7v5+/aRf6rp6ncw4Nmqnd78OJUW3Jq9YSb+uEY8C6pyjwtfmwVPeVLMz\nKljYkvh7SJFgCDnwvPzm9asOrbN5MlEyFXrE9qGjjdacQ8Fu47pMNZmbdRxqPFhy\ndphk7x0UShNGobBinXMuzNah4RojmTZDrcA0wmKjcc6FkXePB42iAyEwUNFVac5e\nd7AuPbTh9lOaqFJlmKymioVah+8e1OvGQaogUv7VAQKBgQD250NXaBMM0AlYQ11k\nMhBsf4THW27X5vC3+1cAAvu+q7WESLYEHc/sW7mOuhgUwkbqJtg5nsUuQ7QOaNFA\nrkq/aJBmOin5UCfkDSEA12WgRrcFRt3ffloQ2ItDbRqxPAq50Ah8dKC/4/Dr/Gf0\nPNkLohPVp4dsGbTmr3TXf2BMswKBgQDZADIvTWz4DdowRYp1VG89ZlSJqzOk0doR\nNwG7AK6FH0siTPj/s5VDwniKLI4NSFzmY5AxPK6xmmUMLYyH8fKKNjI58/FgQRyQ\nHRubvZcmAE4SVRm2U3xqqErh0OZIg+ldFFejcgyMKifwRutkmr7Gl3EfWdMQvJXS\n+JqIT4ukWQKBgAx/Ffx1iwlJ+j8aYb6xff1P0vOYIBsTWDmnofahMAatgClq2LOK\norxuxAyCRLfAQYCWaLk53PcDfDiCe5zPdX8MlsplxTwWH36+X15AiKc9DQRaWt51\n8a8KlrnZ6tDvngdbjSJncL9llQsMomJNNhsNn/1fVk5VWr+WP86sZr5bAoGBAJr0\nJuHcOenPinRZ1AsAZgbEIa3E0LXrG/qa+uNcE0MAG5i8ujltNTMTlRulwTH+8Eeb\n5QUjveMYyvstM2KIBJdpJ+h2J3CCTjEid+p4MYxzP0yb9CZb60YGMqKZlzdE6skK\nk6Ik+IzGNYrAOaq3TW9mCONIMw2KfLoPx9l6Y87RAoGBAMopU6VgpnIh4qndf/J/\nAYALAsDxT2bif/9tdGqQnG+XQ7EkH3vDtct5SwvlDLa4E0NIhqdTOTZP5O891eO5\nY8mJJWwb99wVhI/agnunzTNXNLn5Fzegf+JKUhyheYNl8V7JbGk5TfH61E6VYchJ\nrDlAPEoSyhlV2CLCTZtig9FQ\n-----END PRIVATE KEY-----\n'
+    };
 
     // ============================================================
     // SUPABASE CONFIG
@@ -1263,20 +1262,17 @@
 
         const header = { alg: 'RS256', typ: 'JWT' };
         
-        // Encode header and payload
         const encodedHeader = btoa(JSON.stringify(header));
         const encodedPayload = btoa(JSON.stringify(payload));
         
         const signatureInput = encodedHeader + '.' + encodedPayload;
         
-        // Use Web Crypto API to sign
         const privateKey = GOOGLE_DRIVE_CONFIG.PRIVATE_KEY;
         const pemHeader = "-----BEGIN PRIVATE KEY-----";
         const pemFooter = "-----END PRIVATE KEY-----";
         const pemContents = privateKey.substring(pemHeader.length, privateKey.length - pemFooter.length);
         const binaryDerString = atob(pemContents);
         
-        // Convert to binary
         const binaryDer = new Uint8Array(binaryDerString.length);
         for (let i = 0; i < binaryDerString.length; i++) {
             binaryDer[i] = binaryDerString.charCodeAt(i);
@@ -1317,14 +1313,12 @@
         try {
             const accessToken = await getGoogleDriveAccessToken();
             
-            // Get file metadata
             const metadata = {
                 name: fileName,
                 parents: [GOOGLE_DRIVE_CONFIG.FOLDER_ID],
                 mimeType: file.type || 'image/jpeg'
             };
             
-            // Create multipart upload
             const formData = new FormData();
             formData.append('metadata', new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
             formData.append('file', file);
@@ -1338,14 +1332,10 @@
             });
             
             const data = await response.json();
-            console.log('Uploaded to Google Drive:', data);
-            
-            // Get the file URL (direct download)
-            const fileId = data.id;
-            const fileUrl = `https://drive.google.com/uc?export=view&id=${fileId}`;
+            const fileUrl = `https://drive.google.com/uc?export=view&id=${data.id}`;
             
             return {
-                fileId: fileId,
+                fileId: data.id,
                 fileUrl: fileUrl
             };
         } catch (error) {
@@ -1369,7 +1359,6 @@
                 throw new Error(`Failed to delete file: ${response.statusText}`);
             }
             
-            console.log('Deleted from Google Drive:', fileId);
             return true;
         } catch (error) {
             console.error('Error deleting from Google Drive:', error);
@@ -1859,11 +1848,9 @@
             const storeName = selectedStaffer ? selectedStaffer.store_name || '' : '';
             
             if (editId) {
-                // Get existing records to delete from Google Drive
                 const existingRecords = dtrRecordsAll.filter(r => r.batch_id === editId);
                 for (let rec of existingRecords) {
                     if (rec.image_data && rec.image_data.includes('drive.google.com')) {
-                        // Extract file ID from URL
                         const fileIdMatch = rec.image_data.match(/id=([^&]+)/);
                         if (fileIdMatch) {
                             try {
@@ -1880,7 +1867,6 @@
             
             let savedCount = 0;
             for (let img of currentImages) {
-                // Upload to Google Drive
                 const fileName = `${stafferName.replace(/[^a-zA-Z0-9]/g, '_')}_${Date.now()}_${savedCount + 1}.jpg`;
                 const driveResult = await uploadToGoogleDrive(img, fileName);
                 
@@ -1894,7 +1880,7 @@
                     cutoff_to: toDate,
                     cutoff_range: cutoffRange,
                     remarks: remarks || '',
-                    image_data: driveResult.fileUrl, // Store Google Drive URL instead of base64
+                    image_data: driveResult.fileUrl,
                     batch_id: batchId,
                     printed: false
                 };
@@ -1979,7 +1965,7 @@
     document.getElementById('sHistorySearch').addEventListener('input', renderStafferHistory);
 
     // ============================================================
-    // Admin/Coordinator Functions (abbreviated for space)
+    // Admin/Coordinator Functions
     // ============================================================
     function switchAdminTab(tab) {
         adminTab = tab;
@@ -2252,7 +2238,6 @@
         const result = await Swal.fire({ title: 'Delete Staffer?', text: 'This will also delete all their DTR records!', icon: 'warning', showCancelButton: true, confirmButtonColor: '#dc3545' });
         if (result.isConfirmed) {
             try {
-                // Delete DTR records and their Google Drive images
                 const records = await fetch(`${SUPABASE_URL}/rest/v1/dtr_records?staffer_id=eq.${id}`, {
                     headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
                 });
@@ -2327,7 +2312,7 @@
     }
 
     // ============================================================
-    // DTR Submissions (Admin/Coordinator) - abridged
+    // DTR Submissions (Admin/Coordinator)
     // ============================================================
     async function loadDTRSubmissions() {
         try {
@@ -2609,7 +2594,6 @@
         const result = await Swal.fire({ title: 'Delete Selected?', text: `Delete ${selectedSubmissions.size} batch(es)?`, icon: 'warning', showCancelButton: true, confirmButtonColor: '#dc3545' });
         if (result.isConfirmed) {
             for (let batchId of selectedSubmissions) {
-                // Delete from Google Drive first
                 const records = dtrRecordsAll.filter(r => r.batch_id === batchId);
                 for (let rec of records) {
                     if (rec.image_data && rec.image_data.includes('drive.google.com')) {
@@ -2691,7 +2675,6 @@
                 const folder = zip.folder(folderName);
                 
                 for (let i = 0; i < emp.images.length; i++) {
-                    // Download image from Google Drive URL
                     const imgUrl = emp.images[i];
                     const response = await fetch(imgUrl);
                     const blob = await response.blob();
