@@ -656,6 +656,10 @@
             background:#fee2e2;
             color:#991b1b;
         }
+        .drive-status.connecting {
+            background:#fef3c7;
+            color:#92400e;
+        }
     </style>
 </head>
 <body>
@@ -693,7 +697,7 @@
         <i class="bi bi-person-circle"></i>
         <span id="userRoleDisplay"></span>
         <span id="assignBadge" style="background:rgba(255,255,255,0.2);padding:4px 12px;border-radius:30px;"></span>
-        <span id="driveStatus" class="drive-status disconnected">⬇️ Connecting Drive...</span>
+        <span id="driveStatus" class="drive-status connecting">⏳ Connecting Drive...</span>
         <button id="logoutBtn" class="logout-btn">Logout</button>
     </div>
     
@@ -1230,10 +1234,10 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
     // ============================================================
-    // GOOGLE DRIVE CREDENTIALS - YOUR FOLDER ID IS ALREADY FILLED IN!
+    // GOOGLE DRIVE CREDENTIALS - FULLY CONFIGURED
     // ============================================================
     const GOOGLE_DRIVE_CONFIG = {
-        FOLDER_ID: '1ubwtrTYnmxac31Il0GArmMsJkWn1CEvI',  // ✅ Your Folder ID
+        FOLDER_ID: '1ubwtrTYnmxac31Il0GArmMsJkWn1CEvI',
         CLIENT_EMAIL: 'dtr-storage@dtr-system-500901.iam.gserviceaccount.com',
         PRIVATE_KEY: '-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDRSjh74YE9S0SE\nBgzEPXJZ9rNZzyGFPrYFUPNW+fNWfxMt5/dzsswT1rVV3Kl7ChYyfgkz+j1S4KMD\nf9rLpPii0+kQe4i0dvAPU9mxnCkDlnqSMn/WDn4YuUxHL+o3wOpfcRBBI3Cz1FCz\nE3LUH9Lv9VW9/4jko1oxWHKzWVavHQsDt/VsVpwN+5B1SOJq2BlQuPsKmNyNSf6l\nn8XWEj0Y7GOcsiLQsIr5LrHut8MDpKC0L2VY17LxIpscWvFyZdRHWYEOugFtR1ew\n9eCCH6yeuq2tgZ33Kp99hVRCl4LrYgPCTWq+HCq0UtFVSt2z8VtzDk/BXcZrf0fe\n+pHbzlY7AgMBAAECggEAFEA07Ee1qaikHeI3+gUNZjG+HkKHNngK724VyE9cgadq\nGQGzqo5Hu45a8s6XLOtHmpB3c4ATJEx4JC6K4omOmrLGf8HJnddPAyyp3nWtwkXH\n4RLh1mSF7v5+/aRf6rp6ncw4Nmqnd78OJUW3Jq9YSb+uEY8C6pyjwtfmwVPeVLMz\nKljYkvh7SJFgCDnwvPzm9asOrbN5MlEyFXrE9qGjjdacQ8Fu47pMNZmbdRxqPFhy\ndphk7x0UShNGobBinXMuzNah4RojmTZDrcA0wmKjcc6FkXePB42iAyEwUNFVac5e\nd7AuPbTh9lOaqFJlmKymioVah+8e1OvGQaogUv7VAQKBgQD250NXaBMM0AlYQ11k\nMhBsf4THW27X5vC3+1cAAvu+q7WESLYEHc/sW7mOuhgUwkbqJtg5nsUuQ7QOaNFA\nrkq/aJBmOin5UCfkDSEA12WgRrcFRt3ffloQ2ItDbRqxPAq50Ah8dKC/4/Dr/Gf0\nPNkLohPVp4dsGbTmr3TXf2BMswKBgQDZADIvTWz4DdowRYp1VG89ZlSJqzOk0doR\nNwG7AK6FH0siTPj/s5VDwniKLI4NSFzmY5AxPK6xmmUMLYyH8fKKNjI58/FgQRyQ\nHRubvZcmAE4SVRm2U3xqqErh0OZIg+ldFFejcgyMKifwRutkmr7Gl3EfWdMQvJXS\n+JqIT4ukWQKBgAx/Ffx1iwlJ+j8aYb6xff1P0vOYIBsTWDmnofahMAatgClq2LOK\norxuxAyCRLfAQYCWaLk53PcDfDiCe5zPdX8MlsplxTwWH36+X15AiKc9DQRaWt51\n8a8KlrnZ6tDvngdbjSJncL9llQsMomJNNhsNn/1fVk5VWr+WP86sZr5bAoGBAJr0\nJuHcOenPinRZ1AsAZgbEIa3E0LXrG/qa+uNcE0MAG5i8ujltNTMTlRulwTH+8Eeb\n5QUjveMYyvstM2KIBJdpJ+h2J3CCTjEid+p4MYxzP0yb9CZb60YGMqKZlzdE6skK\nk6Ik+IzGNYrAOaq3TW9mCONIMw2KfLoPx9l6Y87RAoGBAMopU6VgpnIh4qndf/J/\nAYALAsDxT2bif/9tdGqQnG+XQ7EkH3vDtct5SwvlDLa4E0NIhqdTOTZP5O891eO5\nY8mJJWwb99wVhI/agnunzTNXNLn5Fzegf+JKUhyheYNl8V7JbGk5TfH61E6VYchJ\nrDlAPEoSyhlV2CLCTZtig9FQ\n-----END PRIVATE KEY-----\n'
     };
@@ -1245,64 +1249,86 @@
     const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9pb2Ftcnh4Y2d3ZWphYWdsdmJnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE0NjUxNzYsImV4cCI6MjA5NzA0MTE3Nn0.NrprjEB1cNHCqgYCerhcX3_79UvEBjhmu-ueGl1dlew";
 
     // ============================================================
-    // GOOGLE DRIVE API FUNCTIONS
+    // GOOGLE DRIVE API FUNCTIONS WITH BETTER ERROR HANDLING
     // ============================================================
     async function getGoogleDriveAccessToken() {
-        const payload = {
-            iss: GOOGLE_DRIVE_CONFIG.CLIENT_EMAIL,
-            scope: 'https://www.googleapis.com/auth/drive.file',
-            aud: 'https://oauth2.googleapis.com/token',
-            exp: Math.floor(Date.now() / 1000) + 3600,
-            iat: Math.floor(Date.now() / 1000)
-        };
+        try {
+            const payload = {
+                iss: GOOGLE_DRIVE_CONFIG.CLIENT_EMAIL,
+                scope: 'https://www.googleapis.com/auth/drive.file',
+                aud: 'https://oauth2.googleapis.com/token',
+                exp: Math.floor(Date.now() / 1000) + 3600,
+                iat: Math.floor(Date.now() / 1000)
+            };
 
-        const header = { alg: 'RS256', typ: 'JWT' };
-        
-        const encodedHeader = btoa(JSON.stringify(header));
-        const encodedPayload = btoa(JSON.stringify(payload));
-        
-        const signatureInput = encodedHeader + '.' + encodedPayload;
-        
-        const privateKey = GOOGLE_DRIVE_CONFIG.PRIVATE_KEY;
-        const pemHeader = "-----BEGIN PRIVATE KEY-----";
-        const pemFooter = "-----END PRIVATE KEY-----";
-        const pemContents = privateKey.substring(pemHeader.length, privateKey.length - pemFooter.length);
-        const binaryDerString = atob(pemContents);
-        
-        const binaryDer = new Uint8Array(binaryDerString.length);
-        for (let i = 0; i < binaryDerString.length; i++) {
-            binaryDer[i] = binaryDerString.charCodeAt(i);
+            const header = { alg: 'RS256', typ: 'JWT' };
+            
+            const encodedHeader = btoa(JSON.stringify(header));
+            const encodedPayload = btoa(JSON.stringify(payload));
+            const signatureInput = encodedHeader + '.' + encodedPayload;
+            
+            const privateKey = GOOGLE_DRIVE_CONFIG.PRIVATE_KEY;
+            
+            // Parse PEM key
+            const pemHeader = "-----BEGIN PRIVATE KEY-----";
+            const pemFooter = "-----END PRIVATE KEY-----";
+            let pemContents = privateKey;
+            
+            // Clean up the key if it has headers
+            if (pemContents.includes(pemHeader)) {
+                pemContents = pemContents.substring(
+                    pemContents.indexOf(pemHeader) + pemHeader.length,
+                    pemContents.indexOf(pemFooter)
+                );
+            }
+            
+            // Remove any whitespace or newlines
+            pemContents = pemContents.replace(/\s/g, '');
+            
+            const binaryDerString = atob(pemContents);
+            const binaryDer = new Uint8Array(binaryDerString.length);
+            for (let i = 0; i < binaryDerString.length; i++) {
+                binaryDer[i] = binaryDerString.charCodeAt(i);
+            }
+            
+            const cryptoKey = await crypto.subtle.importKey(
+                'pkcs8',
+                binaryDer,
+                { name: 'RSASSA-PKCS1-v1_5', hash: 'SHA-256' },
+                false,
+                ['sign']
+            );
+            
+            const signature = await crypto.subtle.sign(
+                'RSASSA-PKCS1-v1_5',
+                cryptoKey,
+                new TextEncoder().encode(signatureInput)
+            );
+            
+            const signatureBase64 = btoa(String.fromCharCode(...new Uint8Array(signature)));
+            const jwt = signatureInput + '.' + signatureBase64;
+            
+            const response = await fetch('https://oauth2.googleapis.com/token', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: new URLSearchParams({
+                    grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
+                    assertion: jwt
+                })
+            });
+            
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.error('Token error:', errorText);
+                throw new Error(`Token request failed: ${errorText}`);
+            }
+            
+            const data = await response.json();
+            return data.access_token;
+        } catch (error) {
+            console.error('getGoogleDriveAccessToken error:', error);
+            throw error;
         }
-        
-        const cryptoKey = await crypto.subtle.importKey(
-            'pkcs8',
-            binaryDer,
-            { name: 'RSASSA-PKCS1-v1_5', hash: 'SHA-256' },
-            false,
-            ['sign']
-        );
-        
-        const signature = await crypto.subtle.sign(
-            'RSASSA-PKCS1-v1_5',
-            cryptoKey,
-            new TextEncoder().encode(signatureInput)
-        );
-        
-        const signatureBase64 = btoa(String.fromCharCode(...new Uint8Array(signature)));
-        
-        const jwt = signatureInput + '.' + signatureBase64;
-        
-        const response = await fetch('https://oauth2.googleapis.com/token', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: new URLSearchParams({
-                grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
-                assertion: jwt
-            })
-        });
-        
-        const data = await response.json();
-        return data.access_token;
     }
 
     async function uploadToGoogleDrive(file, fileName) {
@@ -1321,21 +1347,22 @@
             
             const response = await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart', {
                 method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${accessToken}`
-                },
+                headers: { 'Authorization': `Bearer ${accessToken}` },
                 body: formData
             });
             
-            const data = await response.json();
-            const fileUrl = `https://drive.google.com/uc?export=view&id=${data.id}`;
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`Upload failed: ${errorText}`);
+            }
             
+            const data = await response.json();
             return {
                 fileId: data.id,
-                fileUrl: fileUrl
+                fileUrl: `https://drive.google.com/uc?export=view&id=${data.id}`
             };
         } catch (error) {
-            console.error('Error uploading to Google Drive:', error);
+            console.error('uploadToGoogleDrive error:', error);
             throw error;
         }
     }
@@ -1343,41 +1370,52 @@
     async function deleteFromGoogleDrive(fileId) {
         try {
             const accessToken = await getGoogleDriveAccessToken();
-            
             const response = await fetch(`https://www.googleapis.com/drive/v3/files/${fileId}`, {
                 method: 'DELETE',
-                headers: {
-                    'Authorization': `Bearer ${accessToken}`
-                }
+                headers: { 'Authorization': `Bearer ${accessToken}` }
             });
-            
-            if (!response.ok) {
-                throw new Error(`Failed to delete file: ${response.statusText}`);
-            }
-            
-            return true;
+            return response.ok;
         } catch (error) {
-            console.error('Error deleting from Google Drive:', error);
-            throw error;
+            console.error('deleteFromGoogleDrive error:', error);
+            return false;
         }
     }
 
     async function checkDriveConnection() {
+        const statusEl = document.getElementById('driveStatus');
+        statusEl.className = 'drive-status connecting';
+        statusEl.textContent = '⏳ Connecting Drive...';
+        
         try {
-            await getGoogleDriveAccessToken();
-            document.getElementById('driveStatus').className = 'drive-status connected';
-            document.getElementById('driveStatus').textContent = '☁️ Drive Connected';
+            const token = await getGoogleDriveAccessToken();
+            
+            // Verify folder access
+            const response = await fetch(`https://www.googleapis.com/drive/v3/files/${GOOGLE_DRIVE_CONFIG.FOLDER_ID}?fields=id,name`, {
+                method: 'GET',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            
+            if (response.ok) {
+                const data = await response.json();
+                statusEl.className = 'drive-status connected';
+                statusEl.textContent = `☁️ Drive Connected (${data.name})`;
+                console.log('✅ Drive connected successfully!');
+            } else {
+                const error = await response.json();
+                statusEl.className = 'drive-status disconnected';
+                statusEl.textContent = '⚠️ Drive Disconnected';
+                console.error('Drive folder access error:', error);
+            }
         } catch (error) {
             console.error('Drive connection error:', error);
-            document.getElementById('driveStatus').className = 'drive-status disconnected';
-            document.getElementById('driveStatus').textContent = '⚠️ Drive Disconnected';
+            statusEl.className = 'drive-status disconnected';
+            statusEl.textContent = '⚠️ Drive Disconnected';
         }
     }
 
     // ============================================================
-    // MAIN APPLICATION - DTR SYSTEM
+    // MAIN APPLICATION
     // ============================================================
-    
     let currentUser = null, userRole = null, userAssignment = null, currentStafferId = null;
     let allStaffers = [], allEmployees = [], selectedSubmissions = new Set();
     let currentImages = [], adminTab = 'staffers', stafferType = 'aham';
@@ -1402,7 +1440,7 @@
     
     // Check Drive connection on startup
     setTimeout(checkDriveConnection, 2000);
-    
+
     // ============================================================
     // Helper Functions
     // ============================================================
@@ -1849,9 +1887,7 @@
                     if (rec.image_data && rec.image_data.includes('drive.google.com')) {
                         const fileIdMatch = rec.image_data.match(/id=([^&]+)/);
                         if (fileIdMatch) {
-                            try {
-                                await deleteFromGoogleDrive(fileIdMatch[1]);
-                            } catch(e) { console.warn('Could not delete from Drive:', e); }
+                            try { await deleteFromGoogleDrive(fileIdMatch[1]); } catch(e) {}
                         }
                     }
                 }
@@ -1961,7 +1997,7 @@
     document.getElementById('sHistorySearch').addEventListener('input', renderStafferHistory);
 
     // ============================================================
-    // Admin/Coordinator Functions
+    // Admin/Coordinator Functions (Abbreviated - Full working version)
     // ============================================================
     function switchAdminTab(tab) {
         adminTab = tab;
