@@ -660,14 +660,6 @@
             background:#fef3c7;
             color:#92400e;
         }
-        .drive-status.using {
-            background:#dbeafe;
-            color:#1e40af;
-        }
-        .drive-status.fallback {
-            background:#fef3c7;
-            color:#92400e;
-        }
     </style>
 </head>
 <body>
@@ -1242,12 +1234,39 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
     // ============================================================
-    // GOOGLE DRIVE CREDENTIALS
+    // GOOGLE DRIVE CREDENTIALS - YOUR ACTUAL VALUES
     // ============================================================
     const GOOGLE_DRIVE_CONFIG = {
         FOLDER_ID: '1ubwtrTYnmxac31Il0GArmMsJkWn1CEvI',
         CLIENT_EMAIL: 'dtr-storage@dtr-system-500901.iam.gserviceaccount.com',
-        PRIVATE_KEY: '-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDRSjh74YE9S0SE\nBgzEPXJZ9rNZzyGFPrYFUPNW+fNWfxMt5/dzsswT1rVV3Kl7ChYyfgkz+j1S4KMD\nf9rLpPii0+kQe4i0dvAPU9mxnCkDlnqSMn/WDn4YuUxHL+o3wOpfcRBBI3Cz1FCz\nE3LUH9Lv9VW9/4jko1oxWHKzWVavHQsDt/VsVpwN+5B1SOJq2BlQuPsKmNyNSf6l\nn8XWEj0Y7GOcsiLQsIr5LrHut8MDpKC0L2VY17LxIpscWvFyZdRHWYEOugFtR1ew\n9eCCH6yeuq2tgZ33Kp99hVRCl4LrYgPCTWq+HCq0UtFVSt2z8VtzDk/BXcZrf0fe\n+pHbzlY7AgMBAAECggEAFEA07Ee1qaikHeI3+gUNZjG+HkKHNngK724VyE9cgadq\nGQGzqo5Hu45a8s6XLOtHmpB3c4ATJEx4JC6K4omOmrLGf8HJnddPAyyp3nWtwkXH\n4RLh1mSF7v5+/aRf6rp6ncw4Nmqnd78OJUW3Jq9YSb+uEY8C6pyjwtfmwVPeVLMz\nKljYkvh7SJFgCDnwvPzm9asOrbN5MlEyFXrE9qGjjdacQ8Fu47pMNZmbdRxqPFhy\ndphk7x0UShNGobBinXMuzNah4RojmTZDrcA0wmKjcc6FkXePB42iAyEwUNFVac5e\nd7AuPbTh9lOaqFJlmKymioVah+8e1OvGQaogUv7VAQKBgQD250NXaBMM0AlYQ11k\nMhBsf4THW27X5vC3+1cAAvu+q7WESLYEHc/sW7mOuhgUwkbqJtg5nsUuQ7QOaNFA\nrkq/aJBmOin5UCfkDSEA12WgRrcFRt3ffloQ2ItDbRqxPAq50Ah8dKC/4/Dr/Gf0\nPNkLohPVp4dsGbTmr3TXf2BMswKBgQDZADIvTWz4DdowRYp1VG89ZlSJqzOk0doR\nNwG7AK6FH0siTPj/s5VDwniKLI4NSFzmY5AxPK6xmmUMLYyH8fKKNjI58/FgQRyQ\nHRubvZcmAE4SVRm2U3xqqErh0OZIg+ldFFejcgyMKifwRutkmr7Gl3EfWdMQvJXS\n+JqIT4ukWQKBgAx/Ffx1iwlJ+j8aYb6xff1P0vOYIBsTWDmnofahMAatgClq2LOK\norxuxAyCRLfAQYCWaLk53PcDfDiCe5zPdX8MlsplxTwWH36+X15AiKc9DQRaWt51\n8a8KlrnZ6tDvngdbjSJncL9llQsMomJNNhsNn/1fVk5VWr+WP86sZr5bAoGBAJr0\nJuHcOenPinRZ1AsAZgbEIa3E0LXrG/qa+uNcE0MAG5i8ujltNTMTlRulwTH+8Eeb\n5QUjveMYyvstM2KIBJdpJ+h2J3CCTjEid+p4MYxzP0yb9CZb60YGMqKZlzdE6skK\nk6Ik+IzGNYrAOaq3TW9mCONIMw2KfLoPx9l6Y87RAoGBAMopU6VgpnIh4qndf/J/\nAYALAsDxT2bif/9tdGqQnG+XQ7EkH3vDtct5SwvlDLa4E0NIhqdTOTZP5O891eO5\nY8mJJWwb99wVhI/agnunzTNXNLn5Fzegf+JKUhyheYNl8V7JbGk5TfH61E6VYchJ\nrDlAPEoSyhlV2CLCTZtig9FQ\n-----END PRIVATE KEY-----\n'
+        PRIVATE_KEY: `-----BEGIN PRIVATE KEY-----
+MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDRSjh74YE9S0SE
+BgzEPXJZ9rNZzyGFPrYFUPNW+fNWfxMt5/dzsswT1rVV3Kl7ChYyfgkz+j1S4KMD
+f9rLpPii0+kQe4i0dvAPU9mxnCkDlnqSMn/WDn4YuUxHL+o3wOpfcRBBI3Cz1FCz
+E3LUH9Lv9VW9/4jko1oxWHKzWVavHQsDt/VsVpwN+5B1SOJq2BlQuPsKmNyNSf6l
+n8XWEj0Y7GOcsiLQsIr5LrHut8MDpKC0L2VY17LxIpscWvFyZdRHWYEOugFtR1ew
+9eCCH6yeuq2tgZ33Kp99hVRCl4LrYgPCTWq+HCq0UtFVSt2z8VtzDk/BXcZrf0fe
++pHbzlY7AgMBAAECggEAFEA07Ee1qaikHeI3+gUNZjG+HkKHNngK724VyE9cgadq
+GQGzqo5Hu45a8s6XLOtHmpB3c4ATJEx4JC6K4omOmrLGf8HJnddPAyyp3nWtwkXH
+4RLh1mSF7v5+/aRf6rp6ncw4Nmqnd78OJUW3Jq9YSb+uEY8C6pyjwtfmwVPeVLMz
+KljYkvh7SJFgCDnwvPzm9asOrbN5MlEyFXrE9qGjjdacQ8Fu47pMNZmbdRxqPFhy
+dphk7x0UShNGobBinXMuzNah4RojmTZDrcA0wmKjcc6FkXePB42iAyEwUNFVac5e
+d7AuPbTh9lOaqFJlmKymioVah+8e1OvGQaogUv7VAQKBgQD250NXaBMM0AlYQ11k
+MhBsf4THW27X5vC3+1cAAvu+q7WESLYEHc/sW7mOuhgUwkbqJtg5nsUuQ7QOaNFA
+rkq/aJBmOin5UCfkDSEA12WgRrcFRt3ffloQ2ItDbRqxPAq50Ah8dKC/4/Dr/Gf0
+PNkLohPVp4dsGbTmr3TXf2BMswKBgQDZADIvTWz4DdowRYp1VG89ZlSJqzOk0doR
+NwG7AK6FH0siTPj/s5VDwniKLI4NSFzmY5AxPK6xmmUMLYyH8fKKNjI58/FgQRyQ
+HRubvZcmAE4SVRm2U3xqqErh0OZIg+ldFFejcgyMKifwRutkmr7Gl3EfWdMQvJXS
++JqIT4ukWQKBgAx/Ffx1iwlJ+j8aYb6xff1P0vOYIBsTWDmnofahMAatgClq2LOK
+orxuxAyCRLfAQYCWaLk53PcDfDiCe5zPdX8MlsplxTwWH36+X15AiKc9DQRaWt51
+8a8KlrnZ6tDvngdbjSJncL9llQsMomJNNhsNn/1fVk5VWr+WP86sZr5bAoGBAJr0
+JuHcOenPinRZ1AsAZgbEIa3E0LXrG/qa+uNcE0MAG5i8ujltNTMTlRulwTH+8Eeb
+5QUjveMYyvstM2KIBJdpJ+h2J3CCTjEid+p4MYxzP0yb9CZb60YGMqKZlzdE6skK
+k6Ik+IzGNYrAOaq3TW9mCONIMw2KfLoPx9l6Y87RAoGBAMopU6VgpnIh4qndf/J/
+AYALAsDxT2bif/9tdGqQnG+XQ7EkH3vDtct5SwvlDLa4E0NIhqdTOTZP5O891eO5
+Y8mJJWwb99wVhI/agnunzTNXNLn5Fzegf+JKUhyheYNl8V7JbGk5TfH61E6VYchJ
+rDlAPEoSyhlV2CLCTZtig9FQ
+-----END PRIVATE KEY-----`
     };
 
     // ============================================================
@@ -1257,25 +1276,27 @@
     const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9pb2Ftcnh4Y2d3ZWphYWdsdmJnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE0NjUxNzYsImV4cCI6MjA5NzA0MTE3Nn0.NrprjEB1cNHCqgYCerhcX3_79UvEBjhmu-ueGl1dlew";
 
     // ============================================================
-    // SIMPLIFIED GOOGLE DRIVE - Using Service Account with fetch
+    // GOOGLE DRIVE API FUNCTIONS - USING BACKTICKS FOR PRIVATE KEY
     // ============================================================
     let driveToken = null;
     let driveConnected = false;
 
-    async function getDriveToken() {
+    async function getGoogleDriveAccessToken() {
         try {
-            // Clean the private key
-            let privateKey = GOOGLE_DRIVE_CONFIG.PRIVATE_KEY;
+            // Get the private key (now using backticks, preserves newlines)
+            const privateKey = GOOGLE_DRIVE_CONFIG.PRIVATE_KEY;
             
             // Remove header/footer and whitespace
-            privateKey = privateKey.replace(/-----BEGIN PRIVATE KEY-----/, '');
-            privateKey = privateKey.replace(/-----END PRIVATE KEY-----/, '');
-            privateKey = privateKey.replace(/\n/g, '');
-            privateKey = privateKey.replace(/\r/g, '');
-            privateKey = privateKey.trim();
+            let pemContents = privateKey
+                .replace(/-----BEGIN PRIVATE KEY-----/, '')
+                .replace(/-----END PRIVATE KEY-----/, '')
+                .trim();
+            
+            // Remove all whitespace including newlines
+            pemContents = pemContents.replace(/\s/g, '');
             
             // Decode base64
-            const binaryDer = Uint8Array.from(atob(privateKey), c => c.charCodeAt(0));
+            const binaryDer = Uint8Array.from(atob(pemContents), c => c.charCodeAt(0));
             
             // Import key
             const cryptoKey = await crypto.subtle.importKey(
@@ -1286,7 +1307,7 @@
                 ['sign']
             );
 
-            // Create JWT payload
+            // Create JWT
             const now = Math.floor(Date.now() / 1000);
             const payload = {
                 iss: GOOGLE_DRIVE_CONFIG.CLIENT_EMAIL,
@@ -1302,7 +1323,6 @@
             const encodedPayload = btoa(JSON.stringify(payload));
             const signatureInput = encodedHeader + '.' + encodedPayload;
             
-            // Sign
             const signature = await crypto.subtle.sign(
                 'RSASSA-PKCS1-v1_5',
                 cryptoKey,
@@ -1312,7 +1332,6 @@
             const signatureBase64 = btoa(String.fromCharCode(...new Uint8Array(signature)));
             const jwt = signatureInput + '.' + signatureBase64;
             
-            // Exchange for token
             const response = await fetch('https://oauth2.googleapis.com/token', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -1336,11 +1355,11 @@
         }
     }
 
-    async function uploadToDrive(file, fileName) {
+    async function uploadToGoogleDrive(file, fileName) {
         try {
             let token = driveToken;
             if (!token) {
-                token = await getDriveToken();
+                token = await getGoogleDriveAccessToken();
             }
             if (!token) {
                 throw new Error('Cannot authenticate with Google Drive');
@@ -1379,11 +1398,11 @@
         }
     }
 
-    async function deleteFromDrive(fileId) {
+    async function deleteFromGoogleDrive(fileId) {
         try {
             let token = driveToken;
             if (!token) {
-                token = await getDriveToken();
+                token = await getGoogleDriveAccessToken();
             }
             if (!token) return false;
             
@@ -1404,7 +1423,7 @@
         statusEl.textContent = '⏳ Connecting Drive...';
         
         try {
-            const token = await getDriveToken();
+            const token = await getGoogleDriveAccessToken();
             if (token) {
                 statusEl.className = 'drive-status connected';
                 statusEl.textContent = '☁️ Drive Connected';
@@ -1894,7 +1913,7 @@
                     if (rec.image_data && rec.image_data.includes('drive.google.com')) {
                         const fileIdMatch = rec.image_data.match(/id=([^&]+)/);
                         if (fileIdMatch) {
-                            try { await deleteFromDrive(fileIdMatch[1]); } catch(e) {}
+                            try { await deleteFromGoogleDrive(fileIdMatch[1]); } catch(e) {}
                         }
                     }
                 }
@@ -1907,7 +1926,7 @@
             let savedCount = 0;
             for (let img of currentImages) {
                 const fileName = `${stafferName.replace(/[^a-zA-Z0-9]/g, '_')}_${Date.now()}_${savedCount + 1}.jpg`;
-                const driveResult = await uploadToDrive(img, fileName);
+                const driveResult = await uploadToGoogleDrive(img, fileName);
                 
                 const recordData = {
                     staffer_id: currentStafferId,
@@ -2004,7 +2023,7 @@
     document.getElementById('sHistorySearch').addEventListener('input', renderStafferHistory);
 
     // ============================================================
-    // Admin/Coordinator Functions (Abbreviated for space - but full working)
+    // Admin/Coordinator Functions
     // ============================================================
     function switchAdminTab(tab) {
         adminTab = tab;
@@ -2285,7 +2304,7 @@
                     if (rec.image_data && rec.image_data.includes('drive.google.com')) {
                         const fileIdMatch = rec.image_data.match(/id=([^&]+)/);
                         if (fileIdMatch) {
-                            try { await deleteFromDrive(fileIdMatch[1]); } catch(e) {}
+                            try { await deleteFromGoogleDrive(fileIdMatch[1]); } catch(e) {}
                         }
                     }
                 }
@@ -2638,7 +2657,7 @@
                     if (rec.image_data && rec.image_data.includes('drive.google.com')) {
                         const fileIdMatch = rec.image_data.match(/id=([^&]+)/);
                         if (fileIdMatch) {
-                            try { await deleteFromDrive(fileIdMatch[1]); } catch(e) {}
+                            try { await deleteFromGoogleDrive(fileIdMatch[1]); } catch(e) {}
                         }
                     }
                 }
