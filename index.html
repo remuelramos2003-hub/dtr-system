@@ -29,7 +29,6 @@
             --warning-color: #f59e0b;
             --danger-color: #ef4444;
         }
-        
         body.dark-mode {
             --bg-color: #1a1a2e;
             --card-bg: #16213e;
@@ -45,7 +44,6 @@
             --label-color: #94a3b8;
             --select-bg: #0f0f23;
         }
-        
         *{margin:0;padding:0;box-sizing:border-box;}
         body {
             background: var(--bg-color);
@@ -816,7 +814,6 @@
                 <div class="summary-item"><h3 id="printedCount">0</h3><p>Printed</p></div>
             </div>
             
-            <!-- Filter Section -->
             <div class="filter-section">
                 <div class="filter-row">
                     <div class="filter-group">
@@ -1234,7 +1231,7 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
     // ============================================================
-    // GOOGLE DRIVE CREDENTIALS - YOUR ACTUAL VALUES
+    // GOOGLE DRIVE CREDENTIALS
     // ============================================================
     const GOOGLE_DRIVE_CONFIG = {
         FOLDER_ID: '1ubwtrTYnmxac31Il0GArmMsJkWn1CEvI',
@@ -1276,28 +1273,21 @@ rDlAPEoSyhlV2CLCTZtig9FQ
     const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9pb2Ftcnh4Y2d3ZWphYWdsdmJnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE0NjUxNzYsImV4cCI6MjA5NzA0MTE3Nn0.NrprjEB1cNHCqgYCerhcX3_79UvEBjhmu-ueGl1dlew";
 
     // ============================================================
-    // GOOGLE DRIVE API FUNCTIONS - FIXED VERSION
+    // GOOGLE DRIVE API FUNCTIONS
     // ============================================================
     let driveToken = null;
     let driveConnected = false;
 
     async function getGoogleDriveAccessToken() {
         try {
-            // Get the private key
             const privateKey = GOOGLE_DRIVE_CONFIG.PRIVATE_KEY;
-            
-            // Extract the base64 content - remove header/footer and all whitespace from the key content
             let pemContents = privateKey
                 .replace(/-----BEGIN PRIVATE KEY-----/, '')
                 .replace(/-----END PRIVATE KEY-----/, '')
-                .replace(/\n/g, '')  // Remove newlines
-                .replace(/\r/g, '')  // Remove carriage returns
+                .replace(/\n/g, '')
+                .replace(/\r/g, '')
                 .trim();
-            
-            // Decode base64
             const binaryDer = Uint8Array.from(atob(pemContents), c => c.charCodeAt(0));
-            
-            // Import key
             const cryptoKey = await crypto.subtle.importKey(
                 'pkcs8',
                 binaryDer.buffer,
@@ -1305,8 +1295,6 @@ rDlAPEoSyhlV2CLCTZtig9FQ
                 false,
                 ['sign']
             );
-
-            // Create JWT
             const now = Math.floor(Date.now() / 1000);
             const payload = {
                 iss: GOOGLE_DRIVE_CONFIG.CLIENT_EMAIL,
@@ -1315,29 +1303,21 @@ rDlAPEoSyhlV2CLCTZtig9FQ
                 exp: now + 3600,
                 iat: now
             };
-
             const header = { alg: 'RS256', typ: 'JWT' };
-            
-            // Base64url encode
             const encodedHeader = btoa(JSON.stringify(header))
                 .replace(/\+/g, '-')
                 .replace(/\//g, '_')
                 .replace(/=+$/, '');
-            
             const encodedPayload = btoa(JSON.stringify(payload))
                 .replace(/\+/g, '-')
                 .replace(/\//g, '_')
                 .replace(/=+$/, '');
-            
             const signatureInput = encodedHeader + '.' + encodedPayload;
-            
             const signature = await crypto.subtle.sign(
                 'RSASSA-PKCS1-v1_5',
                 cryptoKey,
                 new TextEncoder().encode(signatureInput)
             );
-            
-            // Convert signature to base64url
             const signatureArray = new Uint8Array(signature);
             let binaryString = '';
             for (let i = 0; i < signatureArray.length; i++) {
@@ -1347,21 +1327,17 @@ rDlAPEoSyhlV2CLCTZtig9FQ
                 .replace(/\+/g, '-')
                 .replace(/\//g, '_')
                 .replace(/=+$/, '');
-            
             const jwt = signatureInput + '.' + signatureBase64;
-            
             const response = await fetch('https://oauth2.googleapis.com/token', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 body: `grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer&assertion=${jwt}`
             });
-            
             if (!response.ok) {
                 const errorText = await response.text();
                 console.error('Token error:', errorText);
                 throw new Error('Token request failed: ' + errorText);
             }
-            
             const data = await response.json();
             driveToken = data.access_token;
             driveConnected = true;
@@ -1383,29 +1359,24 @@ rDlAPEoSyhlV2CLCTZtig9FQ
             if (!token) {
                 throw new Error('Cannot authenticate with Google Drive');
             }
-            
             const metadata = {
                 name: fileName,
                 parents: [GOOGLE_DRIVE_CONFIG.FOLDER_ID],
                 mimeType: file.type || 'image/jpeg'
             };
-            
             const formData = new FormData();
             formData.append('metadata', new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
             formData.append('file', file);
-            
             const response = await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart', {
                 method: 'POST',
                 headers: { 'Authorization': `Bearer ${token}` },
                 body: formData
             });
-            
             if (!response.ok) {
                 const errorText = await response.text();
                 console.error('Upload error:', errorText);
                 throw new Error('Upload failed');
             }
-            
             const data = await response.json();
             return {
                 fileId: data.id,
@@ -1424,7 +1395,6 @@ rDlAPEoSyhlV2CLCTZtig9FQ
                 token = await getGoogleDriveAccessToken();
             }
             if (!token) return false;
-            
             const response = await fetch(`https://www.googleapis.com/drive/v3/files/${fileId}`, {
                 method: 'DELETE',
                 headers: { 'Authorization': `Bearer ${token}` }
@@ -1440,7 +1410,6 @@ rDlAPEoSyhlV2CLCTZtig9FQ
         const statusEl = document.getElementById('driveStatus');
         statusEl.className = 'drive-status connecting';
         statusEl.textContent = '⏳ Connecting Drive...';
-        
         try {
             const token = await getGoogleDriveAccessToken();
             if (token) {
@@ -1459,7 +1428,7 @@ rDlAPEoSyhlV2CLCTZtig9FQ
     }
 
     // ============================================================
-    // MAIN APPLICATION - FULL DTR SYSTEM
+    // MAIN APPLICATION
     // ============================================================
     let currentUser = null, userRole = null, userAssignment = null, currentStafferId = null;
     let allStaffers = [], allEmployees = [], selectedSubmissions = new Set();
@@ -1483,7 +1452,6 @@ rDlAPEoSyhlV2CLCTZtig9FQ
         staffer_fbc: 'fbc123'
     };
     
-    // Check Drive on startup
     setTimeout(checkDriveConnection, 1500);
 
     // ============================================================
@@ -1597,17 +1565,14 @@ rDlAPEoSyhlV2CLCTZtig9FQ
     function login() {
         const role = document.getElementById('roleSelect').value;
         const password = document.getElementById('passwordInput').value;
-        
         if (credentials[role] === password) {
             currentUser = role;
             localStorage.setItem('dtrUser', currentUser);
-            
             if (role === 'admin') { userRole = 'admin'; userAssignment = null; }
             else if (role === 'coordinator_aham') { userRole = 'coordinator'; userAssignment = 'AHAM'; }
             else if (role === 'coordinator_fbc') { userRole = 'coordinator'; userAssignment = 'FBC'; }
             else if (role === 'staffer_aham') { userRole = 'staffer'; userAssignment = 'AHAM'; }
             else if (role === 'staffer_fbc') { userRole = 'staffer'; userAssignment = 'FBC'; }
-            
             showApp();
         } else {
             showMessage('Login Failed', 'Invalid password', 'error');
@@ -1626,15 +1591,12 @@ rDlAPEoSyhlV2CLCTZtig9FQ
     function showApp() {
         document.getElementById('loginContainer').style.display = 'none';
         document.getElementById('appContainer').style.display = 'block';
-        
         let displayName = '', assignText = '';
         if (userRole === 'admin') { displayName = 'Admin'; assignText = 'Full Access'; }
         else if (userRole === 'coordinator') { displayName = 'Coordinator'; assignText = userAssignment; }
         else { displayName = 'Staffer'; assignText = userAssignment || ''; }
-        
         document.getElementById('userRoleDisplay').innerText = displayName;
         document.getElementById('assignBadge').innerText = assignText;
-        
         if (userRole === 'coordinator') {
             document.getElementById('stafferTypeTabs').style.display = 'none';
             document.getElementById('modalTypeTabs').style.display = 'none';
@@ -1642,7 +1604,6 @@ rDlAPEoSyhlV2CLCTZtig9FQ
             document.getElementById('stafferTypeTabs').style.display = 'flex';
             document.getElementById('modalTypeTabs').style.display = 'flex';
         }
-        
         if (userRole === 'staffer') {
             document.getElementById('stafferView').style.display = 'block';
             document.getElementById('adminCoordinatorView').style.display = 'none';
@@ -1661,7 +1622,6 @@ rDlAPEoSyhlV2CLCTZtig9FQ
                 }
             }, 15000);
         }
-        
         document.getElementById('status').innerHTML = '✅ Connected';
         document.getElementById('status').className = 'status success';
     }
@@ -1704,25 +1664,21 @@ rDlAPEoSyhlV2CLCTZtig9FQ
         const searchTerm = document.getElementById('stafferSearchInput').value.trim();
         const resultsDiv = document.getElementById('stafferSearchResults');
         const clearBtn = document.getElementById('clearSearchBtn');
-        
         if (searchTerm.length > 0) {
             clearBtn.style.display = 'block';
         } else {
             clearBtn.style.display = 'none';
         }
-        
         if (!searchTerm) {
             resultsDiv.innerHTML = '';
             document.getElementById('stafferQuickSelect').style.display = 'none';
             return;
         }
-        
         if (searchTimeout) clearTimeout(searchTimeout);
         searchTimeout = setTimeout(() => {
             let filtered = allStaffers.filter(s => 
                 (s.name || '').toLowerCase().includes(searchTerm.toLowerCase())
             );
-            
             if (filtered.length === 0) {
                 resultsDiv.innerHTML = `
                     <div class="staffer-search-result" style="cursor:default;border-color:var(--danger-color);">
@@ -1733,7 +1689,6 @@ rDlAPEoSyhlV2CLCTZtig9FQ
                 document.getElementById('stafferQuickSelect').style.display = 'none';
                 return;
             }
-            
             if (filtered.length > 5) {
                 document.getElementById('stafferQuickSelect').style.display = 'block';
                 document.getElementById('stafferQuickSelect').innerHTML = `
@@ -1744,7 +1699,6 @@ rDlAPEoSyhlV2CLCTZtig9FQ
             } else {
                 document.getElementById('stafferQuickSelect').style.display = 'none';
             }
-            
             resultsDiv.innerHTML = filtered.map(s => {
                 const dealerClass = s.dealer && s.dealer.includes('AHAM') ? 'aham' : 'fbc';
                 return `
@@ -1764,16 +1718,13 @@ rDlAPEoSyhlV2CLCTZtig9FQ
     function selectStaffer(stafferId) {
         const staffer = allStaffers.find(s => s.id === stafferId);
         if (!staffer) return;
-        
         selectedStaffer = staffer;
         currentStafferId = stafferId;
-        
         document.getElementById('selectedStafferInfo').style.display = 'block';
         document.getElementById('stafferSearchResults').innerHTML = '';
         document.getElementById('stafferSearchInput').value = staffer.name;
         document.getElementById('clearSearchBtn').style.display = 'block';
         document.getElementById('stafferQuickSelect').style.display = 'none';
-        
         document.getElementById('sName').innerText = staffer.name || '-';
         document.getElementById('sCode').innerText = staffer.staff_code || staffer.id_no || '-';
         document.getElementById('sStore').innerText = staffer.store_name || staffer.outlet || '-';
@@ -1784,7 +1735,6 @@ rDlAPEoSyhlV2CLCTZtig9FQ
         document.getElementById('sSchedule').innerText = staffer.schedule || '-';
         document.getElementById('sPosition').innerText = staffer.position || '-';
         document.getElementById('sDayOff').innerText = staffer.day_off || '-';
-        
         loadStafferDTRHistory();
         document.getElementById('selectedStafferInfo').scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
@@ -1795,15 +1745,12 @@ rDlAPEoSyhlV2CLCTZtig9FQ
                 document.getElementById('sHistoryGrid').innerHTML = '<div class="loading">No staffer selected.</div>';
                 return;
             }
-            
             const res = await fetch(`${SUPABASE_URL}/rest/v1/dtr_records?select=*&order=created_at.desc`, {
                 headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
             });
             const allData = await res.json();
-            
             const stafferName = selectedStaffer ? selectedStaffer.name : '';
             const stafferId = currentStafferId;
-            
             let data = allData.filter(r => {
                 if (r.staffer_id === stafferId) return true;
                 if (r.employee_name === stafferName) return true;
@@ -1811,7 +1758,6 @@ rDlAPEoSyhlV2CLCTZtig9FQ
                     r.employee_name.toLowerCase().trim() === stafferName.toLowerCase().trim()) return true;
                 return false;
             });
-            
             dtrRecordsAll = data || [];
             document.getElementById('historyCount').textContent = dtrRecordsAll.length;
             renderStafferHistory();
@@ -1827,13 +1773,11 @@ rDlAPEoSyhlV2CLCTZtig9FQ
             const searchable = (r.cutoff_range || '') + (r.remarks || '') + (r.employee_name || '');
             return searchable.toLowerCase().includes(search);
         });
-        
         const grid = document.getElementById('sHistoryGrid');
         if (filtered.length === 0) {
             grid.innerHTML = '<div class="no-records">📭 No DTR records found. Submit your first DTR above!</div>';
             return;
         }
-        
         const grouped = {};
         filtered.forEach(r => {
             const key = r.batch_id || r.id;
@@ -1842,7 +1786,6 @@ rDlAPEoSyhlV2CLCTZtig9FQ
                 grouped[key].images.push(r.image_data);
             }
         });
-        
         grid.innerHTML = Object.values(grouped).map((g, index) => `
             <div class="card">
                 ${g.images.length > 0 ? `<img src="${g.images[0]}" class="card-img" onclick="openImageViewer(${JSON.stringify(g.images)}, '${g.batch_id}')" alt="DTR Image">` : '<div class="card-img" style="background:#e5e7eb;display:flex;align-items:center;justify-content:center;color:#6b7280;">No Image</div>'}
@@ -1869,11 +1812,9 @@ rDlAPEoSyhlV2CLCTZtig9FQ
             if (record.cutoff_from) document.getElementById('sFromDate').value = record.cutoff_from;
             if (record.cutoff_to) document.getElementById('sToDate').value = record.cutoff_to;
             if (record.remarks) document.getElementById('sRemarks').value = record.remarks;
-            
             document.getElementById('sSaveBtn').dataset.editId = batchId;
             document.getElementById('sSaveBtn').innerHTML = '<i class="bi bi-pencil"></i> Update DTR';
             document.getElementById('sSaveBtn').style.background = '#f59e0b';
-            
             let cancelBtn = document.getElementById('cancelEditBtn');
             if (!cancelBtn) {
                 cancelBtn = document.createElement('button');
@@ -1891,7 +1832,6 @@ rDlAPEoSyhlV2CLCTZtig9FQ
                 };
                 document.getElementById('sSaveBtn').parentNode.appendChild(cancelBtn);
             }
-            
             showMessage('Edit Mode', 'Modify the cutoff dates or remarks, then click Update DTR.', 'info');
         } else {
             showMessage('Error', 'Record not found', 'error');
@@ -1903,7 +1843,6 @@ rDlAPEoSyhlV2CLCTZtig9FQ
         const toDate = document.getElementById('sToDate').value;
         const remarks = document.getElementById('sRemarks').value;
         const editId = document.getElementById('sSaveBtn').dataset.editId;
-        
         if (!fromDate || !toDate) {
             showMessage('Error', 'Please select cutoff dates', 'error');
             return;
@@ -1912,20 +1851,17 @@ rDlAPEoSyhlV2CLCTZtig9FQ
             showMessage('Error', 'Please select at least one image', 'error');
             return;
         }
-        
         const cutoffRange = `${fromDate} to ${toDate}`;
         const batchId = editId || Date.now().toString();
         const saveBtn = document.getElementById('sSaveBtn');
         const originalText = saveBtn.innerHTML;
         saveBtn.innerHTML = 'Saving...';
         saveBtn.disabled = true;
-        
         try {
             const stafferName = selectedStaffer ? selectedStaffer.name : document.getElementById('sName').innerText;
             const outlet = selectedStaffer ? selectedStaffer.outlet || selectedStaffer.store_name || 'N/A' : 'N/A';
             const dealer = selectedStaffer ? selectedStaffer.dealer || userAssignment || 'N/A' : 'N/A';
             const storeName = selectedStaffer ? selectedStaffer.store_name || '' : '';
-            
             if (editId) {
                 const existingRecords = dtrRecordsAll.filter(r => r.batch_id === editId);
                 for (let rec of existingRecords) {
@@ -1941,12 +1877,10 @@ rDlAPEoSyhlV2CLCTZtig9FQ
                     headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
                 });
             }
-            
             let savedCount = 0;
             for (let img of currentImages) {
                 const fileName = `${stafferName.replace(/[^a-zA-Z0-9]/g, '_')}_${Date.now()}_${savedCount + 1}.jpg`;
                 const driveResult = await uploadToGoogleDrive(img, fileName);
-                
                 const recordData = {
                     staffer_id: currentStafferId,
                     employee_name: stafferName,
@@ -1961,7 +1895,6 @@ rDlAPEoSyhlV2CLCTZtig9FQ
                     batch_id: batchId,
                     printed: false
                 };
-                
                 const response = await fetch(`${SUPABASE_URL}/rest/v1/dtr_records`, {
                     method: 'POST',
                     headers: { 
@@ -1971,17 +1904,13 @@ rDlAPEoSyhlV2CLCTZtig9FQ
                     },
                     body: JSON.stringify(recordData)
                 });
-                
                 if (!response.ok) {
                     const errorText = await response.text();
                     throw new Error(`Failed to save: ${errorText}`);
                 }
-                
                 savedCount++;
             }
-            
             await showMessage('Success!', `${savedCount} image(s) saved to Google Drive!`, 'success');
-            
             document.getElementById('sRemarks').value = '';
             document.getElementById('sImageFiles').value = '';
             document.getElementById('sPreviewContainer').innerHTML = '';
@@ -1989,18 +1918,14 @@ rDlAPEoSyhlV2CLCTZtig9FQ
             document.getElementById('sSaveBtn').innerHTML = '<i class="bi bi-save"></i> Save DTR';
             document.getElementById('sSaveBtn').style.background = '#4361ee';
             delete document.getElementById('sSaveBtn').dataset.editId;
-            
             const cancelBtn = document.getElementById('cancelEditBtn');
             if (cancelBtn) cancelBtn.remove();
-            
             const today = new Date();
             document.getElementById('sFromDate').value = new Date(today.getFullYear(), today.getMonth(), 1).toISOString().split('T')[0];
             document.getElementById('sToDate').value = new Date(today.getFullYear(), today.getMonth() + 1, 0).toISOString().split('T')[0];
-            
             setTimeout(() => {
                 loadStafferDTRHistory();
             }, 1000);
-            
         } catch(e) {
             console.error('Save error:', e);
             showMessage('Error', 'Failed to save: ' + e.message, 'error');
@@ -2078,7 +2003,6 @@ rDlAPEoSyhlV2CLCTZtig9FQ
                 headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
             });
             let data = await res.json();
-            
             if (userRole === 'coordinator') {
                 if (userAssignment === 'AHAM') {
                     data = data.filter(s => s.dealer === 'AHAM OFFICE' || s.dealer?.includes('AHAM'));
@@ -2092,7 +2016,6 @@ rDlAPEoSyhlV2CLCTZtig9FQ
                     data = data.filter(s => s.dealer === 'FBC');
                 }
             }
-            
             allStaffers = data || [];
             allStaffersForComparison = data || [];
             renderStaffers();
@@ -2110,13 +2033,11 @@ rDlAPEoSyhlV2CLCTZtig9FQ
             (s.staff_code || '').toLowerCase().includes(search) ||
             (s.store_name || '').toLowerCase().includes(search)
         );
-        
         const grid = document.getElementById('staffersGrid');
         if (filtered.length === 0) {
             grid.innerHTML = '<div class="no-records">📭 No staffers found. Click "Add Staffer" to get started!</div>';
             return;
         }
-        
         grid.innerHTML = filtered.map(s => `
             <div class="card">
                 <div class="card-body">
@@ -2140,11 +2061,9 @@ rDlAPEoSyhlV2CLCTZtig9FQ
     function editStaffer(id) {
         const staffer = allStaffers.find(s => s.id === id);
         if (!staffer) return;
-        
         document.getElementById('editStafferId').value = id;
         document.getElementById('modalTitle').innerText = 'Edit';
         document.getElementById('modalSaveBtnText').innerText = 'Update';
-        
         const isAham = staffer.dealer === 'AHAM OFFICE' || staffer.dealer?.includes('AHAM');
         if (isAham) {
             switchModalType('aham');
@@ -2181,25 +2100,58 @@ rDlAPEoSyhlV2CLCTZtig9FQ
             document.getElementById('fFbcSchedule').value = staffer.schedule || '';
             document.getElementById('fFbcRemarks').value = staffer.remarks || '';
         }
-        
         const modal = new bootstrap.Modal(document.getElementById('addStafferModal'));
         modal.show();
     }
     
+    // FIXED: Individual validation for each field
     async function saveStaffer() {
         const type = document.getElementById('modalStafferTypeHidden').value;
         const editId = document.getElementById('editStafferId').value;
         let data = {};
         
         if (type === 'aham') {
+            const idNo = document.getElementById('fAhamIdNo').value.trim();
+            const surname = document.getElementById('fAhamSurname').value.trim();
+            const name = document.getElementById('fAhamName').value.trim();
+            const dealer = document.getElementById('fAhamDealer').value;
+            const outlet = document.getElementById('fAhamOutlet').value;
+            const position = document.getElementById('fAhamPosition').value;
+            
+            // INDIVIDUAL validation - shows exact missing field
+            if (!idNo) {
+                showMessage('Error', 'Please fill in ID-NO', 'error');
+                return;
+            }
+            if (!surname) {
+                showMessage('Error', 'Please fill in SURNAME', 'error');
+                return;
+            }
+            if (!name) {
+                showMessage('Error', 'Please fill in NAME', 'error');
+                return;
+            }
+            if (!dealer) {
+                showMessage('Error', 'Please select DEALER', 'error');
+                return;
+            }
+            if (!outlet) {
+                showMessage('Error', 'Please select OUTLET', 'error');
+                return;
+            }
+            if (!position) {
+                showMessage('Error', 'Please select POSITION', 'error');
+                return;
+            }
+            
             data = {
-                id_no: document.getElementById('fAhamIdNo').value.trim(),
-                surname: document.getElementById('fAhamSurname').value.trim(),
-                name: document.getElementById('fAhamName').value.trim(),
+                id_no: idNo,
+                surname: surname,
+                name: name,
                 middle: document.getElementById('fAhamMiddle').value.trim(),
-                dealer: document.getElementById('fAhamDealer').value,
-                outlet: document.getElementById('fAhamOutlet').value,
-                position: document.getElementById('fAhamPosition').value,
+                dealer: dealer,
+                outlet: outlet,
+                position: position,
                 date_hired: document.getElementById('fAhamDateHired').value || null,
                 rates: parseFloat(document.getElementById('fAhamRates').value) || null,
                 region: document.getElementById('fAhamRegion').value,
@@ -2211,21 +2163,34 @@ rDlAPEoSyhlV2CLCTZtig9FQ
                 email_address: document.getElementById('fAhamEmail').value.trim(),
                 payroll: document.getElementById('fAhamPayroll').value.trim(),
                 remarks: document.getElementById('fAhamRemarks').value.trim(),
-                staff_code: document.getElementById('fAhamIdNo').value.trim(),
-                store_name: document.getElementById('fAhamOutlet').value
+                staff_code: idNo,
+                store_name: outlet
             };
+            data.full_name = `${surname}, ${name} ${data.middle}`.trim();
             
-            if (!data.id_no || !data.surname || !data.name || !data.dealer || !data.outlet || !data.position) {
-                showMessage('Error', 'Please fill in ID-NO, SURNAME, NAME, DEALER, OUTLET, and POSITION', 'error');
+        } else {
+            const storeCode = document.getElementById('fFbcStoreCode').value.trim();
+            const storeName = document.getElementById('fFbcStoreName').value;
+            const name = document.getElementById('fFbcName').value.trim();
+            
+            if (!storeCode) {
+                showMessage('Error', 'Please fill in STORE CODE', 'error');
                 return;
             }
-            data.full_name = `${data.surname}, ${data.name} ${data.middle}`.trim();
-        } else {
+            if (!storeName) {
+                showMessage('Error', 'Please select STORE NAME', 'error');
+                return;
+            }
+            if (!name) {
+                showMessage('Error', 'Please fill in NAME', 'error');
+                return;
+            }
+            
             data = {
-                store_code: document.getElementById('fFbcStoreCode').value.trim(),
-                store_name: document.getElementById('fFbcStoreName').value,
+                store_code: storeCode,
+                store_name: storeName,
                 plotted_disers: parseInt(document.getElementById('fFbcPlottedDisers').value) || 0,
-                name: document.getElementById('fFbcName').value.trim(),
+                name: name,
                 region: document.getElementById('fFbcRegion').value,
                 rate: parseFloat(document.getElementById('fFbcRate').value) || null,
                 date_hired_philman: document.getElementById('fFbcDateHired').value || null,
@@ -2234,15 +2199,10 @@ rDlAPEoSyhlV2CLCTZtig9FQ
                 day_off: document.getElementById('fFbcDayOff').value.trim(),
                 schedule: document.getElementById('fFbcSchedule').value.trim(),
                 remarks: document.getElementById('fFbcRemarks').value.trim(),
-                staff_code: document.getElementById('fFbcStoreCode').value.trim(),
+                staff_code: storeCode,
                 dealer: 'FBC',
-                full_name: document.getElementById('fFbcName').value.trim()
+                full_name: name
             };
-            
-            if (!data.store_code || !data.store_name || !data.name) {
-                showMessage('Error', 'Please fill in STORE CODE, STORE NAME, and NAME', 'error');
-                return;
-            }
         }
         
         try {
@@ -2252,7 +2212,6 @@ rDlAPEoSyhlV2CLCTZtig9FQ
                 url += `?id=eq.${editId}`;
                 method = 'PATCH';
             }
-            
             const res = await fetch(url, {
                 method: method,
                 headers: { 
@@ -2263,12 +2222,10 @@ rDlAPEoSyhlV2CLCTZtig9FQ
                 },
                 body: JSON.stringify(data)
             });
-            
             if (!res.ok) {
                 const errorText = await res.text();
                 throw new Error(errorText);
             }
-            
             if (!editId) {
                 const result = await res.json();
                 const newStaffer = result[0];
@@ -2295,14 +2252,11 @@ rDlAPEoSyhlV2CLCTZtig9FQ
             } else {
                 await showMessage('Success', 'Staffer updated successfully!', 'success');
             }
-            
             const modal = bootstrap.Modal.getInstance(document.getElementById('addStafferModal'));
             if (modal) modal.hide();
-            
             document.getElementById('editStafferId').value = '';
             document.getElementById('modalTitle').innerText = 'Add';
             document.getElementById('modalSaveBtnText').innerText = 'Save';
-            
             loadStaffers();
             loadDTRSubmissions();
         } catch(e) {
@@ -2327,7 +2281,6 @@ rDlAPEoSyhlV2CLCTZtig9FQ
                         }
                     }
                 }
-                
                 await fetch(`${SUPABASE_URL}/rest/v1/staffers?id=eq.${id}`, {
                     method: 'DELETE',
                     headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
@@ -2343,7 +2296,6 @@ rDlAPEoSyhlV2CLCTZtig9FQ
         document.getElementById('editStafferId').value = '';
         document.getElementById('modalTitle').innerText = 'Add';
         document.getElementById('modalSaveBtnText').innerText = 'Save';
-        
         document.getElementById('fAhamIdNo').value = '';
         document.getElementById('fAhamSurname').value = '';
         document.getElementById('fAhamName').value = '';
@@ -2362,7 +2314,6 @@ rDlAPEoSyhlV2CLCTZtig9FQ
         document.getElementById('fAhamEmail').value = '';
         document.getElementById('fAhamPayroll').value = '';
         document.getElementById('fAhamRemarks').value = '';
-        
         document.getElementById('fFbcStoreCode').value = '';
         document.getElementById('fFbcStoreName').value = '';
         document.getElementById('fFbcPlottedDisers').value = '';
@@ -2375,7 +2326,6 @@ rDlAPEoSyhlV2CLCTZtig9FQ
         document.getElementById('fFbcDayOff').value = '';
         document.getElementById('fFbcSchedule').value = '';
         document.getElementById('fFbcRemarks').value = '';
-        
         modalType = 'aham';
         document.getElementById('modalTypeAham').classList.add('active');
         document.getElementById('modalTypeFbc').classList.remove('active');
@@ -2383,7 +2333,6 @@ rDlAPEoSyhlV2CLCTZtig9FQ
         document.getElementById('modalStafferTypeHidden').value = 'aham';
         document.getElementById('ahamStafferForm').style.display = 'block';
         document.getElementById('fbcStafferForm').style.display = 'none';
-        
         const modal = new bootstrap.Modal(document.getElementById('addStafferModal'));
         modal.show();
     }
@@ -2397,9 +2346,7 @@ rDlAPEoSyhlV2CLCTZtig9FQ
                 headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
             });
             let data = await res.json();
-            
             allDtrRecords = data || [];
-            
             if (userRole === 'coordinator') {
                 if (userAssignment === 'AHAM') {
                     data = data.filter(r => r.dealer === 'AHAM OFFICE' || r.dealer?.includes('AHAM'));
@@ -2407,9 +2354,7 @@ rDlAPEoSyhlV2CLCTZtig9FQ
                     data = data.filter(r => r.dealer === 'FBC');
                 }
             }
-            
             dtrRecordsAll = data || [];
-            
             let staffersForView = allStaffersForComparison;
             if (userRole === 'coordinator') {
                 if (userAssignment === 'AHAM') {
@@ -2418,10 +2363,8 @@ rDlAPEoSyhlV2CLCTZtig9FQ
                     staffersForView = allStaffersForComparison.filter(s => s.dealer === 'FBC');
                 }
             }
-            
             const employeeMap = {};
             const cutoffSet = new Set();
-            
             staffersForView.forEach(s => {
                 const empKey = s.name;
                 if (!employeeMap[empKey]) {
@@ -2441,12 +2384,10 @@ rDlAPEoSyhlV2CLCTZtig9FQ
                     };
                 }
             });
-            
             data.forEach(r => {
                 const empKey = r.employee_name;
                 const cutoffKey = r.cutoff_range;
                 if (cutoffKey) cutoffSet.add(cutoffKey);
-                
                 if (employeeMap[empKey]) {
                     employeeMap[empKey].submitted = true;
                     employeeMap[empKey].cutoff = cutoffKey || 'N/A';
@@ -2474,9 +2415,7 @@ rDlAPEoSyhlV2CLCTZtig9FQ
                     }
                 }
             });
-            
             cutoffList = Array.from(cutoffSet).sort();
-            
             const cutoffSelect = document.getElementById('filterCutoff');
             if (cutoffSelect) {
                 cutoffSelect.innerHTML = '<option value="all">All Cutoffs</option>';
@@ -2487,7 +2426,6 @@ rDlAPEoSyhlV2CLCTZtig9FQ
                     cutoffSelect.appendChild(opt);
                 });
             }
-            
             const cutoffDownload = document.getElementById('filterCutoffDownload');
             if (cutoffDownload) {
                 cutoffDownload.innerHTML = '<option value="all">All Cutoffs</option>';
@@ -2498,24 +2436,19 @@ rDlAPEoSyhlV2CLCTZtig9FQ
                     cutoffDownload.appendChild(opt);
                 });
             }
-            
             allEmployees = Object.values(employeeMap);
-            
             const totalStaffers = allEmployees.length;
             const submitted = allEmployees.filter(e => e.submitted).length;
             const notSubmitted = totalStaffers - submitted;
             const printed = allEmployees.filter(e => e.printed).length;
-            
             document.getElementById('totalStaffers').textContent = totalStaffers;
             document.getElementById('submittedCount').textContent = submitted;
             document.getElementById('notSubmittedCount').textContent = notSubmitted;
             document.getElementById('printedCount').textContent = printed;
-            
             selectedSubmissions.clear();
             applySubmissionFilters();
             applyDownloadFilters();
             updateLastUpdated('dtrLastUpdated');
-            
             if (userRole === 'staffer' && currentStafferId) {
                 loadStafferDTRHistory();
             }
@@ -2528,7 +2461,6 @@ rDlAPEoSyhlV2CLCTZtig9FQ
         const searchTerm = document.getElementById('searchEmployeeDownload')?.value.toLowerCase() || '';
         const cutoffFilter = document.getElementById('filterCutoffDownload')?.value || 'all';
         const statusFilter = document.getElementById('filterStatusDownload')?.value || 'all';
-        
         filteredEmployeesForDownload = allEmployees.filter(e => {
             if (searchTerm && !e.name.toLowerCase().includes(searchTerm)) return false;
             if (cutoffFilter !== 'all' && e.cutoff !== cutoffFilter) return false;
@@ -2556,7 +2488,6 @@ rDlAPEoSyhlV2CLCTZtig9FQ
         const searchTerm = document.getElementById('searchEmployee')?.value.toLowerCase() || '';
         const cutoffFilter = document.getElementById('filterCutoff')?.value || 'all';
         const statusFilter = document.getElementById('filterStatus')?.value || 'all';
-        
         let filtered = allEmployees.filter(e => {
             if (searchTerm && !e.name.toLowerCase().includes(searchTerm)) return false;
             if (cutoffFilter !== 'all' && e.cutoff !== cutoffFilter) return false;
@@ -2566,7 +2497,6 @@ rDlAPEoSyhlV2CLCTZtig9FQ
             if (statusFilter === 'not_printed' && e.printed) return false;
             return true;
         });
-        
         renderSubmissionGrid(filtered);
         updateSelectedInfo();
     }
@@ -2577,11 +2507,9 @@ rDlAPEoSyhlV2CLCTZtig9FQ
             grid.innerHTML = '<div class="no-records">📭 No submissions found matching your filters.</div>';
             return;
         }
-        
         grid.innerHTML = employees.map(emp => {
             const statusClass = emp.submitted ? (emp.printed ? 'status-printed' : 'status-pending') : 'status-not-sent';
             const statusText = emp.submitted ? (emp.printed ? '✓ Printed' : 'Pending') : '✗ Not Submitted';
-            
             return `
             <div class="card ${selectedSubmissions.has(emp.batch_id) ? 'selected' : ''}">
                 ${emp.submitted ? `<input type="checkbox" class="select-checkbox" data-id="${emp.batch_id}" ${selectedSubmissions.has(emp.batch_id) ? 'checked' : ''} onclick="toggleSubmissionSelect('${emp.batch_id}')">` : ''}
@@ -2637,7 +2565,6 @@ rDlAPEoSyhlV2CLCTZtig9FQ
             showMessage('No Selection', 'Please select records to mark as printed', 'warning');
             return;
         }
-        
         const result = await Swal.fire({
             title: 'Mark as Printed?',
             text: `Mark ${selectedSubmissions.size} record(s) as printed?`,
@@ -2646,7 +2573,6 @@ rDlAPEoSyhlV2CLCTZtig9FQ
             confirmButtonText: 'Yes, mark as printed',
             cancelButtonText: 'Cancel'
         });
-        
         if (result.isConfirmed) {
             try {
                 for (let batchId of selectedSubmissions) {
@@ -2698,7 +2624,6 @@ rDlAPEoSyhlV2CLCTZtig9FQ
                 emp.images.forEach(img => toPrint.push(img));
             }
         });
-        
         allEmployees.forEach(emp => {
             if (selectedSubmissions.has(emp.batch_id)) {
                 if (!filteredEmployeesForDownload.find(e => e.batch_id === emp.batch_id)) {
@@ -2706,7 +2631,6 @@ rDlAPEoSyhlV2CLCTZtig9FQ
                 }
             }
         });
-        
         if (toPrint.length === 0) { 
             showMessage('No Selection', 'Select records to print', 'warning'); 
             return; 
@@ -2723,7 +2647,6 @@ rDlAPEoSyhlV2CLCTZtig9FQ
                 selectedEmp.push(emp);
             }
         });
-        
         allEmployees.forEach(emp => {
             if (selectedSubmissions.has(emp.batch_id)) {
                 if (!selectedEmp.find(e => e.batch_id === emp.batch_id)) {
@@ -2731,26 +2654,21 @@ rDlAPEoSyhlV2CLCTZtig9FQ
                 }
             }
         });
-        
         if (selectedEmp.length === 0) { 
             showMessage('No Selection', 'Select records to download', 'warning'); 
             return; 
         }
-        
         const btn = document.getElementById('downloadSelectedBtn');
         const orig = btn.innerHTML;
         btn.innerHTML = 'Creating ZIP...';
         btn.disabled = true;
-        
         try {
             const zip = new JSZip();
-            
             for (let emp of selectedEmp) {
                 const cutoffRange = emp.cutoff || 'No_Cutoff';
                 const cutoffStr = cutoffRange.replace(/\s/g, '_').replace(/to/g, '-');
                 const folderName = `${emp.name.replace(/[^a-zA-Z0-9]/g, '_')}_${cutoffStr}`;
                 const folder = zip.folder(folderName);
-                
                 for (let i = 0; i < emp.images.length; i++) {
                     const imgUrl = emp.images[i];
                     const response = await fetch(imgUrl);
@@ -2759,9 +2677,7 @@ rDlAPEoSyhlV2CLCTZtig9FQ
                     folder.file(filename, blob);
                 }
             }
-            
             const content = await zip.generateAsync({ type: 'blob' });
-            
             let zipName;
             if (selectedEmp.length === 1) {
                 const emp = selectedEmp[0];
@@ -2770,7 +2686,6 @@ rDlAPEoSyhlV2CLCTZtig9FQ
             } else {
                 zipName = `DTR_Records_${new Date().toISOString().slice(0,10)}.zip`;
             }
-            
             saveAs(content, zipName);
             showMessage('Complete', `${selectedEmp.length} employee(s) DTR images downloaded`, 'success');
         } catch(e) { 
