@@ -1273,7 +1273,7 @@ rDlAPEoSyhlV2CLCTZtig9FQ
     const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9pb2Ftcnh4Y2d3ZWphYWdsdmJnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE0NjUxNzYsImV4cCI6MjA5NzA0MTE3Nn0.NrprjEB1cNHCqgYCerhcX3_79UvEBjhmu-ueGl1dlew";
 
     // ============================================================
-    // GOOGLE DRIVE API FUNCTIONS
+    // GOOGLE DRIVE API FUNCTIONS - UPDATED FIX
     // ============================================================
     let driveToken = null;
     let driveConnected = false;
@@ -1281,13 +1281,15 @@ rDlAPEoSyhlV2CLCTZtig9FQ
     async function getGoogleDriveAccessToken() {
         try {
             const privateKey = GOOGLE_DRIVE_CONFIG.PRIVATE_KEY;
+            
             let pemContents = privateKey
                 .replace(/-----BEGIN PRIVATE KEY-----/, '')
                 .replace(/-----END PRIVATE KEY-----/, '')
-                .replace(/\n/g, '')
-                .replace(/\r/g, '')
+                .replace(/\s/g, '')
                 .trim();
+            
             const binaryDer = Uint8Array.from(atob(pemContents), c => c.charCodeAt(0));
+            
             const cryptoKey = await crypto.subtle.importKey(
                 'pkcs8',
                 binaryDer.buffer,
@@ -1295,6 +1297,7 @@ rDlAPEoSyhlV2CLCTZtig9FQ
                 false,
                 ['sign']
             );
+
             const now = Math.floor(Date.now() / 1000);
             const payload = {
                 iss: GOOGLE_DRIVE_CONFIG.CLIENT_EMAIL,
@@ -1303,41 +1306,47 @@ rDlAPEoSyhlV2CLCTZtig9FQ
                 exp: now + 3600,
                 iat: now
             };
+
             const header = { alg: 'RS256', typ: 'JWT' };
-            const encodedHeader = btoa(JSON.stringify(header))
-                .replace(/\+/g, '-')
-                .replace(/\//g, '_')
-                .replace(/=+$/, '');
-            const encodedPayload = btoa(JSON.stringify(payload))
-                .replace(/\+/g, '-')
-                .replace(/\//g, '_')
-                .replace(/=+$/, '');
+            
+            function base64UrlEncode(str) {
+                return btoa(str)
+                    .replace(/\+/g, '-')
+                    .replace(/\//g, '_')
+                    .replace(/=+$/, '');
+            }
+            
+            const encodedHeader = base64UrlEncode(JSON.stringify(header));
+            const encodedPayload = base64UrlEncode(JSON.stringify(payload));
             const signatureInput = encodedHeader + '.' + encodedPayload;
+            
             const signature = await crypto.subtle.sign(
                 'RSASSA-PKCS1-v1_5',
                 cryptoKey,
                 new TextEncoder().encode(signatureInput)
             );
+            
             const signatureArray = new Uint8Array(signature);
             let binaryString = '';
             for (let i = 0; i < signatureArray.length; i++) {
                 binaryString += String.fromCharCode(signatureArray[i]);
             }
-            const signatureBase64 = btoa(binaryString)
-                .replace(/\+/g, '-')
-                .replace(/\//g, '_')
-                .replace(/=+$/, '');
+            const signatureBase64 = base64UrlEncode(binaryString);
+            
             const jwt = signatureInput + '.' + signatureBase64;
+            
             const response = await fetch('https://oauth2.googleapis.com/token', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 body: `grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer&assertion=${jwt}`
             });
+            
             if (!response.ok) {
                 const errorText = await response.text();
                 console.error('Token error:', errorText);
                 throw new Error('Token request failed: ' + errorText);
             }
+            
             const data = await response.json();
             driveToken = data.access_token;
             driveConnected = true;
@@ -1352,35 +1361,55 @@ rDlAPEoSyhlV2CLCTZtig9FQ
 
     async function uploadToGoogleDrive(file, fileName) {
         try {
-            let token = driveToken;
-            if (!token) {
-                token = await getGoogleDriveAccessToken();
-            }
+            const token = await getGoogleDriveAccessToken();
             if (!token) {
                 throw new Error('Cannot authenticate with Google Drive');
             }
+            
+            // Use the simpler resumable upload approach
             const metadata = {
                 name: fileName,
-                parents: [GOOGLE_DRIVE_CONFIG.FOLDER_ID],
-                mimeType: file.type || 'image/jpeg'
+                parents: [GOOGLE_DRIVE_CONFIG.FOLDER_ID]
             };
-            const formData = new FormData();
-            formData.append('metadata', new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
-            formData.append('file', file);
-            const response = await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart', {
+            
+            // First, create the file metadata
+            const createResponse = await fetch('https://www.googleapis.com/drive/v3/files', {
                 method: 'POST',
-                headers: { 'Authorization': `Bearer ${token}` },
-                body: formData
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(metadata)
             });
-            if (!response.ok) {
-                const errorText = await response.text();
-                console.error('Upload error:', errorText);
-                throw new Error('Upload failed');
+            
+            if (!createResponse.ok) {
+                const errorText = await createResponse.text();
+                console.error('Create file error:', errorText);
+                throw new Error('Failed to create file: ' + errorText);
             }
-            const data = await response.json();
+            
+            const fileData = await createResponse.json();
+            const fileId = fileData.id;
+            
+            // Then upload the file content
+            const uploadResponse = await fetch(`https://www.googleapis.com/upload/drive/v3/files/${fileId}?uploadType=media`, {
+                method: 'PATCH',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': file.type || 'image/jpeg'
+                },
+                body: file
+            });
+            
+            if (!uploadResponse.ok) {
+                const errorText = await uploadResponse.text();
+                console.error('Upload content error:', errorText);
+                throw new Error('Failed to upload content: ' + errorText);
+            }
+            
             return {
-                fileId: data.id,
-                fileUrl: `https://drive.google.com/uc?export=view&id=${data.id}`
+                fileId: fileId,
+                fileUrl: `https://drive.google.com/uc?export=view&id=${fileId}`
             };
         } catch (error) {
             console.error('Upload error:', error);
@@ -1390,11 +1419,9 @@ rDlAPEoSyhlV2CLCTZtig9FQ
 
     async function deleteFromGoogleDrive(fileId) {
         try {
-            let token = driveToken;
-            if (!token) {
-                token = await getGoogleDriveAccessToken();
-            }
+            const token = await getGoogleDriveAccessToken();
             if (!token) return false;
+            
             const response = await fetch(`https://www.googleapis.com/drive/v3/files/${fileId}`, {
                 method: 'DELETE',
                 headers: { 'Authorization': `Bearer ${token}` }
@@ -1410,6 +1437,7 @@ rDlAPEoSyhlV2CLCTZtig9FQ
         const statusEl = document.getElementById('driveStatus');
         statusEl.className = 'drive-status connecting';
         statusEl.textContent = '⏳ Connecting Drive...';
+        
         try {
             const token = await getGoogleDriveAccessToken();
             if (token) {
@@ -2104,7 +2132,7 @@ rDlAPEoSyhlV2CLCTZtig9FQ
         modal.show();
     }
     
-    // FIXED: Individual validation for each field
+    // FIXED: Individual validation + duplicate check
     async function saveStaffer() {
         const type = document.getElementById('modalStafferTypeHidden').value;
         const editId = document.getElementById('editStafferId').value;
@@ -2118,7 +2146,7 @@ rDlAPEoSyhlV2CLCTZtig9FQ
             const outlet = document.getElementById('fAhamOutlet').value;
             const position = document.getElementById('fAhamPosition').value;
             
-            // INDIVIDUAL validation - shows exact missing field
+            // Individual validation
             if (!idNo) {
                 showMessage('Error', 'Please fill in ID-NO', 'error');
                 return;
@@ -2141,6 +2169,13 @@ rDlAPEoSyhlV2CLCTZtig9FQ
             }
             if (!position) {
                 showMessage('Error', 'Please select POSITION', 'error');
+                return;
+            }
+            
+            // Check for duplicate staff_code
+            const existing = allStaffers.find(s => s.staff_code === idNo && s.id != editId);
+            if (existing && !editId) {
+                showMessage('Error', `Staff code "${idNo}" already exists. Please use a unique ID.`, 'error');
                 return;
             }
             
@@ -2186,6 +2221,13 @@ rDlAPEoSyhlV2CLCTZtig9FQ
                 return;
             }
             
+            // Check for duplicate staff_code
+            const existing = allStaffers.find(s => s.staff_code === storeCode && s.id != editId);
+            if (existing && !editId) {
+                showMessage('Error', `Store code "${storeCode}" already exists. Please use a unique code.`, 'error');
+                return;
+            }
+            
             data = {
                 store_code: storeCode,
                 store_name: storeName,
@@ -2224,6 +2266,11 @@ rDlAPEoSyhlV2CLCTZtig9FQ
             });
             if (!res.ok) {
                 const errorText = await res.text();
+                // Check if it's a duplicate error
+                if (errorText.includes('duplicate key')) {
+                    showMessage('Error', 'This staff code is already taken. Please use a unique code.', 'error');
+                    return;
+                }
                 throw new Error(errorText);
             }
             if (!editId) {
